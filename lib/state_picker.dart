@@ -10,15 +10,13 @@ class StatePicker extends StatefulWidget {
 }
 
 class _StatePicker extends State<StatePicker> {
-
   final entries = ['Aimee', 'Kelly', 'Elizabeth'];
   final states = kAllStates;
 
   ListView showStates() {
-
     var stateKeys = states.keys;
 
-    ListView lv = ListView.separated (
+    ListView lv = ListView.separated(
       padding: EdgeInsets.all(10.0),
       itemCount: stateKeys.length,
       itemBuilder: (BuildContext context, int index) {
@@ -27,10 +25,15 @@ class _StatePicker extends State<StatePicker> {
           children: <Widget>[
             new ListTile(
               title: new Text("${states[key]}"),
+              trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () {
+                print(key);
+              },
             )
           ],
         );
-      }, separatorBuilder: (BuildContext context, int index) => const Divider(),
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
     );
 
     return lv;
@@ -39,9 +42,7 @@ class _StatePicker extends State<StatePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title)
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: showStates().build(context),
     );
   }
