@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:streamwatcher/constants.dart';
 import 'dart:core';
 
+import 'package:streamwatcher/gauge_selector.dart';
+
 class StatePicker extends StatefulWidget {
   final String title;
   StatePicker({this.title});
@@ -27,7 +29,9 @@ class _StatePicker extends State<StatePicker> {
               title: new Text("${states[key]}"),
               trailing: Icon(Icons.keyboard_arrow_right),
               onTap: () {
-                print(key);
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return GaugeSelector(stateAbbreviation: key);
+                }));
               },
             )
           ],
