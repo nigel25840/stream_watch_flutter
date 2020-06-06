@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:streamwatcher/gauge_detail.dart';
 import 'package:streamwatcher/gauge_model.dart';
 
 import 'constants.dart';
@@ -42,12 +43,21 @@ class _GaugeSelector extends State<GaugeSelector> {
         future: DataService().stateGauges(widget.stateAbbreviation),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return ListView.builder (
+            return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (_, index) {
                 return ListTile(
                   title: Text(snapshot.data[index].gaugeName),
                   subtitle: Text(snapshot.data[index].gaugeId),
+                  onTap: () {
+                    print(snapshot.data[index].gaugeId);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return GaugeDetail(
+                          gaugeId: snapshot.data[index].gaugeId,
+                          gaugeName: snapshot.data[index].gaugeName);
+                    }));
+                  },
                 );
               },
             );
