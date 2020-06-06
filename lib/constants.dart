@@ -1,4 +1,6 @@
 
+const kBaseUrl = 'https://waterservices.usgs.gov/nwis/iv/?format=json';
+
 const Map<String,String> kAllStates = {
   'AL': 'Alabama',
   'AK': 'Alaska',
