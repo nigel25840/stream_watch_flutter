@@ -12,7 +12,6 @@ class StatePicker extends StatefulWidget {
 }
 
 class _StatePicker extends State<StatePicker> {
-  final entries = ['Aimee', 'Kelly', 'Elizabeth'];
   final states = kAllStates;
 
   ListView showStates() {
