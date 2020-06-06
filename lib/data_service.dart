@@ -30,6 +30,9 @@ class DataService {
       }
       idSet.add(gID);
     }
-    return gaugeList;
+
+    Comparator<GaugeModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
+    gaugeList.sort(sortByname);
+    return gaugeList.toList();
   }
 }

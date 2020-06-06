@@ -47,6 +47,7 @@ class _GaugeSelector extends State<GaugeSelector> {
               itemBuilder: (_, index) {
                 return ListTile(
                   title: Text(snapshot.data[index].gaugeName),
+                  subtitle: Text(snapshot.data[index].gaugeId),
                 );
               },
             );
