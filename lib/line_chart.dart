@@ -1,65 +1,78 @@
 
-import 'package:bezier_chart/bezier_chart.dart';
-import 'package:flutter/cupertino.dart';
+//import 'package:bezier_chart/bezier_chart.dart';
+//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+//import 'package:charts_common/common.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class GaugeLineChart extends StatefulWidget {
+
   @override
-  _GaugeLineChart createState() => _GaugeLineChart();
-
-
-
+  _GaugeLineChartState createState() => _GaugeLineChartState();
 }
 
-class _GaugeLineChart extends State<GaugeLineChart> {
-  Widget build(BuildContext context) {
+class _GaugeLineChartState extends State<GaugeLineChart> {
 
-    final fromDate = DateTime.now().subtract(Duration(hours: 24));
-    final toDate = DateTime.now();
+  List<charts.Series<GaugeFlowReading, DateTime>> _flowSeries;
 
-    DateTime date1 = DateTime.now().subtract(Duration(hours: 2));
-    DateTime date2 = DateTime.now().subtract(Duration(hours: 3));
-
-    List<DataPoint> getReadings() {
-      var retval = List<DataPoint>();
-      for (int index = 0; index < 24; index++) {
-        double val = (index % 2 == 0)
-            ? index.roundToDouble() - 10.0 : index.roundToDouble() + 12.0;
-        retval.add(DataPoint<DateTime>(
-            value: val,
-            xAxis: DateTime.now()
-                .subtract(Duration(seconds: 3600 + (index * 2000)))));
-      }
-      return retval;
+  _getReadingData() {
+    List<GaugeFlowReading> flows = [];
+    for(int i = 0; i < 100; i++) {
+      flows.add(GaugeFlowReading(i * 1000, DateTime.now().subtract(Duration(hours: i)), Color(0xffb74093)));
     }
 
-    return   Container(
-      padding: EdgeInsets.all(20.0),
-      color: Colors.white,
-      height: MediaQuery.of(context).size.height / 2,
-      width: MediaQuery.of(context).size.width,
-      child: BezierChart(
-        fromDate: fromDate,
-        bezierChartScale: BezierChartScale.HOURLY,
-        xAxisCustomValues: [1,2,3,4,5],
-        toDate: toDate,
-        selectedDate: toDate,
-        series: [
-          BezierLine(
-            label: " Reading",
-            data: getReadings(),
-          ),
-        ],
-        config: BezierChartConfig(
-          verticalIndicatorStrokeWidth: 2.0,
-          verticalIndicatorColor: Colors.black26,
-          showVerticalIndicator: false,
-          showDataPoints: true,
-          verticalIndicatorFixedPosition: false,
-          backgroundColor: Colors.lightBlue,
-          footerHeight: 30.0,
-        ),
-      ),
+    _flowSeries.add(
+      charts.Series(
+        data: flows,
+        domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
+        measureFn: (GaugeFlowReading reading, _) => reading.flow,
+        colorFn: (GaugeFlowReading reading, _) => charts.ColorUtil.fromDartColor(reading.color),
+        id: 'flows',
+        labelAccessorFn: (GaugeFlowReading row,_) => '${row.timestamp.toString()}'
+      )
     );
+
+    @override
+    void initState() {
+      super.initState();
+      _flowSeries = List<charts.Series<GaugeFlowReading, DateTime>>();
+      _getReadingData();
+    }
+
+  }
+
+
+
+  Widget build(BuildContext context) {
+    return Center(
+        child: charts.LineChart(
+          _flowSeries,
+          defaultRenderer: charts.LineRendererConfig(
+            includeArea: true, stacked: true),
+          animate: true,
+          animationDuration: Duration(seconds: 5),
+          behaviors: [
+            charts.ChartTitle('Years',
+                behaviorPosition: charts.BehaviorPosition.bottom,
+                titleOutsideJustification:charts.OutsideJustification.middleDrawArea)
+          ],
+          ),
+        );
   }
 }
+
+class GaugeFlowReading {
+  int flow;
+  DateTime timestamp;
+  Color color;
+  GaugeFlowReading(this.flow, this.timestamp, this.color);
+}
+
+class GaugeStageReading {
+  final double stage;
+  final DateTime timestamp;
+  GaugeStageReading(this.stage, this.timestamp);
+}
+
+

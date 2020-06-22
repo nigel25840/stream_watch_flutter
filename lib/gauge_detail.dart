@@ -1,10 +1,12 @@
-import 'package:bezier_chart/bezier_chart.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/constants.dart';
 import 'dart:core';
 
 import 'package:streamwatcher/line_chart.dart';
+
+import 'gauge_line_chart.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -21,19 +23,11 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.gaugeName),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            GaugeLineChart(),
-            Spacer()
-          ],
-        ),
-      ),
+      body: GaugeLineChart(),
     );
   }
 }
