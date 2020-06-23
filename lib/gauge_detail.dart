@@ -24,11 +24,12 @@ class _GaugeDetail extends State<GaugeDetail> {
   String getGauge() {
     return widget.gaugeId;
   }
+
   List<charts.Series<GaugeFlowReading, DateTime>> _seriesFlowData;
   List<charts.Series<GaugeStageReading, DateTime>> _seriesStageData;
   List<GaugeFlowReading> gaugeFlowReadings = [];
-  List<GaugeStageReading> gaugeStageReadings  = [];
-  List<int>tickValues = [];
+  List<GaugeStageReading> gaugeStageReadings = [];
+  List<int> tickValues = [];
   var isCfs = true;
 
   int currentCfs = 0;
@@ -43,7 +44,8 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   _getGaugeData() async {
     // 03185400
-    http.Response res = await http.get('https://waterservices.usgs.gov/nwis/iv/?site=${widget.gaugeId}&format=json&period=PT${hours}H');
+    http.Response res = await http.get(
+        'https://waterservices.usgs.gov/nwis/iv/?site=${widget.gaugeId}&format=json&period=PT${hours}H');
     var json = jsonDecode(res.body);
     int count = json['value']['timeSeries'].length;
     var timeseries = json['value']['timeSeries'];
@@ -61,16 +63,14 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   _generateChartSeries() {
     _seriesFlowData = List<charts.Series<GaugeFlowReading, DateTime>>();
-    _seriesFlowData.add(
-      charts.Series(
+    _seriesFlowData.add(charts.Series(
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
-        areaColorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-        id:'Readings',
+        areaColorFn: (__, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
+        id: 'Readings',
         data: gaugeFlowReadings,
         domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
-        measureFn: (GaugeFlowReading reading, _) => reading.flow
-      )
-    );
+        measureFn: (GaugeFlowReading reading, _) => reading.flow));
   }
 
   _getFlowReadings(json) {
@@ -104,7 +104,7 @@ class _GaugeDetail extends State<GaugeDetail> {
     return retval;
   }
 
-  _getStageReadings(json){
+  _getStageReadings(json) {
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
@@ -124,59 +124,77 @@ class _GaugeDetail extends State<GaugeDetail> {
   Widget build(BuildContext context) {
     _generateChartSeries();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.gaugeName),
-      ),
-      body:
-          Column(
-            children: [
-              Container (
-                height: MediaQuery.of(context).size.height * .6,
-                alignment: Alignment(0.0, 0.0),
-                color: Colors.lightBlueAccent,
-                child: charts.TimeSeriesChart(
-                  _seriesFlowData,
-                  animate: true,
-                  animationDuration: Duration(milliseconds: 1500),
-                  dateTimeFactory: const charts.LocalDateTimeFactory(),
-                  primaryMeasureAxis: charts.NumericAxisSpec(
-                    tickProviderSpec: charts.StaticNumericTickProviderSpec(
-                    <charts.TickSpec<num>>[
-                    charts.TickSpec<num>(tickValues[0]),
-                    charts.TickSpec<num>(tickValues[1]),
-                    charts.TickSpec<num>(tickValues[2]),
-                    charts.TickSpec<num>(tickValues[3]),
-                    charts.TickSpec<num>(tickValues[4])]
-                    )
-                  ),
-                ),
+        appBar: AppBar(
+          title: Text(widget.gaugeName),
+        ),
+        body: Column(
+          children: [
+            Container(
+              child: Row(
+                children: [
+                  Text("VITALS"),
+                ],
               ),
-              Container (
-                width: double.infinity,
-                color: Colors.white,
-                alignment: Alignment(-1.0, 0.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * .5,
+              alignment: Alignment(0.0, 0.0),
+              color: Colors.lightBlueAccent,
+              child: charts.TimeSeriesChart(
+                _seriesFlowData,
+                animate: true,
+                animationDuration: Duration(milliseconds: 700),
+                dateTimeFactory: const charts.LocalDateTimeFactory(),
+                primaryMeasureAxis: charts.NumericAxisSpec(
+                    tickProviderSpec: charts
+                        .StaticNumericTickProviderSpec(<charts.TickSpec<num>>[
+                  charts.TickSpec<num>(tickValues[0]),
+                  charts.TickSpec<num>(tickValues[1]),
+                  charts.TickSpec<num>(tickValues[2]),
+                  charts.TickSpec<num>(tickValues[3]),
+                  charts.TickSpec<num>(tickValues[4])
+                ])),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              color: Colors.white,
+              alignment: Alignment(-1.0, 0.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Text("CONSTRAINED BOX"),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: double.infinity,
-                          minHeight: MediaQuery.of(context).size.height * .25,
-                          maxWidth: double.infinity,
-                          maxHeight: MediaQuery.of(context).size.height * .25
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${gaugeFlowReadings.last.timestamp}",
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${gaugeFlowReadings.last.flow}cfs",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ],
                   ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        minWidth: double.infinity,
+                        minHeight: MediaQuery.of(context).size.height * .3,
+                        maxWidth: double.infinity,
+                        maxHeight: MediaQuery.of(context).size.height * .3),
+                  )
+                ],
               ),
-            ],
-          )
-      );
-
+            ),
+          ],
+        ));
   }
 }
-
 
 class GaugeFlowReading {
   int flow;
