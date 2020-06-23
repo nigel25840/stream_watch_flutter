@@ -24,8 +24,8 @@ class _GaugeDetail extends State<GaugeDetail> {
   String getGauge() {
     return widget.gaugeId;
   }
-  List<charts.Series<GaugeFlowReading, double>> _seriesFlowData;
-  List<charts.Series<GaugeStageReading, double>> _seriesStageData;
+  List<charts.Series<GaugeFlowReading, DateTime>> _seriesFlowData;
+  List<charts.Series<GaugeStageReading, DateTime>> _seriesStageData;
   List<GaugeFlowReading> gaugeFlowReadings = [];
   List<GaugeStageReading> gaugeStageReadings  = [];
   List<int>tickValues = [];
@@ -55,16 +55,16 @@ class _GaugeDetail extends State<GaugeDetail> {
         _getStageReadings(timeseries[index]['values'][0]['value']);
       }
     }
-    _generateChartFlowData();
+    _generateChartSeries();
   }
 
-  _generateChartFlowData() {
-    _seriesFlowData = List<charts.Series<GaugeFlowReading, double>>();
+  _generateChartSeries() {
+    _seriesFlowData = List<charts.Series<GaugeFlowReading, DateTime>>();
     _seriesFlowData.add(
       charts.Series(
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
         areaColorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-        id:'Redings',
+        id:'Readings',
         data: gaugeFlowReadings,
         domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
         measureFn: (GaugeFlowReading reading, _) => reading.flow
@@ -78,7 +78,7 @@ class _GaugeDetail extends State<GaugeDetail> {
       var dict = json[i];
       var value = int.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
-      gaugeFlowReadings.add(GaugeFlowReading(value, i.toDouble()));
+      gaugeFlowReadings.add(GaugeFlowReading(value, timestamp));
       tickValues.add(value);
     }
     currentCfs = tickValues.last;
@@ -121,7 +121,7 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   @override
   Widget build(BuildContext context) {
-    _generateChartFlowData();
+    _generateChartSeries();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.gaugeName),
@@ -133,17 +133,17 @@ class _GaugeDetail extends State<GaugeDetail> {
                 height: MediaQuery.of(context).size.height * .6,
                 alignment: Alignment(0.0, 0.0),
                 color: Colors.lightBlueAccent,
-                child: charts.LineChart(
+                child: charts.TimeSeriesChart(
                   _seriesFlowData,
+                  dateTimeFactory: const charts.LocalDateTimeFactory(),
                   primaryMeasureAxis: charts.NumericAxisSpec(
                     tickProviderSpec: charts.StaticNumericTickProviderSpec(
-                      <charts.TickSpec<num>>[
-                        charts.TickSpec<num>(tickValues[0]),
-                        charts.TickSpec<num>(tickValues[1]),
-                        charts.TickSpec<num>(tickValues[2]),
-                        charts.TickSpec<num>(tickValues[3]),
-                        charts.TickSpec<num>(tickValues[4]),
-                      ]
+                    <charts.TickSpec<num>>[
+                    charts.TickSpec<num>(tickValues[0]),
+                    charts.TickSpec<num>(tickValues[1]),
+                    charts.TickSpec<num>(tickValues[2]),
+                    charts.TickSpec<num>(tickValues[3]),
+                    charts.TickSpec<num>(tickValues[4])]
                     )
                   ),
                 ),
@@ -177,7 +177,7 @@ class _GaugeDetail extends State<GaugeDetail> {
 
 class GaugeFlowReading {
   int flow;
-  double timestamp;
+  DateTime timestamp;
   GaugeFlowReading(this.flow, this.timestamp);
 }
 
@@ -186,3 +186,18 @@ class GaugeStageReading {
   final DateTime timestamp;
   GaugeStageReading(this.stage, this.timestamp);
 }
+
+//charts.LineChart(
+//_seriesFlowData,
+//primaryMeasureAxis: charts.NumericAxisSpec(
+//tickProviderSpec: charts.StaticNumericTickProviderSpec(
+//<charts.TickSpec<num>>[
+//charts.TickSpec<num>(tickValues[0]),
+//charts.TickSpec<num>(tickValues[1]),
+//charts.TickSpec<num>(tickValues[2]),
+//charts.TickSpec<num>(tickValues[3]),
+//charts.TickSpec<num>(tickValues[4]),
+//]
+//)
+//),
+//)
