@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:streamwatcher/constants.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:core';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -22,6 +23,9 @@ class _GaugeDetail extends State<GaugeDetail> {
   String getGauge() {
     return widget.gaugeId;
   }
+  List<charts.Series<GaugeFlowReading, double>> _seriesLineData;
+  List<GaugeFlowReading> gaugeFlowReadings = [];
+  List<GaugeStageReading> gaugeStageReadings  = [];
 
   _getGaugeData() async {
     // 03185400
@@ -33,10 +37,30 @@ class _GaugeDetail extends State<GaugeDetail> {
     for (int index = 0; index < count; index++) {
       String item = timeseries[index]['variable']['variableName'];
       if (item.contains('Streamflow')) {
-        print(timeseries[index]['values'][0]['value']);
+        _getFlowReadings(timeseries[index]['values'][0]['value']);
       } else if (item.contains('Gage height')) {
-        print(timeseries[index]['values'][0]['value']);
+        _getStageReadings(timeseries[index]['values'][0]['value']);
       }
+    }
+  }
+
+  List<GaugeFlowReading> _getFlowReadings(json) {
+    for (int i = 0; i < json.length; i++) {
+      var dict = json[i];
+      var value = int.parse(dict['value']);
+      var timestamp = DateTime.parse(dict['dateTime']);
+      gaugeFlowReadings.add(GaugeFlowReading(value, i.toDouble()));
+      print("OBJECT: ${value} - ${timestamp}");
+    }
+  }
+
+  List<GaugeStageReading> _getStageReadings(json){
+    for (int i = 0; i < json.length; i++) {
+      var dict = json[i];
+      var value = double.parse(dict['value']);
+      var timestamp = DateTime.parse(dict['dateTime']);
+      gaugeStageReadings.add(GaugeStageReading(value, timestamp));
+      print("OBJECT: ${value} - ${timestamp}");
     }
   }
 
@@ -85,4 +109,17 @@ class _GaugeDetail extends State<GaugeDetail> {
       );
 
   }
+}
+
+
+class GaugeFlowReading {
+  int flow;
+  double timestamp;
+  GaugeFlowReading(this.flow, this.timestamp);
+}
+
+class GaugeStageReading {
+  final double stage;
+  final DateTime timestamp;
+  GaugeStageReading(this.stage, this.timestamp);
 }
