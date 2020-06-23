@@ -37,12 +37,13 @@ class _GaugeDetail extends State<GaugeDetail> {
   double currentStage = 0.0;
   double lowStage = 0.0;
   double highStage = 0.0;
+  int hours = 72;
 
   List<int> cfsTickVals = [];
 
   _getGaugeData() async {
     // 03185400
-    http.Response res = await http.get('https://waterservices.usgs.gov/nwis/iv/?site=${widget.gaugeId}&format=json&period=PT48H');
+    http.Response res = await http.get('https://waterservices.usgs.gov/nwis/iv/?site=${widget.gaugeId}&format=json&period=PT${hours}H');
     var json = jsonDecode(res.body);
     int count = json['value']['timeSeries'].length;
     var timeseries = json['value']['timeSeries'];
@@ -135,6 +136,8 @@ class _GaugeDetail extends State<GaugeDetail> {
                 color: Colors.lightBlueAccent,
                 child: charts.TimeSeriesChart(
                   _seriesFlowData,
+                  animate: true,
+                  animationDuration: Duration(milliseconds: 1500),
                   dateTimeFactory: const charts.LocalDateTimeFactory(),
                   primaryMeasureAxis: charts.NumericAxisSpec(
                     tickProviderSpec: charts.StaticNumericTickProviderSpec(
