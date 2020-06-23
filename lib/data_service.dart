@@ -13,8 +13,7 @@ import 'package:streamwatcher/gauge_model.dart';
 
 class DataService {
   Future<List<GaugeModel>> stateGauges(String stateAbbr) async {
-    String url =
-        '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
+    String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
     Response res = await get(url);
     var json = jsonDecode(res.body);
     var gaugeList = List<GaugeModel>();
@@ -35,4 +34,10 @@ class DataService {
     gaugeList.sort(sortByname);
     return gaugeList.toList();
   }
+
+  // Single reading: https://waterservices.usgs.gov/nwis/iv/?site=03185400&format=json
+  // &period=PT2H
+  // value.timeSeries[0].values[0].value[0].value  (feet)
+  // value.timeSeries[2].values[0].value[0].value  (cfs)
+  // GaugeHeight/StreamFlow value.timeSeries[i].variable.variableName - "Streamflow, ft&#179;/s" or "Gage height, feet"
 }
