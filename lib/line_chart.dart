@@ -14,12 +14,12 @@ class GaugeLineChart extends StatefulWidget {
 
 class _GaugeLineChartState extends State<GaugeLineChart> {
 
-  List<charts.Series<GaugeFlowReading, DateTime>> _flowSeries;
+  List<charts.Series<GaugeFlowReading, double>> _flowSeries;
 
   _getReadingData() {
     List<GaugeFlowReading> flows = [];
     for(int i = 0; i < 100; i++) {
-      flows.add(GaugeFlowReading(i * 1000, DateTime.now().subtract(Duration(hours: i)), Color(0xffb74093)));
+//      flows.add(GaugeFlowReading(i * 1000, DateTime.now().subtract(Duration(hours: i)), Color(0xffb74093)));
     }
 
     _flowSeries.add(
@@ -27,7 +27,6 @@ class _GaugeLineChartState extends State<GaugeLineChart> {
         data: flows,
         domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
         measureFn: (GaugeFlowReading reading, _) => reading.flow,
-        colorFn: (GaugeFlowReading reading, _) => charts.ColorUtil.fromDartColor(reading.color),
         id: 'flows',
         labelAccessorFn: (GaugeFlowReading row,_) => '${row.timestamp.toString()}'
       )
@@ -36,7 +35,7 @@ class _GaugeLineChartState extends State<GaugeLineChart> {
     @override
     void initState() {
       super.initState();
-      _flowSeries = List<charts.Series<GaugeFlowReading, DateTime>>();
+      _flowSeries = List<charts.Series<GaugeFlowReading, double>>();
       _getReadingData();
     }
 
@@ -62,11 +61,12 @@ class _GaugeLineChartState extends State<GaugeLineChart> {
   }
 }
 
+
+
 class GaugeFlowReading {
   int flow;
-  DateTime timestamp;
-  Color color;
-  GaugeFlowReading(this.flow, this.timestamp, this.color);
+  double timestamp;
+  GaugeFlowReading(this.flow, this.timestamp);
 }
 
 class GaugeStageReading {
