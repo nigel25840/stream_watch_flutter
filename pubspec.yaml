@@ -17,6 +17,7 @@ dependencies:
   flutter_spinkit: ^3.1.0
   charts_flutter: ^0.6.0
   font_awesome_flutter: ^8.2.0
+  intl: ^0.15.8
 
 dev_dependencies:
   flutter_test:

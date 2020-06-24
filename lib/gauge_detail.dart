@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -31,6 +31,8 @@ class _GaugeDetail extends State<GaugeDetail> {
   List<GaugeStageReading> gaugeStageReadings = [];
   List<int> tickValues = [];
   var isCfs = true;
+  String lastUpdate = '';
+  String timeOfLastUpdate = '';
 
   int currentCfs = 0;
   int lowCfs = 0;
@@ -86,8 +88,19 @@ class _GaugeDetail extends State<GaugeDetail> {
     tickValues.sort();
     lowCfs = tickValues.first;
     highCfs = tickValues.last;
-
+    DateTime updated = gaugeFlowReadings.last.timestamp;
+    lastUpdate = DateFormat.yMMMMd().format(updated);
+    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
     tickValues = _setTickValues(highCfs, lowCfs, 5);
+  }
+
+  _getStageReadings(json) {
+    for (int i = 0; i < json.length; i++) {
+      var dict = json[i];
+      var value = double.parse(dict['value']);
+      var timestamp = DateTime.parse(dict['dateTime']);
+      gaugeStageReadings.add(GaugeStageReading(value, timestamp));
+    }
   }
 
   List<int> _setTickValues(int high, int low, int numberOfTicks) {
@@ -104,15 +117,6 @@ class _GaugeDetail extends State<GaugeDetail> {
     return retval;
   }
 
-  _getStageReadings(json) {
-    for (int i = 0; i < json.length; i++) {
-      var dict = json[i];
-      var value = double.parse(dict['value']);
-      var timestamp = DateTime.parse(dict['dateTime']);
-      gaugeStageReadings.add(GaugeStageReading(value, timestamp));
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -125,14 +129,48 @@ class _GaugeDetail extends State<GaugeDetail> {
     _generateChartSeries();
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.gaugeName),
+          title: Text("STREAM WATCH"), actions: <Widget> [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                setState(() {
+                  _generateChartSeries();
+                });
+              },
+            )
+        ],
         ),
         body: Column(
           children: [
             Container(
-              child: Row(
+              child: Column(
                 children: [
-                  Text("VITALS"),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(widget.gaugeName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0)),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${lastUpdate} - ${timeOfLastUpdate}",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${gaugeFlowReadings.last.flow}cfs",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -146,8 +184,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                 animationDuration: Duration(milliseconds: 700),
                 dateTimeFactory: const charts.LocalDateTimeFactory(),
                 primaryMeasureAxis: charts.NumericAxisSpec(
-                    tickProviderSpec: charts
-                        .StaticNumericTickProviderSpec(<charts.TickSpec<num>>[
+                    tickProviderSpec: charts.StaticNumericTickProviderSpec(<charts.TickSpec<num>>[
                   charts.TickSpec<num>(tickValues[0]),
                   charts.TickSpec<num>(tickValues[1]),
                   charts.TickSpec<num>(tickValues[2]),
@@ -167,26 +204,16 @@ class _GaugeDetail extends State<GaugeDetail> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "${gaugeFlowReadings.last.timestamp}",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "${gaugeFlowReadings.last.flow}cfs",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        child: Text("OTHER"),
                       ),
                     ],
                   ),
                   ConstrainedBox(
                     constraints: BoxConstraints(
                         minWidth: double.infinity,
-                        minHeight: MediaQuery.of(context).size.height * .3,
+                        minHeight: MediaQuery.of(context).size.height * .25,
                         maxWidth: double.infinity,
-                        maxHeight: MediaQuery.of(context).size.height * .3),
+                        maxHeight: MediaQuery.of(context).size.height * .25),
                   )
                 ],
               ),
