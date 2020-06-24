@@ -60,19 +60,32 @@ class _GaugeDetail extends State<GaugeDetail> {
         _getStageReadings(timeseries[index]['values'][0]['value']);
       }
     }
-    _generateChartSeries();
+    _generateChartFlowSeries();
   }
 
-  _generateChartSeries() {
+  _generateChartFlowSeries() {
+    print("GENERATING CHART FLOW SERIES");
     _seriesFlowData = List<charts.Series<GaugeFlowReading, DateTime>>();
     _seriesFlowData.add(charts.Series(
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
-        areaColorFn: (__, _) =>
-            charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-        id: 'Readings',
+        areaColorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
+        id: 'FlowReadings',
         data: gaugeFlowReadings,
         domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
         measureFn: (GaugeFlowReading reading, _) => reading.flow));
+  }
+
+  _generateChartStageSeries() {
+    print("GENERATING CHART STAGE SERIES");
+    _seriesStageData = List<charts.Series<GaugeStageReading, DateTime>>();
+    _seriesStageData.add(charts.Series(
+      colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
+      areaColorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
+      id: 'StageReadings',
+      data: gaugeStageReadings,
+      domainFn: (GaugeStageReading reading, _) => reading.timestamp,
+      measureFn: (GaugeStageReading reading, _) => reading.stage
+    ));
   }
 
   _getFlowReadings(json) {
@@ -126,7 +139,7 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   @override
   Widget build(BuildContext context) {
-    _generateChartSeries();
+    _generateChartFlowSeries();
     return Scaffold(
         appBar: AppBar(
           title: Text("STREAM WATCH"), actions: <Widget> [
@@ -134,7 +147,7 @@ class _GaugeDetail extends State<GaugeDetail> {
               icon: Icon(Icons.refresh),
               onPressed: () {
                 setState(() {
-                  _generateChartSeries();
+                  _generateChartFlowSeries();
                 });
               },
             )
@@ -179,7 +192,7 @@ class _GaugeDetail extends State<GaugeDetail> {
               alignment: Alignment(0.0, 0.0),
               color: Colors.lightBlueAccent,
               child: charts.TimeSeriesChart(
-                _seriesFlowData,
+                isCfs ? _seriesFlowData : _seriesStageData,
                 animate: true,
                 animationDuration: Duration(milliseconds: 700),
                 dateTimeFactory: const charts.LocalDateTimeFactory(),
