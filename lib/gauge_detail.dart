@@ -29,8 +29,8 @@ class _GaugeDetail extends State<GaugeDetail> {
   List<charts.Series<GaugeStageReading, DateTime>> _seriesStageData;
   List<GaugeFlowReading> gaugeFlowReadings = [];
   List<GaugeStageReading> gaugeStageReadings = [];
-  List<int> tickValues = [];
-  var isCfs = true;
+  List<int> flowTickValues = [];
+  List<double> stageTickValues = [];
   String lastUpdate = '';
   String timeOfLastUpdate = '';
 
@@ -41,6 +41,8 @@ class _GaugeDetail extends State<GaugeDetail> {
   double lowStage = 0.0;
   double highStage = 0.0;
   int hours = 72;
+  int tickCount = 5;
+  var isCfs = false;
 
   List<int> cfsTickVals = [];
 
@@ -61,6 +63,7 @@ class _GaugeDetail extends State<GaugeDetail> {
       }
     }
     _generateChartFlowSeries();
+    _generateChartStageSeries();
   }
 
   _generateChartFlowSeries() {
@@ -89,41 +92,65 @@ class _GaugeDetail extends State<GaugeDetail> {
   }
 
   _getFlowReadings(json) {
-    tickValues = [];
+    flowTickValues = [];
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = int.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeFlowReadings.add(GaugeFlowReading(value, timestamp));
-      tickValues.add(value);
+      flowTickValues.add(value);
     }
-    currentCfs = tickValues.last;
-    tickValues.sort();
-    lowCfs = tickValues.first;
-    highCfs = tickValues.last;
+    currentCfs = flowTickValues.last;
+    flowTickValues.sort();
+    lowCfs = flowTickValues.first;
+    highCfs = flowTickValues.last;
     DateTime updated = gaugeFlowReadings.last.timestamp;
     lastUpdate = DateFormat.yMMMMd().format(updated);
     timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    tickValues = _setTickValues(highCfs, lowCfs, 5);
+    flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
   }
 
   _getStageReadings(json) {
+    stageTickValues = [];
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeStageReadings.add(GaugeStageReading(value, timestamp));
+      stageTickValues.add(value);
     }
+    currentStage = stageTickValues.last;
+    stageTickValues.sort();
+    lowStage = stageTickValues.first;
+    highStage = stageTickValues.last;
+    DateTime updated = gaugeStageReadings.last.timestamp;
+    lastUpdate = DateFormat.yMMMMd().format(updated);
+    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+    stageTickValues = _setStageTickValues(highStage, lowStage, tickCount);
   }
 
-  List<int> _setTickValues(int high, int low, int numberOfTicks) {
+  List<int> _setFlowTickValues(int high, int low, int numberOfTicks) {
     double increase = 1.1;
     int _low = low;
-    int _high = (high * 1.1).toInt();
+    int _high = (high * increase).toInt();
     int total = _high - _low;
     int delta = (total / numberOfTicks).toInt();
     List<int> retval = [_low];
     for (int i = 1; i < numberOfTicks; i++) {
+      _low += delta;
+      retval.add(_low);
+    }
+    return retval;
+  }
+
+  List<double> _setStageTickValues(double high, double low, int numberOfTicks) {
+    double increase = 1.1;
+    double _low = low;
+    double _high = high * increase;
+    double spread = _high - _low;
+    double delta = spread / numberOfTicks;
+    List<double> retval = [_low];
+    for (int i = 0; i < numberOfTicks; i++) {
       _low += delta;
       retval.add(_low);
     }
@@ -198,11 +225,11 @@ class _GaugeDetail extends State<GaugeDetail> {
                 dateTimeFactory: const charts.LocalDateTimeFactory(),
                 primaryMeasureAxis: charts.NumericAxisSpec(
                     tickProviderSpec: charts.StaticNumericTickProviderSpec(<charts.TickSpec<num>>[
-                  charts.TickSpec<num>(tickValues[0]),
-                  charts.TickSpec<num>(tickValues[1]),
-                  charts.TickSpec<num>(tickValues[2]),
-                  charts.TickSpec<num>(tickValues[3]),
-                  charts.TickSpec<num>(tickValues[4])
+                  charts.TickSpec<num>(isCfs ? flowTickValues[0] : stageTickValues[0]),
+                  charts.TickSpec<num>(isCfs ? flowTickValues[1] : stageTickValues[1]),
+                  charts.TickSpec<num>(isCfs ? flowTickValues[2] : stageTickValues[2]),
+                  charts.TickSpec<num>(isCfs ? flowTickValues[3] : stageTickValues[3]),
+                  charts.TickSpec<num>(isCfs ? flowTickValues[4] : stageTickValues[4])
                 ])),
               ),
             ),
