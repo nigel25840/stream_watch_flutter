@@ -167,6 +167,7 @@ class _GaugeDetail extends State<GaugeDetail> {
   @override
   Widget build(BuildContext context) {
     _generateChartFlowSeries();
+    _generateChartStageSeries();
     return Scaffold(
         appBar: AppBar(
           title: Text("STREAM WATCH"), actions: <Widget> [
