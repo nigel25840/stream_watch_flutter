@@ -7,7 +7,7 @@ import 'chart/gauge_detail.dart';
 import 'constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'data_provider.dart';
+import 'dataServices/data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
