@@ -33,16 +33,20 @@ class ChartManager {
     for (int index = 0; index < count; index++) {
       String item = timeSeries[index]['variable']['variableName'];
       if (item.contains('Streamflow')) {
-        _getFlowReadings(timeSeries[index]['values'][0]['value']);
+        if (gaugeFlowReadings.length < 1) {
+          _getFlowReadings(timeSeries[index]['values'][0]['value']);
+        }
       } else if (item.contains('Gage height')) {
-        _getStageReadings(timeSeries[index]['values'][0]['value']);
+        if (gaugeStageReadings.length < 1) {
+          _getStageReadings(timeSeries[index]['values'][0]['value']);
+        }
       }
     }
-    await _generateChartFlowSeries();
-    await _generateChartStageSeries();
+    await generateChartFlowSeries();
+    await generateChartStageSeries();
   }
 
-  _generateChartFlowSeries() {
+  generateChartFlowSeries() {
     print("GENERATING CHART FLOW SERIES");
     seriesFlowData = List<charts.Series<GaugeFlowReading, DateTime>>();
     seriesFlowData.add(charts.Series(
@@ -55,7 +59,7 @@ class ChartManager {
         measureFn: (GaugeFlowReading reading, _) => reading.flow));
   }
 
-  _generateChartStageSeries() {
+  generateChartStageSeries() {
     print("GENERATING CHART STAGE SERIES");
     seriesStageData = List<charts.Series<GaugeStageReading, DateTime>>();
     seriesStageData.add(charts.Series(

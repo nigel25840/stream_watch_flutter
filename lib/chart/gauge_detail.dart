@@ -19,18 +19,11 @@ class GaugeDetail extends StatefulWidget {
 }
 
 class _GaugeDetail extends State<GaugeDetail> {
-
-  ChartManager manager = ChartManager();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+  ChartManager mgr = ChartManager();
 
   @override
   Widget build(BuildContext context) {
-    var isCfs = manager.isCfs;
+
     return Scaffold(
         appBar: AppBar(
           title: Text("STREAM WATCH"),
@@ -39,15 +32,14 @@ class _GaugeDetail extends State<GaugeDetail> {
               icon: Icon(Icons.refresh),
               onPressed: () {
                 setState(() {
-//                  _generateChartFlowSeries();
-                print('REFRESH TAPPED');
+                  mgr.isCfs = !mgr.isCfs;
                 });
               },
             )
           ],
         ),
         body: FutureBuilder(
-            future: manager.getGaugeData(widget.gaugeId),
+            future: mgr.getGaugeData(widget.gaugeId),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Column(
@@ -67,7 +59,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                              '${manager.gaugeFlowReadings.last.flow}cfs - ${manager.gaugeStageReadings.last.stage}ft',
+                              '${mgr.gaugeFlowReadings.last.flow}cfs - ${mgr.gaugeStageReadings.last.stage}ft',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16.0)),
                         ),
@@ -78,29 +70,32 @@ class _GaugeDetail extends State<GaugeDetail> {
                         alignment: Alignment(0.0, 0.0),
                         color: Colors.lightBlueAccent,
                         child: charts.TimeSeriesChart(
-                            isCfs ? manager.seriesFlowData : manager.seriesStageData,
+                            mgr.isCfs
+                                ? mgr.seriesFlowData
+                                : mgr.seriesStageData,
                             animate: true,
                             animationDuration: Duration(milliseconds: 700),
                             primaryMeasureAxis: charts.NumericAxisSpec(
                                 tickProviderSpec:
                                     charts.StaticNumericTickProviderSpec(<
                                         charts.TickSpec<num>>[
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[0]
-                                  : manager.stageTickValues[0]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[1]
-                                  : manager.stageTickValues[1]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[2]
-                                  : manager.stageTickValues[2]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[3]
-                                  : manager.stageTickValues[3]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[4]
-                                  : manager.stageTickValues[4])
-                            ]))))
+                              charts.TickSpec<num>(mgr.isCfs
+                                  ? mgr.flowTickValues[0]
+                                  : mgr.stageTickValues[0]),
+                              charts.TickSpec<num>(mgr.isCfs
+                                  ? mgr.flowTickValues[1]
+                                  : mgr.stageTickValues[1]),
+                              charts.TickSpec<num>(mgr.isCfs
+                                  ? mgr.flowTickValues[2]
+                                  : mgr.stageTickValues[2]),
+                              charts.TickSpec<num>(mgr.isCfs
+                                  ? mgr.flowTickValues[3]
+                                  : mgr.stageTickValues[3]),
+                              charts.TickSpec<num>(mgr.isCfs
+                                  ? mgr.flowTickValues[4]
+                                  : mgr.stageTickValues[4])
+                            ]))
+                        ))
                   ],
                 );
               } else {
