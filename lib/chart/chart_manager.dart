@@ -23,20 +23,19 @@ class ChartManager {
   double highStage = 0.0;
   int hours = 72;
   int tickCount = 5;
-  var isCfs = false;
-
+  var isCfs = true;
 
   Future<void> getGaugeData(String gaugeId) async {
     var json = await DataProvider().gaugeJson(gaugeId);
     int count = json['value']['timeSeries'].length;
-    var timeseries = json['value']['timeSeries'];
+    var timeSeries = json['value']['timeSeries'];
 
     for (int index = 0; index < count; index++) {
-      String item = timeseries[index]['variable']['variableName'];
+      String item = timeSeries[index]['variable']['variableName'];
       if (item.contains('Streamflow')) {
-        _getFlowReadings(timeseries[index]['values'][0]['value']);
+        _getFlowReadings(timeSeries[index]['values'][0]['value']);
       } else if (item.contains('Gage height')) {
-        _getStageReadings(timeseries[index]['values'][0]['value']);
+        _getStageReadings(timeSeries[index]['values'][0]['value']);
       }
     }
     await _generateChartFlowSeries();
