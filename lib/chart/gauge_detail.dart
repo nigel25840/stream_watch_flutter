@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:core';
 import 'package:http/http.dart' as http;
+import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'dart:convert';
 import 'package:streamwatcher/model/flow_reading_model.dart';
 import 'package:streamwatcher/model/stage_reading_model.dart';
@@ -44,10 +45,7 @@ class _GaugeDetail extends State<GaugeDetail> {
   List<int> cfsTickVals = [];
 
   _getGaugeData() async {
-    // 03185400
-    http.Response res = await http.get(
-        'https://waterservices.usgs.gov/nwis/iv/?site=${widget.gaugeId}&format=json&period=PT${hours}H');
-    var json = jsonDecode(res.body);
+    var json = await DataProvider().gaugeJson(widget.gaugeId);
     int count = json['value']['timeSeries'].length;
     var timeseries = json['value']['timeSeries'];
 
