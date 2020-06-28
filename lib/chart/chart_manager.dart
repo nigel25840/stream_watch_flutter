@@ -33,13 +33,9 @@ class ChartManager {
     for (int index = 0; index < count; index++) {
       String item = timeSeries[index]['variable']['variableName'];
       if (item.contains('Streamflow')) {
-        if (gaugeFlowReadings.length < 1) {
           _getFlowReadings(timeSeries[index]['values'][0]['value']);
-        }
       } else if (item.contains('Gage height')) {
-        if (gaugeStageReadings.length < 1) {
           _getStageReadings(timeSeries[index]['values'][0]['value']);
-        }
       }
     }
     await generateChartFlowSeries();
@@ -73,6 +69,7 @@ class ChartManager {
   }
   _getFlowReadings(json) {
     flowTickValues = [];
+    gaugeFlowReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = int.parse(dict['value']);
@@ -92,6 +89,7 @@ class ChartManager {
 
   _getStageReadings(json) {
     stageTickValues = [];
+    gaugeStageReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
