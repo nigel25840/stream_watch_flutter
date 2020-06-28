@@ -63,8 +63,8 @@ class _GaugeDetail extends State<GaugeDetail> {
         _getStageReadings(timeseries[index]['values'][0]['value']);
       }
     }
-    _generateChartFlowSeries();
-    _generateChartStageSeries();
+    await _generateChartFlowSeries();
+    await _generateChartStageSeries();
   }
 
   _generateChartFlowSeries() {
