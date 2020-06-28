@@ -1,18 +1,19 @@
 import 'dart:convert';
 
-import 'package:streamwatcher/gauge_detail.dart';
+import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/gauge_model.dart';
 
+import 'chart/gauge_detail.dart';
 import 'constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'data_service.dart';
+import 'data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
   Future<List<GaugeModel>> _data;
   GaugeSelector({this.stateAbbreviation}) {
-    _data = DataService().stateGauges(stateAbbreviation);
+    _data = DataProvider().stateGauges(stateAbbreviation);
   }
   _GaugeSelector createState() => _GaugeSelector();
 }
@@ -40,7 +41,7 @@ class _GaugeSelector extends State<GaugeSelector> {
         title: Text(kAllStates[widget.stateAbbreviation]),
       ),
       body: FutureBuilder(
-        future: DataService().stateGauges(widget.stateAbbreviation),
+        future: DataProvider().stateGauges(widget.stateAbbreviation),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ListView.builder(

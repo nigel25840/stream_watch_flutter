@@ -11,7 +11,7 @@ import 'dart:convert';
 
 import 'package:streamwatcher/line_chart.dart';
 
-import 'gauge_line_chart.dart';
+import 'package:streamwatcher/chart/gauge_detail.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -72,7 +72,8 @@ class _GaugeDetail extends State<GaugeDetail> {
     _seriesFlowData = List<charts.Series<GaugeFlowReading, DateTime>>();
     _seriesFlowData.add(charts.Series(
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
-        areaColorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
+        areaColorFn: (__, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
         id: 'FlowReadings',
         data: gaugeFlowReadings,
         domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
@@ -83,13 +84,13 @@ class _GaugeDetail extends State<GaugeDetail> {
     print("GENERATING CHART STAGE SERIES");
     _seriesStageData = List<charts.Series<GaugeStageReading, DateTime>>();
     _seriesStageData.add(charts.Series(
-      colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
-      areaColorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-      id: 'StageReadings',
-      data: gaugeStageReadings,
-      domainFn: (GaugeStageReading reading, _) => reading.timestamp,
-      measureFn: (GaugeStageReading reading, _) => reading.stage
-    ));
+        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
+        areaColorFn: (__, _) =>
+            charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
+        id: 'StageReadings',
+        data: gaugeStageReadings,
+        domainFn: (GaugeStageReading reading, _) => reading.timestamp,
+        measureFn: (GaugeStageReading reading, _) => reading.stage));
   }
 
   _getFlowReadings(json) {
@@ -162,16 +163,15 @@ class _GaugeDetail extends State<GaugeDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getGaugeData();
+//    _getGaugeData();
   }
 
   @override
   Widget build(BuildContext context) {
-//    _generateChartFlowSeries();
-//    _generateChartStageSeries();
     return Scaffold(
         appBar: AppBar(
-          title: Text("STREAM WATCH"), actions: <Widget> [
+          title: Text("STREAM WATCH"),
+          actions: <Widget>[
             IconButton(
               icon: Icon(Icons.refresh),
               onPressed: () {
@@ -180,88 +180,69 @@ class _GaugeDetail extends State<GaugeDetail> {
                 });
               },
             )
-        ],
-        ),
-        body: Column(
-          children: [
-            Container(
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(widget.gaugeName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0)),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "${lastUpdate} - ${timeOfLastUpdate}",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "${gaugeFlowReadings.last.flow}cfs",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * .5,
-              alignment: Alignment(0.0, 0.0),
-              color: Colors.lightBlueAccent,
-              child: charts.TimeSeriesChart(
-                isCfs ? _seriesFlowData : _seriesStageData,
-                animate: true,
-                animationDuration: Duration(milliseconds: 700),
-                dateTimeFactory: const charts.LocalDateTimeFactory(),
-                primaryMeasureAxis: charts.NumericAxisSpec(
-                    tickProviderSpec: charts.StaticNumericTickProviderSpec(<charts.TickSpec<num>>[
-                  charts.TickSpec<num>(isCfs ? flowTickValues[0] : stageTickValues[0]),
-                  charts.TickSpec<num>(isCfs ? flowTickValues[1] : stageTickValues[1]),
-                  charts.TickSpec<num>(isCfs ? flowTickValues[2] : stageTickValues[2]),
-                  charts.TickSpec<num>(isCfs ? flowTickValues[3] : stageTickValues[3]),
-                  charts.TickSpec<num>(isCfs ? flowTickValues[4] : stageTickValues[4])
-                ])),
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              color: Colors.white,
-              alignment: Alignment(-1.0, 0.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("OTHER"),
-                      ),
-                    ],
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                        minWidth: double.infinity,
-                        minHeight: MediaQuery.of(context).size.height * .25,
-                        maxWidth: double.infinity,
-                        maxHeight: MediaQuery.of(context).size.height * .25),
-                  )
-                ],
-              ),
-            ),
           ],
-        ));
+        ),
+        body: FutureBuilder(
+            future: _getGaugeData(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(widget.gaugeName,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16.0)),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              '${gaugeFlowReadings.last.flow}cfs - ${gaugeStageReadings.last.stage}ft',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16.0)),
+                        ),
+                      ],
+                    ),
+                    Container(
+                        height: MediaQuery.of(context).size.height * .5,
+                        alignment: Alignment(0.0, 0.0),
+                        color: Colors.lightBlueAccent,
+                        child: charts.TimeSeriesChart(
+                            isCfs ? _seriesFlowData : _seriesStageData,
+                            animate: true,
+                            animationDuration: Duration(milliseconds: 700),
+                            primaryMeasureAxis: charts.NumericAxisSpec(
+                                tickProviderSpec:
+                                    charts.StaticNumericTickProviderSpec(<
+                                        charts.TickSpec<num>>[
+                              charts.TickSpec<num>(isCfs
+                                  ? flowTickValues[0]
+                                  : stageTickValues[0]),
+                              charts.TickSpec<num>(isCfs
+                                  ? flowTickValues[1]
+                                  : stageTickValues[1]),
+                              charts.TickSpec<num>(isCfs
+                                  ? flowTickValues[2]
+                                  : stageTickValues[2]),
+                              charts.TickSpec<num>(isCfs
+                                  ? flowTickValues[3]
+                                  : stageTickValues[3]),
+                              charts.TickSpec<num>(isCfs
+                                  ? flowTickValues[4]
+                                  : stageTickValues[4])
+                            ]))))
+                  ],
+                );
+              } else {
+                return Align(child: CircularProgressIndicator());
+              }
+            }));
   }
 }
 
