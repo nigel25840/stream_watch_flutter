@@ -2,16 +2,12 @@ import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:streamwatcher/constants.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:core';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:streamwatcher/line_chart.dart';
-
-import 'package:streamwatcher/chart/gauge_detail.dart';
+import 'package:streamwatcher/model/flow_reading_model.dart';
+import 'package:streamwatcher/model/stage_reading_model.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -246,17 +242,9 @@ class _GaugeDetail extends State<GaugeDetail> {
   }
 }
 
-class GaugeFlowReading {
-  int flow;
-  DateTime timestamp;
-  GaugeFlowReading(this.flow, this.timestamp);
-}
 
-class GaugeStageReading {
-  final double stage;
-  final DateTime timestamp;
-  GaugeStageReading(this.stage, this.timestamp);
-}
+
+
 
 //charts.LineChart(
 //_seriesFlowData,
