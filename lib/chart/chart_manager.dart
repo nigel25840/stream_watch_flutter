@@ -25,17 +25,17 @@ class ChartManager {
   int tickCount = 5;
   var isCfs = true;
 
-  Future<void> getGaugeData(String gaugeId) async {
-    var json = await DataProvider().gaugeJson(gaugeId);
+  Future<void> getGaugeData(String gaugeId, {int hours = 72}) async {
+    var json = await DataProvider().gaugeJson(gaugeId, hours);
     int count = json['value']['timeSeries'].length;
     var timeSeries = json['value']['timeSeries'];
 
     for (int index = 0; index < count; index++) {
       String item = timeSeries[index]['variable']['variableName'];
       if (item.contains('Streamflow')) {
-          _getFlowReadings(timeSeries[index]['values'][0]['value']);
+        _getFlowReadings(timeSeries[index]['values'][0]['value']);
       } else if (item.contains('Gage height')) {
-          _getStageReadings(timeSeries[index]['values'][0]['value']);
+        _getStageReadings(timeSeries[index]['values'][0]['value']);
       }
     }
     await generateChartFlowSeries();
@@ -67,6 +67,7 @@ class ChartManager {
         domainFn: (GaugeStageReading reading, _) => reading.timestamp,
         measureFn: (GaugeStageReading reading, _) => reading.stage));
   }
+
   _getFlowReadings(json) {
     flowTickValues = [];
     gaugeFlowReadings.clear();
@@ -77,14 +78,19 @@ class ChartManager {
       gaugeFlowReadings.add(GaugeFlowReading(value, timestamp));
       flowTickValues.add(value);
     }
-    currentCfs = flowTickValues.last;
-    flowTickValues.sort();
-    lowCfs = flowTickValues.first;
-    highCfs = flowTickValues.last;
-    DateTime updated = gaugeFlowReadings.last.timestamp;
-    lastUpdate = DateFormat.yMMMMd().format(updated);
-    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
+
+    if (flowTickValues.length > 0) {
+      currentCfs = flowTickValues.last;
+      flowTickValues.sort();
+      lowCfs = flowTickValues.first;
+      highCfs = flowTickValues.last;
+      DateTime updated = gaugeFlowReadings.last.timestamp;
+      lastUpdate = DateFormat.yMMMMd().format(updated);
+      timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+      flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
+    } else {
+      isCfs = false;
+    }
   }
 
   _getStageReadings(json) {
@@ -108,7 +114,7 @@ class ChartManager {
   }
 
   List<int> _setFlowTickValues(int high, int low, int numberOfTicks) {
-    double increase = 1.1;
+    double increase = 1.01;
     int _low = low;
     int _high = (high * increase).toInt();
     int total = _high - _low;
@@ -122,7 +128,7 @@ class ChartManager {
   }
 
   List<double> _setStageTickValues(double high, double low, int numberOfTicks) {
-    double increase = 1.1;
+    double increase = 1.01;
     double _low = low;
     double _high = high * increase;
     double spread = _high - _low;
@@ -133,5 +139,38 @@ class ChartManager {
       retval.add(_low);
     }
     return retval;
+  }
+
+  bool containsFlowData() {
+    return gaugeFlowReadings.length > 0;
+  }
+
+  bool containsStageData() {
+    return gaugeStageReadings.length > 0;
+  }
+
+  String getCurrentStats() {
+    String currentFlow = '';
+    String currentStage = '';
+    if (gaugeFlowReadings.length > 0) {
+      currentFlow += "${gaugeFlowReadings.last.flow}cfs";
+    }
+    if (gaugeStageReadings.length > 0) {
+      currentStage += "${gaugeStageReadings.last.stage}ft";
+    }
+    if (currentStage.length > 0 && currentFlow.length > 0) {
+      return "${currentStage} - ${currentFlow}";
+    }
+    return currentStage + currentFlow;
+  }
+
+  List<charts.TickSpec<num>> getTicks(int increments, bool cfs) {
+    List<charts.TickSpec<num>> tickSpecs = [];
+    for (int index = 0; index < increments; index++) {
+      cfs
+          ? tickSpecs.add(charts.TickSpec(flowTickValues[index]))
+          : tickSpecs.add(charts.TickSpec(stageTickValues[index]));
+    }
+    return tickSpecs;
   }
 }
