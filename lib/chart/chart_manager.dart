@@ -23,15 +23,7 @@ class ChartManager {
   double highStage = 0.0;
   int hours = 72;
   int tickCount = 5;
-  var isCfs = false;
-
-  List<charts.Series<GaugeFlowReading, DateTime>> getFlowSeries(){
-    return seriesFlowData;
-  }
-
-  List<charts.Series<GaugeStageReading, DateTime>> getStageSeries(){
-    return seriesStageData;
-  }
+  var isCfs = true;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72}) async {
     var json = await DataProvider().gaugeJson(gaugeId, hours);
@@ -121,6 +113,17 @@ class ChartManager {
     stageTickValues = _setStageTickValues(highStage, lowStage, tickCount);
   }
 
+  List<num> _setTickValues<num>(num high, num low, int numberOfTicks) {
+    List<num> retval = [];
+    double increase = 1.01; // this adds top & bottom padding to the chart
+    if (num is double) {
+
+    } else if (num is int) {
+      int _low = low as int;
+      int _high = ((high as int) * increase).toInt();
+    }
+  }
+
   List<int> _setFlowTickValues(int high, int low, int numberOfTicks) {
     double increase = 1.01;
     int _low = low;
@@ -172,7 +175,7 @@ class ChartManager {
     return currentStage + currentFlow;
   }
 
-  List<charts.TickSpec<num>> getTickSpecs(int increments, bool cfs) {
+  List<charts.TickSpec<num>> getTicks(int increments, bool cfs) {
     List<charts.TickSpec<num>> tickSpecs = [];
     for (int index = 0; index < increments; index++) {
       cfs
@@ -181,5 +184,4 @@ class ChartManager {
     }
     return tickSpecs;
   }
-
 }

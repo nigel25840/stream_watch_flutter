@@ -62,12 +62,13 @@ class _GaugeDetail extends State<GaugeDetail> {
                         color: Colors.lightBlueAccent,
                         child: charts.TimeSeriesChart(
                             mgr.isCfs
-                                ? mgr.getFlowSeries()
-                                : mgr.getStageSeries(),
+                                ? mgr.seriesFlowData
+                                : mgr.seriesStageData,
                             animate: true,
                             animationDuration: Duration(milliseconds: 700),
                             primaryMeasureAxis: charts.NumericAxisSpec(
-                                tickProviderSpec: charts.StaticNumericTickProviderSpec(mgr.getTickSpecs(5, mgr.isCfs)))
+                                tickProviderSpec:
+                                    charts.StaticNumericTickProviderSpec(mgr.getTicks(5, mgr.isCfs)))
                         ))
                   ],
                 );
