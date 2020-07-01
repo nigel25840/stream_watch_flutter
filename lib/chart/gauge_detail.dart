@@ -17,7 +17,6 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           title: Text("STREAM WATCH"),
@@ -51,9 +50,12 @@ class _GaugeDetail extends State<GaugeDetail> {
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(mgr.getCurrentStats(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),)
-                        ),
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              mgr.getCurrentStats(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16.0),
+                            )),
                       ],
                     ),
                     Container(
@@ -61,14 +63,20 @@ class _GaugeDetail extends State<GaugeDetail> {
                         alignment: Alignment(0.0, 0.0),
                         color: Colors.lightBlueAccent,
                         child: charts.TimeSeriesChart(
-                            mgr.isCfs
-                                ? mgr.seriesFlowData
-                                : mgr.seriesStageData,
-                            animate: true,
-                            animationDuration: Duration(milliseconds: 700),
-                            primaryMeasureAxis: charts.NumericAxisSpec(
-                                tickProviderSpec:
-                                    charts.StaticNumericTickProviderSpec(mgr.getTicks(5, mgr.isCfs)))
+                          mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
+                          animate: true,
+                          animationDuration: Duration(milliseconds: 700),
+                          primaryMeasureAxis: charts.NumericAxisSpec(
+                            tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                              zeroBound: false,
+                              dataIsInWholeNumbers: false,
+                              desiredMaxTickCount: 8,
+                              desiredMinTickCount: 5
+                            ),
+                              renderSpec: charts.GridlineRendererSpec(
+                                tickLengthPx: 0,
+                                labelOffsetFromAxisPx: 5,
+                              )),
                         ))
                   ],
                 );
