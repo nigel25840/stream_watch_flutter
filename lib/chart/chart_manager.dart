@@ -11,9 +11,6 @@ class ChartManager {
   List<GaugeReading> gaugeFlowReadings = [];
   List<GaugeReading> gaugeStageReadings = [];
 
-  List<double> flowTickValues = [];
-  List<double> stageTickValues = [];
-
   String lastUpdate = '';
   String timeOfLastUpdate = '';
 
@@ -40,19 +37,17 @@ class ChartManager {
         _getStageReadings(timeSeries[index]['values'][0]['value']);
       }
     }
-//    await generateChartFlowSeries();
-//    await generateChartStageSeries();
-    seriesFlowData = await generateChartSeries(gaugeFlowReadings);
-    seriesStageData = await generateChartSeries(gaugeStageReadings);
+    seriesFlowData = await generateChartSeries(gaugeFlowReadings, 'FlowReadings');
+    seriesStageData = await generateChartSeries(gaugeStageReadings, 'StageReadings');
   }
 
-  List<charts.Series<GaugeReading, DateTime>> generateChartSeries(List<GaugeReading> readings) {
+  List<charts.Series<GaugeReading, DateTime>> generateChartSeries(List<GaugeReading> readings, String identifier) {
     var series = List<charts.Series<GaugeReading, DateTime>>();
     series.add(charts.Series(
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
         areaColorFn: (__, _) =>
             charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-        id: 'FlowReadings',
+        id: identifier,
         data: readings,
         domainFn: (GaugeReading reading, _) => reading.timestamp,
         measureFn: (GaugeReading reading, _) => reading.dFlow));
@@ -60,43 +55,30 @@ class ChartManager {
   }
 
   _getFlowReadings(json) {
-    flowTickValues = [];
     gaugeFlowReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeFlowReadings.add(GaugeReading(value, timestamp));
-      flowTickValues.add(value);
     }
-    currentCfs = flowTickValues.last;
-    flowTickValues.sort();
-    lowCfs = flowTickValues.first;
-    highCfs = flowTickValues.last;
     DateTime updated = gaugeFlowReadings.last.timestamp;
     lastUpdate = DateFormat.yMMMMd().format(updated);
     timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    flowTickValues = _setTickValues(highCfs, lowCfs, 5);
   }
 
   _getStageReadings(json) {
-    stageTickValues = [];
     gaugeStageReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeStageReadings.add(GaugeReading(value, timestamp));
-      stageTickValues.add(value);
     }
-    currentStage = stageTickValues.last;
-    stageTickValues.sort();
-    lowStage = stageTickValues.first;
-    highStage = stageTickValues.last;
+
     DateTime updated = gaugeStageReadings.last.timestamp;
     lastUpdate = DateFormat.yMMMMd().format(updated);
     timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    stageTickValues = _setTickValues(highStage, lowStage, 5);
   }
 
   List<double> _setTickValues(double high, double low, int numberOfTicks) {
@@ -125,10 +107,14 @@ class ChartManager {
     String currentFlow = '';
     String currentStage = '';
     if (gaugeFlowReadings.length > 0) {
-      currentFlow += "${gaugeFlowReadings.last.flow}cfs";
+      if (gaugeFlowReadings.last.dFlow > 99) {
+        currentFlow = "${gaugeFlowReadings.last.dFlow.round()}cfs";
+      } else {
+        currentFlow = "${gaugeFlowReadings.last.dFlow}cfs";
+      }
     }
     if (gaugeStageReadings.length > 0) {
-      currentStage += "${gaugeStageReadings.last.dFlow}ft";
+      currentStage = "${gaugeStageReadings.last.dFlow} ft";
     }
     if (currentStage.length > 0 && currentFlow.length > 0) {
       return "${currentStage} - ${currentFlow}";
