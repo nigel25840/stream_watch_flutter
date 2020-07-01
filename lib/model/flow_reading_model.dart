@@ -1,8 +1,9 @@
 
 class GaugeFlowReading {
   int flow;
+  double dFlow;
   DateTime timestamp;
-  GaugeFlowReading(this.flow, this.timestamp);
+  GaugeFlowReading(this.dFlow, this.timestamp);
 }
 
 class GaugeReading<T> {

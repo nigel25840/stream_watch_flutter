@@ -8,16 +8,22 @@ import 'package:flutter/rendering.dart';
 class ChartManager {
   List<charts.Series<GaugeFlowReading, DateTime>> seriesFlowData;
   List<charts.Series<GaugeStageReading, DateTime>> seriesStageData;
+
+//  List<charts.Series<GaugeReading, DateTime>> flowSeries;
+//  List<charts.Series<GaugeReading, DateTime>> stageSeries;
+
   List<GaugeFlowReading> gaugeFlowReadings = [];
   List<GaugeStageReading> gaugeStageReadings = [];
-  List<int> flowTickValues = [];
+
+  List<double> flowTickValues = [];
   List<double> stageTickValues = [];
+
   String lastUpdate = '';
   String timeOfLastUpdate = '';
 
-  int currentCfs = 0;
-  int lowCfs = 0;
-  int highCfs = 0;
+  double currentCfs = 0;
+  double lowCfs = 0;
+  double highCfs = 0;
   double currentStage = 0.0;
   double lowStage = 0.0;
   double highStage = 0.0;
@@ -52,7 +58,7 @@ class ChartManager {
         id: 'FlowReadings',
         data: gaugeFlowReadings,
         domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
-        measureFn: (GaugeFlowReading reading, _) => reading.flow));
+        measureFn: (GaugeFlowReading reading, _) => reading.dFlow));
   }
 
   generateChartStageSeries() {
@@ -73,24 +79,21 @@ class ChartManager {
     gaugeFlowReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
-      var value = int.parse(dict['value']);
+      var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeFlowReadings.add(GaugeFlowReading(value, timestamp));
       flowTickValues.add(value);
     }
+    currentCfs = flowTickValues.last;
+    flowTickValues.sort();
+    lowCfs = flowTickValues.first;
+    highCfs = flowTickValues.last;
+    DateTime updated = gaugeFlowReadings.last.timestamp;
+    lastUpdate = DateFormat.yMMMMd().format(updated);
+    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+    flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
 
-    if (flowTickValues.length > 0) {
-      currentCfs = flowTickValues.last;
-      flowTickValues.sort();
-      lowCfs = flowTickValues.first;
-      highCfs = flowTickValues.last;
-      DateTime updated = gaugeFlowReadings.last.timestamp;
-      lastUpdate = DateFormat.yMMMMd().format(updated);
-      timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-      flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
-    } else {
-      isCfs = false;
-    }
+    _setTickValues(highCfs, lowCfs, 5);
   }
 
   _getStageReadings(json) {
@@ -111,27 +114,29 @@ class ChartManager {
     lastUpdate = DateFormat.yMMMMd().format(updated);
     timeOfLastUpdate = '${updated.hour}:${updated.minute}';
     stageTickValues = _setStageTickValues(highStage, lowStage, tickCount);
+    _setTickValues(highStage, lowStage, 5);
   }
 
   List<num> _setTickValues<num>(num high, num low, int numberOfTicks) {
     List<num> retval = [];
     double increase = 1.01; // this adds top & bottom padding to the chart
-    if (num is double) {
-
-    } else if (num is int) {
+    if (high is double) {
+      print("DOUBLES");
+    } else if (high is int) {
+      print("INTS");
       int _low = low as int;
       int _high = ((high as int) * increase).toInt();
     }
   }
 
-  List<int> _setFlowTickValues(int high, int low, int numberOfTicks) {
+  List<double> _setFlowTickValues(double high, double low, int numberOfTicks) {
     double increase = 1.01;
-    int _low = low;
-    int _high = (high * increase).toInt();
-    int total = _high - _low;
-    int delta = (total / numberOfTicks).toInt();
-    List<int> retval = [_low];
-    for (int i = 1; i < numberOfTicks; i++) {
+    double _low = low;
+    double _high = high * increase;
+    double spread = _high - _low;
+    double delta = spread / numberOfTicks;
+    List<double> retval = [_low];
+    for (int i = 0; i < numberOfTicks; i++) {
       _low += delta;
       retval.add(_low);
     }
