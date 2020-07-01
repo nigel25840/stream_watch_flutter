@@ -91,9 +91,9 @@ class ChartManager {
     DateTime updated = gaugeFlowReadings.last.timestamp;
     lastUpdate = DateFormat.yMMMMd().format(updated);
     timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
+    flowTickValues = _setTickValues(highCfs, lowCfs, 5); // _setFlowTickValues(highCfs, lowCfs, tickCount);
 
-    _setTickValues(highCfs, lowCfs, 5);
+//    _setTickValues(highCfs, lowCfs, 5);
   }
 
   _getStageReadings(json) {
@@ -113,37 +113,11 @@ class ChartManager {
     DateTime updated = gaugeStageReadings.last.timestamp;
     lastUpdate = DateFormat.yMMMMd().format(updated);
     timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    stageTickValues = _setStageTickValues(highStage, lowStage, tickCount);
-    _setTickValues(highStage, lowStage, 5);
+    stageTickValues = _setTickValues(highStage, lowStage, 5); // _setStageTickValues(highStage, lowStage, tickCount);
+//    _setTickValues(highStage, lowStage, 5);
   }
 
-  List<num> _setTickValues<num>(num high, num low, int numberOfTicks) {
-    List<num> retval = [];
-    double increase = 1.01; // this adds top & bottom padding to the chart
-    if (high is double) {
-      print("DOUBLES");
-    } else if (high is int) {
-      print("INTS");
-      int _low = low as int;
-      int _high = ((high as int) * increase).toInt();
-    }
-  }
-
-  List<double> _setFlowTickValues(double high, double low, int numberOfTicks) {
-    double increase = 1.01;
-    double _low = low;
-    double _high = high * increase;
-    double spread = _high - _low;
-    double delta = spread / numberOfTicks;
-    List<double> retval = [_low];
-    for (int i = 0; i < numberOfTicks; i++) {
-      _low += delta;
-      retval.add(_low);
-    }
-    return retval;
-  }
-
-  List<double> _setStageTickValues(double high, double low, int numberOfTicks) {
+  List<double> _setTickValues(double high, double low, int numberOfTicks) {
     double increase = 1.01;
     double _low = low;
     double _high = high * increase;
