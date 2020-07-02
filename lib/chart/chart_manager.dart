@@ -124,15 +124,15 @@ class ChartManager {
       if (gaugeFlowReadings.last.dFlow > 99) {
         currentFlow = "${gaugeFlowReadings.last.dFlow.round()}cfs";
       } else {
-        currentFlow = "${gaugeFlowReadings.last.dFlow}cfs";
+        currentFlow = gaugeFlowReadings.last.dFlow > 0 ? "${gaugeFlowReadings.last.dFlow}cfs" : "N/A";
       }
     }
     if (gaugeStageReadings.length > 0) {
-      currentStage = "${gaugeStageReadings.last.dFlow} ft";
+      currentStage = gaugeStageReadings.last.dFlow > 0.0 ? "${gaugeStageReadings.last.dFlow} ft" : "N/A";
     }
     if (currentStage.length > 0 && currentFlow.length > 0) {
       return "${currentStage} - ${currentFlow}";
     }
-    return currentStage + currentFlow;
+    return "This gauge is not currently reporting";
   }
 }

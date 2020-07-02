@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:material_segmented_control/material_segmented_control.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_manager.dart';
 
@@ -15,6 +16,7 @@ class GaugeDetail extends StatefulWidget {
 class _GaugeDetail extends State<GaugeDetail> {
   ChartManager mgr = ChartManager();
   bool refresh = false;
+  int segmentedControlIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,24 @@ class _GaugeDetail extends State<GaugeDetail> {
                                 tickLengthPx: 0,
                                 labelOffsetFromAxisPx: 5,
                               )),
-                        ))
+                        )),
+                    Container (
+                      child: MaterialSegmentedControl(
+                        horizontalPadding: EdgeInsets.all(20),
+                        children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },
+                        selectionIndex: segmentedControlIndex,
+                        borderRadius: 10.0,
+                        selectedColor: Colors.blue,
+                        unselectedColor: Colors.white,
+                        onSegmentChosen: (index) {
+                          setState(() {
+                            mgr.isCfs = !mgr.isCfs;
+                            segmentedControlIndex = index;
+                          });
+                        },
+                      ),
+
+                    )
                   ],
                 );
               } else {
@@ -87,3 +106,18 @@ class _GaugeDetail extends State<GaugeDetail> {
             }));
   }
 }
+
+class RFSegmentedControl extends CupertinoSegmentedControl {
+
+}
+
+//CupertinoSegmentedControl(
+//padding: EdgeInsets.all(10.0),
+//children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },
+//selectedColor: Colors.lightBlueAccent,
+//onValueChanged: (value) {
+//setState(() {
+//mgr.isCfs = !mgr.isCfs;
+//});
+//},
+//)
