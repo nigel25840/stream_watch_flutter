@@ -70,9 +70,7 @@ class ChartManager {
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeFlowReadings.add(GaugeReading(value, timestamp));
     }
-    DateTime updated = gaugeFlowReadings.last.timestamp;
-    lastUpdate = DateFormat.yMMMMd().format(updated);
-    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+    setLocalVars(gaugeFlowReadings);
   }
 
   _getStageReadings(json) {
@@ -83,10 +81,18 @@ class ChartManager {
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeStageReadings.add(GaugeReading(value, timestamp));
     }
+    setLocalVars(gaugeStageReadings);
+  }
 
-    DateTime updated = gaugeStageReadings.last.timestamp;
-    lastUpdate = DateFormat.yMMMMd().format(updated);
-    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+  void setLocalVars(List<GaugeReading> readings) {
+    try {
+      DateTime updated = readings.last.timestamp;
+      lastUpdate = DateFormat.yMMMMd().format(updated);
+      timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+    } catch (e) {
+      print("ERROR CAUGHT");
+    }
+
   }
 
   List<double> _setTickValues(double high, double low, int numberOfTicks) {
