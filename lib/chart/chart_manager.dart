@@ -138,7 +138,9 @@ class ChartManager {
     }
     if (currentStage.length > 0 && currentFlow.length > 0) {
       return "${currentStage} - ${currentFlow}";
+    } else if (currentStage.length < 1 && currentFlow.length < 1) {
+      return "This gauge is not currently reporting";
     }
-    return "This gauge is not currently reporting";
+    return currentFlow + currentStage;
   }
 }
