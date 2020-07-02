@@ -14,6 +14,7 @@ class GaugeDetail extends StatefulWidget {
 
 class _GaugeDetail extends State<GaugeDetail> {
   ChartManager mgr = ChartManager();
+  bool refresh = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class _GaugeDetail extends State<GaugeDetail> {
           ],
         ),
         body: FutureBuilder(
-            future: mgr.getGaugeData(widget.gaugeId),
+            future: mgr.getGaugeData(widget.gaugeId, refresh: refresh),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Column(

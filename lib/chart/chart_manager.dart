@@ -25,13 +25,13 @@ class ChartManager {
   var isCfs = true;
   String gaugeId;
 
-  Future<void> getGaugeData(String gaugeId, {int hours = 72}) async {
+  Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
 
     var json;
     var timeSeries;
     int count;
 
-    if (seriesStageData == null || seriesStageData == null) {
+    if (seriesStageData == null || seriesStageData == null || refresh) {
       json = await DataProvider().gaugeJson(gaugeId, hours);
       count = json['value']['timeSeries'].length;
       timeSeries = json['value']['timeSeries'];
