@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:streamwatcher/dataServices/data_provider.dart';
-import 'package:streamwatcher/model/flow_reading_model.dart';
+import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
 
 class ChartManager {
@@ -23,11 +23,19 @@ class ChartManager {
   int hours = 72;
   int tickCount = 5;
   var isCfs = true;
+  String gaugeId;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72}) async {
-    var json = await DataProvider().gaugeJson(gaugeId, hours);
-    int count = json['value']['timeSeries'].length;
-    var timeSeries = json['value']['timeSeries'];
+
+    var json;
+    var timeSeries;
+    int count;
+
+    if (seriesStageData == null || seriesStageData == null) {
+      json = await DataProvider().gaugeJson(gaugeId, hours);
+      count = json['value']['timeSeries'].length;
+      timeSeries = json['value']['timeSeries'];
+    }
 
     for (int index = 0; index < count; index++) {
       String item = timeSeries[index]['variable']['variableName'];
