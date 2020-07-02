@@ -81,7 +81,8 @@ class _GaugeDetail extends State<GaugeDetail> {
                                 labelOffsetFromAxisPx: 5,
                               )),
                         )),
-                    Container (
+                    Visibility (
+                      visible: mgr.containsAllData,
                       child: MaterialSegmentedControl(
                         horizontalPadding: EdgeInsets.all(20),
                         children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },

@@ -24,6 +24,7 @@ class ChartManager {
   int tickCount = 5;
   var isCfs = true;
   String gaugeId;
+  bool containsAllData = false;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
 
@@ -45,6 +46,11 @@ class ChartManager {
         _getStageReadings(timeSeries[index]['values'][0]['value']);
       }
     }
+
+    containsAllData = (gaugeStageReadings.length > 0 && gaugeFlowReadings.length > 0);
+
+    isCfs = gaugeFlowReadings.length > 0;
+
     seriesFlowData = await generateChartSeries(gaugeFlowReadings, 'FlowReadings');
     seriesStageData = await generateChartSeries(gaugeStageReadings, 'StageReadings');
   }
