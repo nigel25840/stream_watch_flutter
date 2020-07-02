@@ -1,34 +1,42 @@
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:streamwatcher/dataServices/data_provider.dart';
-import 'package:streamwatcher/model/flow_reading_model.dart';
-import 'package:streamwatcher/model/stage_reading_model.dart';
+import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
 
 class ChartManager {
-  List<charts.Series<GaugeFlowReading, DateTime>> seriesFlowData;
-  List<charts.Series<GaugeStageReading, DateTime>> seriesStageData;
-  List<GaugeFlowReading> gaugeFlowReadings = [];
-  List<GaugeStageReading> gaugeStageReadings = [];
-  List<int> flowTickValues = [];
-  List<double> stageTickValues = [];
+  List<charts.Series<GaugeReading, DateTime>> seriesFlowData;
+  List<charts.Series<GaugeReading, DateTime>> seriesStageData;
+
+  List<GaugeReading> gaugeFlowReadings = [];
+  List<GaugeReading> gaugeStageReadings = [];
+
   String lastUpdate = '';
   String timeOfLastUpdate = '';
 
-  int currentCfs = 0;
-  int lowCfs = 0;
-  int highCfs = 0;
+  double currentCfs = 0;
+  double lowCfs = 0;
+  double highCfs = 0;
   double currentStage = 0.0;
   double lowStage = 0.0;
   double highStage = 0.0;
   int hours = 72;
   int tickCount = 5;
   var isCfs = true;
+  String gaugeId;
+  bool containsAllData = false;
 
-  Future<void> getGaugeData(String gaugeId) async {
-    var json = await DataProvider().gaugeJson(gaugeId);
-    int count = json['value']['timeSeries'].length;
-    var timeSeries = json['value']['timeSeries'];
+  Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
+
+    var json;
+    var timeSeries;
+    int count;
+
+    if (seriesStageData == null || seriesStageData == null || refresh) {
+      json = await DataProvider().gaugeJson(gaugeId, hours);
+      count = json['value']['timeSeries'].length;
+      timeSeries = json['value']['timeSeries'];
+    }
 
     for (int index = 0; index < count; index++) {
       String item = timeSeries[index]['variable']['variableName'];
@@ -38,98 +46,101 @@ class ChartManager {
         _getStageReadings(timeSeries[index]['values'][0]['value']);
       }
     }
-    await _generateChartFlowSeries();
-    await _generateChartStageSeries();
+
+    containsAllData = (gaugeStageReadings.length > 0 && gaugeFlowReadings.length > 0);
+
+    isCfs = gaugeFlowReadings.length > 0;
+
+    seriesFlowData = await generateChartSeries(gaugeFlowReadings, 'FlowReadings');
+    seriesStageData = await generateChartSeries(gaugeStageReadings, 'StageReadings');
   }
 
-  _generateChartFlowSeries() {
-    print("GENERATING CHART FLOW SERIES");
-    seriesFlowData = List<charts.Series<GaugeFlowReading, DateTime>>();
-    seriesFlowData.add(charts.Series(
+  List<charts.Series<GaugeReading, DateTime>> generateChartSeries(List<GaugeReading> readings, String identifier) {
+    var series = List<charts.Series<GaugeReading, DateTime>>();
+    series.add(charts.Series(
         colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
         areaColorFn: (__, _) =>
             charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-        id: 'FlowReadings',
-        data: gaugeFlowReadings,
-        domainFn: (GaugeFlowReading reading, _) => reading.timestamp,
-        measureFn: (GaugeFlowReading reading, _) => reading.flow));
+        id: identifier,
+        data: readings,
+        domainFn: (GaugeReading reading, _) => reading.timestamp,
+        measureFn: (GaugeReading reading, _) => reading.dFlow));
+    return series;
   }
 
-  _generateChartStageSeries() {
-    print("GENERATING CHART STAGE SERIES");
-    seriesStageData = List<charts.Series<GaugeStageReading, DateTime>>();
-    seriesStageData.add(charts.Series(
-        colorFn: (__, _) => charts.ColorUtil.fromDartColor(Color(0xff0000ff)),
-        areaColorFn: (__, _) =>
-            charts.ColorUtil.fromDartColor(Color(0xff45b6fe)),
-        id: 'StageReadings',
-        data: gaugeStageReadings,
-        domainFn: (GaugeStageReading reading, _) => reading.timestamp,
-        measureFn: (GaugeStageReading reading, _) => reading.stage));
-  }
   _getFlowReadings(json) {
-    flowTickValues = [];
-    for (int i = 0; i < json.length; i++) {
-      var dict = json[i];
-      var value = int.parse(dict['value']);
-      var timestamp = DateTime.parse(dict['dateTime']);
-      gaugeFlowReadings.add(GaugeFlowReading(value, timestamp));
-      flowTickValues.add(value);
-    }
-    currentCfs = flowTickValues.last;
-    flowTickValues.sort();
-    lowCfs = flowTickValues.first;
-    highCfs = flowTickValues.last;
-    DateTime updated = gaugeFlowReadings.last.timestamp;
-    lastUpdate = DateFormat.yMMMMd().format(updated);
-    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    flowTickValues = _setFlowTickValues(highCfs, lowCfs, tickCount);
-  }
-
-  _getStageReadings(json) {
-    stageTickValues = [];
+    gaugeFlowReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
-      gaugeStageReadings.add(GaugeStageReading(value, timestamp));
-      stageTickValues.add(value);
+      gaugeFlowReadings.add(GaugeReading(value, timestamp));
     }
-    currentStage = stageTickValues.last;
-    stageTickValues.sort();
-    lowStage = stageTickValues.first;
-    highStage = stageTickValues.last;
-    DateTime updated = gaugeStageReadings.last.timestamp;
-    lastUpdate = DateFormat.yMMMMd().format(updated);
-    timeOfLastUpdate = '${updated.hour}:${updated.minute}';
-    stageTickValues = _setStageTickValues(highStage, lowStage, tickCount);
+    setLocalVars(gaugeFlowReadings);
   }
 
-  List<int> _setFlowTickValues(int high, int low, int numberOfTicks) {
-    double increase = 1.1;
-    int _low = low;
-    int _high = (high * increase).toInt();
-    int total = _high - _low;
-    int delta = (total / numberOfTicks).toInt();
-    List<int> retval = [_low];
-    for (int i = 1; i < numberOfTicks; i++) {
-      _low += delta;
-      retval.add(_low);
+  _getStageReadings(json) {
+    gaugeStageReadings.clear();
+    for (int i = 0; i < json.length; i++) {
+      var dict = json[i];
+      var value = double.parse(dict['value']);
+      var timestamp = DateTime.parse(dict['dateTime']);
+      gaugeStageReadings.add(GaugeReading(value, timestamp));
     }
-    return retval;
+    setLocalVars(gaugeStageReadings);
   }
 
-  List<double> _setStageTickValues(double high, double low, int numberOfTicks) {
-    double increase = 1.1;
+  void setLocalVars(List<GaugeReading> readings) {
+    try {
+      DateTime updated = readings.last.timestamp;
+      lastUpdate = DateFormat.yMMMMd().format(updated);
+      timeOfLastUpdate = '${updated.hour}:${updated.minute}';
+    } catch (e) {
+      print("ERROR CAUGHT");
+    }
+
+  }
+
+  List<double> _setTickValues(double high, double low, int numberOfTicks) {
+    double increase = 1.01;
     double _low = low;
     double _high = high * increase;
     double spread = _high - _low;
     double delta = spread / numberOfTicks;
-    List<double> retval = [_low];
+    List<double> tickValues = [_low];
     for (int i = 0; i < numberOfTicks; i++) {
       _low += delta;
-      retval.add(_low);
+      tickValues.add(_low);
     }
-    return retval;
+    return tickValues;
+  }
+
+  bool containsFlowData() {
+    return gaugeFlowReadings.length > 0;
+  }
+
+  bool containsStageData() {
+    return gaugeStageReadings.length > 0;
+  }
+
+  String getCurrentStats() {
+    String currentFlow = '';
+    String currentStage = '';
+    if (gaugeFlowReadings.length > 0) {
+      if (gaugeFlowReadings.last.dFlow > 99) {
+        currentFlow = "${gaugeFlowReadings.last.dFlow.round()}cfs";
+      } else {
+        currentFlow = gaugeFlowReadings.last.dFlow > 0 ? "${gaugeFlowReadings.last.dFlow}cfs" : "N/A";
+      }
+    }
+    if (gaugeStageReadings.length > 0) {
+      currentStage = gaugeStageReadings.last.dFlow > 0.0 ? "${gaugeStageReadings.last.dFlow} ft" : "N/A";
+    }
+    if (currentStage.length > 0 && currentFlow.length > 0) {
+      return "${currentStage} - ${currentFlow}";
+    } else if (currentStage.length < 1 && currentFlow.length < 1) {
+      return "This gauge is not currently reporting";
+    }
+    return currentFlow + currentStage;
   }
 }

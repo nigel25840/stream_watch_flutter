@@ -1,15 +1,10 @@
-import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:material_segmented_control/material_segmented_control.dart';
 import 'dart:core';
-import 'package:http/http.dart' as http;
 import 'package:streamwatcher/chart/chart_manager.dart';
-import 'package:streamwatcher/dataServices/data_provider.dart';
-import 'dart:convert';
-import 'package:streamwatcher/model/flow_reading_model.dart';
-import 'package:streamwatcher/model/stage_reading_model.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -19,18 +14,12 @@ class GaugeDetail extends StatefulWidget {
 }
 
 class _GaugeDetail extends State<GaugeDetail> {
-
-  ChartManager manager = ChartManager();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+  ChartManager mgr = ChartManager();
+  bool refresh = false;
+  int segmentedControlIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    var isCfs = manager.isCfs;
     return Scaffold(
         appBar: AppBar(
           title: Text("STREAM WATCH"),
@@ -39,15 +28,14 @@ class _GaugeDetail extends State<GaugeDetail> {
               icon: Icon(Icons.refresh),
               onPressed: () {
                 setState(() {
-//                  _generateChartFlowSeries();
-                print('REFRESH TAPPED');
+                  mgr.isCfs = !mgr.isCfs;
                 });
               },
             )
           ],
         ),
         body: FutureBuilder(
-            future: manager.getGaugeData(widget.gaugeId),
+            future: mgr.getGaugeData(widget.gaugeId, refresh: refresh),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Column(
@@ -65,12 +53,12 @@ class _GaugeDetail extends State<GaugeDetail> {
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                              '${manager.gaugeFlowReadings.last.flow}cfs - ${manager.gaugeStageReadings.last.stage}ft',
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              mgr.getCurrentStats(),
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16.0)),
-                        ),
+                                  fontWeight: FontWeight.bold, fontSize: 16.0),
+                            )),
                       ],
                     ),
                     Container(
@@ -78,29 +66,39 @@ class _GaugeDetail extends State<GaugeDetail> {
                         alignment: Alignment(0.0, 0.0),
                         color: Colors.lightBlueAccent,
                         child: charts.TimeSeriesChart(
-                            isCfs ? manager.seriesFlowData : manager.seriesStageData,
-                            animate: true,
-                            animationDuration: Duration(milliseconds: 700),
-                            primaryMeasureAxis: charts.NumericAxisSpec(
-                                tickProviderSpec:
-                                    charts.StaticNumericTickProviderSpec(<
-                                        charts.TickSpec<num>>[
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[0]
-                                  : manager.stageTickValues[0]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[1]
-                                  : manager.stageTickValues[1]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[2]
-                                  : manager.stageTickValues[2]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[3]
-                                  : manager.stageTickValues[3]),
-                              charts.TickSpec<num>(isCfs
-                                  ? manager.flowTickValues[4]
-                                  : manager.stageTickValues[4])
-                            ]))))
+                          mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
+                          animate: true,
+                          animationDuration: Duration(milliseconds: 700),
+                          primaryMeasureAxis: charts.NumericAxisSpec(
+                            tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                              zeroBound: false,
+                              dataIsInWholeNumbers: false,
+                              desiredMaxTickCount: 8,
+                              desiredMinTickCount: 5
+                            ),
+                              renderSpec: charts.GridlineRendererSpec(
+                                tickLengthPx: 0,
+                                labelOffsetFromAxisPx: 5,
+                              )),
+                        )),
+                    Visibility (
+                      visible: mgr.containsAllData,
+                      child: MaterialSegmentedControl(
+                        horizontalPadding: EdgeInsets.all(20),
+                        children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },
+                        selectionIndex: segmentedControlIndex,
+                        borderRadius: 10.0,
+                        selectedColor: Colors.blue,
+                        unselectedColor: Colors.white,
+                        onSegmentChosen: (index) {
+                          setState(() {
+                            mgr.isCfs = !mgr.isCfs;
+                            segmentedControlIndex = index;
+                          });
+                        },
+                      ),
+
+                    )
                   ],
                 );
               } else {
@@ -109,3 +107,18 @@ class _GaugeDetail extends State<GaugeDetail> {
             }));
   }
 }
+
+class RFSegmentedControl extends CupertinoSegmentedControl {
+
+}
+
+//CupertinoSegmentedControl(
+//padding: EdgeInsets.all(10.0),
+//children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },
+//selectedColor: Colors.lightBlueAccent,
+//onValueChanged: (value) {
+//setState(() {
+//mgr.isCfs = !mgr.isCfs;
+//});
+//},
+//)

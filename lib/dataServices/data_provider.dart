@@ -13,7 +13,7 @@ import 'package:streamwatcher/gauge_model.dart';
 
 class DataProvider {
 
-  Future<Map<String, dynamic>> gaugeJson(String gaugeId, {int hours = 72}) async {
+  Future<Map<String, dynamic>> gaugeJson(String gaugeId, int hours) async {
     String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
     Response res = await get(url);
     return jsonDecode(res.body);
