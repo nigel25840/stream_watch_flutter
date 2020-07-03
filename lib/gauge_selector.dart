@@ -1,8 +1,8 @@
 import 'dart:convert';
-
+import 'package:streamwatcher/Util/Storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/gauge_model.dart';
-
 import 'chart/gauge_detail.dart';
 import 'constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +19,7 @@ class GaugeSelector extends StatefulWidget {
 }
 
 class _GaugeSelector extends State<GaugeSelector> {
+
   ListView showStateGauges() {
     ListView lv = ListView.separated(
         itemBuilder: (BuildContext context, int index) {
@@ -52,6 +53,7 @@ class _GaugeSelector extends State<GaugeSelector> {
                   subtitle: Text(snapshot.data[index].gaugeId),
                   trailing: IconButton(icon: Icon(Icons.star_border), onPressed: () {
                     print("row: ${snapshot.data[index].gaugeName} - ${snapshot.data[index].gaugeId}");
+                    Storage.putFavorite('favorites', snapshot.data[index].gaugeId);
                   },),
                   onTap: () {
                     print(snapshot.data[index].gaugeId);
