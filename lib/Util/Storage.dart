@@ -28,12 +28,17 @@ class Storage {
   static Future putFavorite(String key, String value) async {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
-      _prefs.setStringList('favorites', []);
+      if (!_prefs.containsKey(key)) {
+        await _prefs.setStringList('favorites', List<String>());
+      }
     };
-    List<String> favorites = _prefs.get(key);
-    if (!favorites.contains(value)) {
-      favorites.add(value);
+
+    if(_prefs.containsKey(key)) {
+      List<String> favorites = _prefs.getStringList(key);
+      if (!favorites.contains(value)) {
+        favorites.add(value);
+      }
+      _prefs.setStringList('favorites', favorites);
     }
-    _prefs.setStringList('favorites', favorites);
   }
 }
