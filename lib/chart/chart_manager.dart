@@ -41,9 +41,9 @@ class ChartManager {
     for (int index = 0; index < count; index++) {
       String item = timeSeries[index]['variable']['variableName'];
       if (item.contains('Streamflow')) {
-        _getFlowReadings(timeSeries[index]['values'][0]['value']);
+        await _getFlowReadings(timeSeries[index]['values'][0]['value']);
       } else if (item.contains('Gage height')) {
-        _getStageReadings(timeSeries[index]['values'][0]['value']);
+        await _getStageReadings(timeSeries[index]['values'][0]['value']);
       }
     }
 
