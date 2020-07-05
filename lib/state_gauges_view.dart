@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/constants.dart';
 
+import 'gauge_selector.dart';
+
 class StateGaugesView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _StateGaugesViewState();
@@ -23,6 +25,11 @@ class _StateGaugesViewState extends State<StateGaugesView> {
           return ListTile(
             title: new Text("$state"),
             trailing: Icon(Icons.keyboard_arrow_right),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return GaugeSelector(stateAbbreviation: key);
+              }));
+            },
           );
         }
       )
