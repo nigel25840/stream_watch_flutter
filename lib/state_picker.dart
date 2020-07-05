@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/constants.dart';
 import 'dart:core';
 
@@ -46,21 +47,8 @@ class _StatePicker extends State<StatePicker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home), title: Text('Home')
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.star), title: Text('Faves')
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.search), title: Text('Search')
-          )
-        ],
-      ),
       body: showStates().build(context),
+      endDrawer: RFDrawer(),
     );
   }
 }
