@@ -27,7 +27,7 @@ class _GaugeDetail extends State<GaugeDetail> {
         actions: <Widget>[],
       ),
       body: FutureBuilder(
-          future: mgr.getGaugeData(widget.gaugeId, refresh: refresh),
+          future: mgr.getGaugeData(widget.gaugeId, refresh: false),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               return Column(
@@ -101,6 +101,9 @@ class _GaugeDetail extends State<GaugeDetail> {
         onPressed: () {
           setState(() {
             mgr.isCfs = true;
+            segmentedControlIndex = 0;
+            mgr.seriesStageData = null;
+            mgr.seriesFlowData = null;
             mgr.getGaugeData(widget.gaugeId, refresh: true);
           });
         },
