@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/main.dart';
@@ -6,7 +5,6 @@ import 'package:streamwatcher/main.dart';
 import '../state_picker.dart';
 
 class RFDrawer extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _RFDrawerState();
   var _key = GlobalKey<ScaffoldState>();
@@ -16,17 +14,17 @@ class RFDrawer extends StatefulWidget {
   }
 }
 
-
 class _RFDrawerState extends State<RFDrawer> {
-
   _handleTap(Widget widget) {
     Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (context){
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
       return widget;
     }));
   }
 
-  var style = TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0, color: Colors.blueGrey);
+  var style = TextStyle(
+      fontWeight: FontWeight.bold, fontSize: 17.0, color: Colors.blueGrey);
+  var divider = Divider(color: Colors.blue);
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +41,11 @@ class _RFDrawerState extends State<RFDrawer> {
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home', style: style),
-              onTap: () { _handleTap(HomePage()); },
+              onTap: () {
+                _handleTap(HomePage());
+              },
             ),
+            divider,
             ListTile(
               leading: Icon(Icons.favorite),
               title: Text('Favorites', style: style),
@@ -52,11 +53,15 @@ class _RFDrawerState extends State<RFDrawer> {
                 print('*FAVORITES*');
               },
             ),
+            divider,
             ListTile(
               leading: Icon(Icons.search),
               title: Text('Search', style: style),
-              onTap: () { _handleTap(StatePicker(title: "Choose a State")); },
+              onTap: () {
+                _handleTap(StatePicker(title: "Choose a State"));
+              },
             ),
+            divider,
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('Preferences', style: style),
@@ -64,6 +69,7 @@ class _RFDrawerState extends State<RFDrawer> {
                 print('*PREFERENCES*');
               },
             ),
+            divider,
           ],
         ),
       ),

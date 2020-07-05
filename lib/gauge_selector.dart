@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
@@ -72,6 +73,7 @@ class _GaugeSelector extends State<GaugeSelector> {
           }
         },
       ),
+      endDrawer: RFDrawer(),
     );
   }
 }
