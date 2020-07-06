@@ -34,14 +34,16 @@ class _GaugeDetail extends State<GaugeDetail> {
           ),
         ),
         actions: [
-
           FlatButton(
-            child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),),
+            child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red ),),
             onPressed: () => Navigator.of(context).pop(),
           ),
           FlatButton(
             child: Text('Approve', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              print(widget.gaugeId);
+              Navigator.of(context).pop();
+            },
           )
         ],
       );
@@ -110,19 +112,24 @@ class _GaugeDetail extends State<GaugeDetail> {
                       )),
                   Visibility(
                     visible: mgr.containsAllData,
-                    child: MaterialSegmentedControl(
-                      horizontalPadding: EdgeInsets.all(20),
-                      children: {0: Text("CFS"), 1: Text("  Stage in feet  ")},
-                      selectionIndex: segmentedControlIndex,
-                      borderRadius: 10.0,
-                      selectedColor: Colors.blue,
-                      unselectedColor: Colors.white,
-                      onSegmentChosen: (index) {
-                        setState(() {
-                          mgr.isCfs = !mgr.isCfs;
-                          segmentedControlIndex = index;
-                        });
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        MaterialSegmentedControl(
+                          horizontalPadding: EdgeInsets.all(20),
+                          children: {0: Text("CFS"), 1: Text("  Stage in feet  ")},
+                          selectionIndex: segmentedControlIndex,
+                          borderRadius: 10.0,
+                          selectedColor: Colors.blue,
+                          unselectedColor: Colors.white,
+                          onSegmentChosen: (index) {
+                            setState(() {
+                              mgr.isCfs = !mgr.isCfs;
+                              segmentedControlIndex = index;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   )
                 ],
