@@ -6,6 +6,7 @@ import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_manager.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -17,6 +18,7 @@ class GaugeDetail extends StatefulWidget {
 class _GaugeDetail extends State<GaugeDetail> {
   ChartManager mgr = ChartManager();
   bool refresh = false;
+  bool isFavorite = true;
   int segmentedControlIndex = 0;
 
   @override
@@ -96,18 +98,55 @@ class _GaugeDetail extends State<GaugeDetail> {
               return Align(child: CircularProgressIndicator());
             }
           }),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.refresh),
-        onPressed: () {
-          setState(() {
-            mgr.isCfs = true;
-            segmentedControlIndex = 0;
-            mgr.seriesStageData = null;
-            mgr.seriesFlowData = null;
-            mgr.getGaugeData(widget.gaugeId, refresh: true);
-          });
-        },
+      floatingActionButton: SpeedDial(
+        child: Icon(Icons.arrow_upward),
+        animatedIcon: AnimatedIcons.ellipsis_search,
+        animatedIconTheme: IconThemeData(size: 22.0),
+        onOpen: () => print("OPENING GUGE MENU"),
+        onClose: () => print("CLOSING GUGE MENU"),
+        visible: true,
+        curve: Curves.bounceIn,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.refresh),
+            backgroundColor: Colors.blue,
+            onTap: () {
+              setState(() {
+                mgr.isCfs = true;
+                segmentedControlIndex = 0;
+                mgr.seriesStageData = null;
+                mgr.seriesFlowData = null;
+                mgr.getGaugeData(widget.gaugeId, refresh: true);
+              });
+            },
+            labelBackgroundColor: Colors.blue,
+          ),
+          SpeedDialChild(
+            child: Icon(isFavorite ? Icons.star_border : Icons.star),
+            backgroundColor: Colors.blue,
+            onTap: () {
+              setState(() {
+                isFavorite = !isFavorite;
+              });
+            },
+            labelBackgroundColor: Colors.blue,
+          ),
+        ],
       ),
+
+
+//      floatingActionButton: FloatingActionButton(
+//        child: Icon(Icons.refresh),
+//        onPressed: () {
+//          setState(() {
+//            mgr.isCfs = true;
+//            segmentedControlIndex = 0;
+//            mgr.seriesStageData = null;
+//            mgr.seriesFlowData = null;
+//            mgr.getGaugeData(widget.gaugeId, refresh: true);
+//          });
+//        },
+//      ),
       endDrawer: RFDrawer(),
     );
   }
