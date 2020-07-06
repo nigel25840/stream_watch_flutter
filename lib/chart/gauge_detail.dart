@@ -21,43 +21,71 @@ class _GaugeDetail extends State<GaugeDetail> {
   bool isFavorite = true;
   int segmentedControlIndex = 0;
 
-  Future<void> _confirmAddRemoveFavorite(bool adding) async {
-    return showDialog(context: context, barrierDismissible: false, builder: (BuildContext context){
-      return CupertinoAlertDialog(
-        title: Text('Confirm?'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: [
-              Text('This is the dialog box'),
-              Text('Do you want to continue?')
-            ],
-          ),
-        ),
-        actions: [
-          FlatButton(
-            child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red ),),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          FlatButton(
-            child: Text('Approve', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),),
-            onPressed: () {
-              print(widget.gaugeId);
-              Navigator.of(context).pop();
-            },
-          )
-        ],
-      );
-    });
+  Future<void> _confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
+    String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
+    String successMessage = '${widget.gaugeName} was just added to you favorites';
+    List<FlatButton> buttons = [];
+
+    // if it's a favorite, then remove it
+    // if it's not a favorite, then add it
+
+    var okButton = FlatButton(
+      child: Text('OK',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    var approveButton = FlatButton(
+      child: Text('Approve',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    var cancelButton = FlatButton(
+      child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+      onPressed: () => Navigator.pop(context),
+    );
+
+    if (favorite) {
+      buttons.add(cancelButton);
+      buttons.add(approveButton);
+    } else {
+      buttons.add(okButton);
+    }
+
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text(favorite ? 'Confirm?' : 'Success!'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [Text(!favorite ? successMessage : deleteMessage)],
+              ),
+            ),
+            actions: buttons,
+          );
+        });
   }
 
-  Future<bool> _addRemoveFavorite(String gaugeId) async {
-
+  Future<bool> _addRemoveFavorite(String gaugeId, bool add) async {
+    if (add) {
+      print("ADDING NEW FAVORITE - $gaugeId");
+    } else {
+      print("REMOVING FAVORITE = $gaugeId");
+    }
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("STREAM WATCH"),
@@ -117,7 +145,10 @@ class _GaugeDetail extends State<GaugeDetail> {
                       children: [
                         MaterialSegmentedControl(
                           horizontalPadding: EdgeInsets.all(20),
-                          children: {0: Text("CFS"), 1: Text("  Stage in feet  ")},
+                          children: {
+                            0: Text("CFS"),
+                            1: Text("  Stage in feet  ")
+                          },
                           selectionIndex: segmentedControlIndex,
                           borderRadius: 10.0,
                           selectedColor: Colors.blue,
@@ -165,20 +196,19 @@ class _GaugeDetail extends State<GaugeDetail> {
             labelBackgroundColor: Colors.blue,
           ),
           SpeedDialChild(
-            child: Icon(isFavorite ? Icons.star_border : Icons.star),
+            child: Icon(isFavorite ? Icons.star : Icons.star_border),
             backgroundColor: Colors.blue,
             onTap: () {
               print("Add Fave");
+              _confirmAddRemoveFavorite(isFavorite, widget.gaugeId);
               setState(() {
                 isFavorite = !isFavorite;
-                _confirmAddRemoveFavorite(isFavorite);
               });
             },
             labelBackgroundColor: Colors.blue,
           ),
         ],
       ),
-
 
 //      floatingActionButton: FloatingActionButton(
 //        child: Icon(Icons.refresh),
