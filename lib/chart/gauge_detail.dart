@@ -21,8 +21,41 @@ class _GaugeDetail extends State<GaugeDetail> {
   bool isFavorite = true;
   int segmentedControlIndex = 0;
 
+  Future<void> _confirmAddRemoveFavorite(bool adding) async {
+    return showDialog(context: context, barrierDismissible: false, builder: (BuildContext context){
+      return CupertinoAlertDialog(
+        title: Text('Confirm?'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: [
+              Text('This is the dialog box'),
+              Text('Do you want to continue?')
+            ],
+          ),
+        ),
+        actions: [
+
+          FlatButton(
+            child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          FlatButton(
+            child: Text('Approve', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),),
+            onPressed: () => Navigator.of(context).pop(),
+          )
+        ],
+      );
+    });
+  }
+
+  Future<bool> _addRemoveFavorite(String gaugeId) async {
+
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("STREAM WATCH"),
@@ -99,11 +132,14 @@ class _GaugeDetail extends State<GaugeDetail> {
             }
           }),
       floatingActionButton: SpeedDial(
-        child: Icon(Icons.arrow_upward),
-        animatedIcon: AnimatedIcons.ellipsis_search,
+        child: Icon(Icons.keyboard_arrow_up),
         animatedIconTheme: IconThemeData(size: 22.0),
-        onOpen: () => print("OPENING GUGE MENU"),
-        onClose: () => print("CLOSING GUGE MENU"),
+        onOpen: () {
+          print("OPENING GAUGE MENU");
+        },
+        onClose: () {
+          print("CLOSING GAUGE MENU");
+        },
         visible: true,
         curve: Curves.bounceIn,
         children: [
@@ -125,8 +161,10 @@ class _GaugeDetail extends State<GaugeDetail> {
             child: Icon(isFavorite ? Icons.star_border : Icons.star),
             backgroundColor: Colors.blue,
             onTap: () {
+              print("Add Fave");
               setState(() {
                 isFavorite = !isFavorite;
+                _confirmAddRemoveFavorite(isFavorite);
               });
             },
             labelBackgroundColor: Colors.blue,
