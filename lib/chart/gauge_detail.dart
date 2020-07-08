@@ -4,9 +4,12 @@ import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:streamwatcher/UI/drawer.dart';
+import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_manager.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+import '../constants.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -43,6 +46,7 @@ class _GaugeDetail extends State<GaugeDetail> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
       onPressed: () {
+        Storage.putFavorite(kFavoritesKey, widget.gaugeId);
         Navigator.pop(context);
       },
     );

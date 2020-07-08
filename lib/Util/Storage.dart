@@ -17,11 +17,11 @@ class Storage {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  static List<String> getFavorites(String key) {
+  static Future<List<String>> getFavorites(String key) async {
     if (_prefs == null) {
       return null;
     } else {
-      return _prefs.getStringList(key);
+      return await _prefs.getStringList(key);
     }
   }
 
@@ -40,5 +40,15 @@ class Storage {
       }
       _prefs.setStringList('favorites', favorites);
     }
+  }
+
+  static Future<bool> purgeList(String key) async {
+    if(_prefs != null) {
+      if (_prefs.getStringList(key) != null) {
+        _prefs.getStringList(key).clear();
+        return true;
+      }
+    }
+    return false;
   }
 }

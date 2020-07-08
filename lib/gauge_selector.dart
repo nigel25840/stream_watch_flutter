@@ -54,7 +54,7 @@ class _GaugeSelector extends State<GaugeSelector> {
                   subtitle: Text(snapshot.data[index].gaugeId),
                   trailing: IconButton(icon: Icon(Icons.star_border), onPressed: () {
                     print("row: ${snapshot.data[index].gaugeName} - ${snapshot.data[index].gaugeId}");
-                    Storage.putFavorite('favorites', snapshot.data[index].gaugeId);
+                    Storage.putFavorite(kFavoritesKey, snapshot.data[index].gaugeId);
                   },),
                   onTap: () {
                     print(snapshot.data[index].gaugeId);
