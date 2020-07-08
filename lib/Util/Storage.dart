@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:streamwatcher/constants.dart';
 
 class Storage {
   static Storage _storage;
@@ -25,7 +26,7 @@ class Storage {
     }
   }
 
-  static Future putFavorite(String key, String value) async {
+  static Future<void> putFavorite(String key, String value) async {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
       if (!_prefs.containsKey(key)) {
@@ -39,6 +40,16 @@ class Storage {
         favorites.add(value);
       }
       _prefs.setStringList('favorites', favorites);
+    }
+  }
+
+  static Future<void> removeFavorite(String key) async {
+    if (_prefs == null) {
+      _prefs = await SharedPreferences.getInstance();
+    }
+    var faves = _prefs.getStringList(kFavoritesKey);
+    if (faves.contains(key)) {
+      faves.remove(key);
     }
   }
 
