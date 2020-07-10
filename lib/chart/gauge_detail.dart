@@ -46,7 +46,8 @@ class _GaugeDetail extends State<GaugeDetail> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
       onPressed: () {
-        Storage.putFavorite(kFavoritesKey, widget.gaugeId);
+//        Storage.putFavorite(kFavoritesKey, widget.gaugeId);
+      Storage.removeFromPrefs(kFavoritesKey, widget.gaugeId);
         Navigator.pop(context);
       },
     );
@@ -57,9 +58,11 @@ class _GaugeDetail extends State<GaugeDetail> {
     );
 
     if (favorite) {
+      // if this IS a favorite, apply removal buttons
       buttons.add(cancelButton);
       buttons.add(approveButton);
     } else {
+      // otherwise show a confirmation button
       buttons.add(okButton);
     }
 
@@ -77,15 +80,6 @@ class _GaugeDetail extends State<GaugeDetail> {
             actions: buttons,
           );
         });
-  }
-
-  Future<bool> _addRemoveFavorite(String gaugeId, bool add) async {
-    if (add) {
-      print("ADDING NEW FAVORITE - $gaugeId");
-    } else {
-      print("REMOVING FAVORITE = $gaugeId");
-    }
-    return false;
   }
 
   @override
@@ -204,6 +198,7 @@ class _GaugeDetail extends State<GaugeDetail> {
             backgroundColor: Colors.blue,
             onTap: () {
               print("Add Fave");
+              Storage.putFavorite(kFavoritesKey, widget.gaugeId);
               _confirmAddRemoveFavorite(isFavorite, widget.gaugeId);
               setState(() {
                 isFavorite = !isFavorite;
@@ -213,19 +208,6 @@ class _GaugeDetail extends State<GaugeDetail> {
           ),
         ],
       ),
-
-//      floatingActionButton: FloatingActionButton(
-//        child: Icon(Icons.refresh),
-//        onPressed: () {
-//          setState(() {
-//            mgr.isCfs = true;
-//            segmentedControlIndex = 0;
-//            mgr.seriesStageData = null;
-//            mgr.seriesFlowData = null;
-//            mgr.getGaugeData(widget.gaugeId, refresh: true);
-//          });
-//        },
-//      ),
       endDrawer: RFDrawer(),
     );
   }
