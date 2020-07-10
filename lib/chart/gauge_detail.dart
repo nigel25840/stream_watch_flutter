@@ -9,7 +9,7 @@ import 'dart:core';
 import 'package:streamwatcher/chart/chart_manager.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import '../constants.dart';
+import '../Util/constants.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;

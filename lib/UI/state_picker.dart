@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/drawer.dart';
-import 'package:streamwatcher/constants.dart';
+import 'package:streamwatcher/Util/constants.dart';
 import 'dart:core';
 
-import 'package:streamwatcher/gauge_selector.dart';
+import 'package:streamwatcher/UI/gauge_selector.dart';
 
 class StatePicker extends StatefulWidget {
   final String title;

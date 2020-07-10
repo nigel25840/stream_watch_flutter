@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/favorites_view.dart';
 import 'package:streamwatcher/main.dart';
 
-import '../state_picker.dart';
+import 'state_picker.dart';
 
 class RFDrawer extends StatefulWidget {
   @override

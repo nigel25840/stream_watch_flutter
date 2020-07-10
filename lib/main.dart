@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:streamwatcher/UI/drawer.dart';
-import 'package:streamwatcher/state_picker.dart';
+import 'package:streamwatcher/UI/state_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

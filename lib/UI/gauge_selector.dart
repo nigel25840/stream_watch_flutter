@@ -3,12 +3,12 @@ import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
-import 'package:streamwatcher/gauge_model.dart';
-import 'chart/gauge_detail.dart';
-import 'constants.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
+import '../chart/gauge_detail.dart';
+import '../Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dataServices/data_provider.dart';
+import '../dataServices/data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
@@ -20,6 +20,12 @@ class GaugeSelector extends StatefulWidget {
 }
 
 class _GaugeSelector extends State<GaugeSelector> {
+
+  List<String> faves;
+
+  _getFavorites() async {
+    faves = await Storage.getList(kFavoritesKey);
+  }
 
   ListView showStateGauges() {
     ListView lv = ListView.separated(
@@ -38,6 +44,7 @@ class _GaugeSelector extends State<GaugeSelector> {
 
   @override
   Widget build(BuildContext context) {
+    _getFavorites();
     return Scaffold(
       appBar: AppBar(
         title: Text(kAllStates[widget.stateAbbreviation]),
@@ -52,7 +59,7 @@ class _GaugeSelector extends State<GaugeSelector> {
                 return ListTile(
                   title: Text(snapshot.data[index].gaugeName),
                   subtitle: Text(snapshot.data[index].gaugeId),
-                  trailing: IconButton(icon: Icon(Icons.star_border), onPressed: () {
+                  trailing: IconButton(icon: Icon(faves.contains(snapshot.data[index].gaugeId) ? Icons.star : Icons.star_border), onPressed: () {
                     print("row: ${snapshot.data[index].gaugeName} - ${snapshot.data[index].gaugeId}");
                     Storage.putFavorite(kFavoritesKey, snapshot.data[index].gaugeId);
                   },),

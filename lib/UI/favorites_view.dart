@@ -12,9 +12,9 @@ class _FavoritesView extends State<FavoritesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favorites'),
+        title: Text('=Favorites='),
       ),
-      body: Center(child: Text('Favorites')),
+      body: Center(child: Text('*Favorites*')),
       endDrawer: RFDrawer(),
     );
   }

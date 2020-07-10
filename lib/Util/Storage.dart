@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:streamwatcher/constants.dart';
+import 'package:streamwatcher/Util/constants.dart';
 
 class Storage {
   static Storage _storage;
