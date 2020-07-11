@@ -19,12 +19,31 @@ class GaugeSelector extends StatefulWidget {
   _GaugeSelector createState() => _GaugeSelector();
 }
 
-class _GaugeSelector extends State<GaugeSelector> {
+class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderStateMixin {
 
   List<String> faves;
+  Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
+  PageController _pageController;
+  int _page = 0;
+  Widget _list;
 
-  Future<List<GaugeModel>> _getStateList(String stateKey) async {
+  @override initState(){
+    super.initState();
+    _pageController = new PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<List<GaugeModel>> _getStateList() async {
+    if(_stateGuageList.containsKey(widget.stateAbbreviation)) {
+      return _stateGuageList[widget.stateAbbreviation];
+    }
     List<GaugeModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
+    _stateGuageList[widget.stateAbbreviation] = gaugeModels;
     return gaugeModels;
   }
 
@@ -55,32 +74,10 @@ class _GaugeSelector extends State<GaugeSelector> {
         title: Text(kAllStates[widget.stateAbbreviation]),
       ),
       body: FutureBuilder(
-//        future: DataProvider().stateGauges(widget.stateAbbreviation),
-        future: _getStateList(widget.stateAbbreviation),
+        future: _getStateList(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (_, index) {
-                return ListTile(
-                  title: Text(snapshot.data[index].gaugeName),
-                  subtitle: Text(snapshot.data[index].gaugeId),
-                  trailing: IconButton(icon: Icon(faves.contains(snapshot.data[index].gaugeId) ? Icons.star : Icons.star_border), onPressed: () {
-                    print("row: ${snapshot.data[index].gaugeName} - ${snapshot.data[index].gaugeId}");
-                    Storage.putFavorite(kFavoritesKey, snapshot.data[index].gaugeId);
-                  },),
-                  onTap: () {
-                    print(snapshot.data[index].gaugeId);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return GaugeDetail(
-                          gaugeId: snapshot.data[index].gaugeId,
-                          gaugeName: snapshot.data[index].gaugeName);
-                    }));
-                  },
-                );
-              },
-            );
+            return _listView(snapshot, context);
           } else {
             return Align(child: CircularProgressIndicator());
           }
@@ -88,5 +85,31 @@ class _GaugeSelector extends State<GaugeSelector> {
       ),
       endDrawer: RFDrawer(),
     );
+  }
+
+  ListView _listView(AsyncSnapshot snapshot, BuildContext context) {
+    return ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (_, index) {
+              return ListTile(
+                title: Text(snapshot.data[index].gaugeName),
+                subtitle: Text(snapshot.data[index].gaugeId),
+                trailing: IconButton(icon: Icon(faves.contains(snapshot.data[index].gaugeId) ? Icons.star : Icons.star_border), onPressed: () {
+                  setState(() {
+                    Storage.putFavorite(kFavoritesKey, snapshot.data[index].gaugeId);
+                  });
+                },),
+                onTap: () {
+                  print(snapshot.data[index].gaugeId);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
+                    return GaugeDetail(
+                        gaugeId: snapshot.data[index].gaugeId,
+                        gaugeName: snapshot.data[index].gaugeName);
+                  }));
+                },
+              );
+            },
+          );
   }
 }
