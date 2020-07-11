@@ -23,6 +23,11 @@ class _GaugeSelector extends State<GaugeSelector> {
 
   List<String> faves;
 
+  Future<List<GaugeModel>> _getStateList(String stateKey) async {
+    List<GaugeModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
+    return gaugeModels;
+  }
+
   _getFavorites() async {
     faves = await Storage.getList(kFavoritesKey);
   }
@@ -50,7 +55,8 @@ class _GaugeSelector extends State<GaugeSelector> {
         title: Text(kAllStates[widget.stateAbbreviation]),
       ),
       body: FutureBuilder(
-        future: DataProvider().stateGauges(widget.stateAbbreviation),
+//        future: DataProvider().stateGauges(widget.stateAbbreviation),
+        future: _getStateList(widget.stateAbbreviation),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ListView.builder(
