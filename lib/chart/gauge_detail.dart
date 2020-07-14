@@ -25,6 +25,7 @@ class _GaugeDetail extends State<GaugeDetail> {
   bool isFavorite;
   int segmentedControlIndex = 0;
   List<String> faves;
+  int animationDuration = 700;
 
   Future<List<String>> getFavorites(String id) async {
     List<String> favorites = await Storage.getList(kFavoritesKey);
@@ -51,6 +52,7 @@ class _GaugeDetail extends State<GaugeDetail> {
       ),
       onPressed: () {
         setState(() {
+          animationDuration = 0;
           mgr.removeFavorite(widget.gaugeId);
           Navigator.pop(context);
         });
@@ -128,7 +130,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                       child: charts.TimeSeriesChart(
                         mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
                         animate: true,
-                        animationDuration: Duration(milliseconds: 700),
+                        animationDuration: Duration(milliseconds: animationDuration),
                         primaryMeasureAxis: charts.NumericAxisSpec(
                             tickProviderSpec:
                                 charts.BasicNumericTickProviderSpec(
@@ -158,6 +160,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                           unselectedColor: Colors.white,
                           onSegmentChosen: (index) {
                             setState(() {
+                              animationDuration = 700;
                               mgr.isCfs = !mgr.isCfs;
                               segmentedControlIndex = index;
                             });
@@ -203,6 +206,7 @@ class _GaugeDetail extends State<GaugeDetail> {
             onTap: () {
               if(!mgr.isFavorite) {
                 setState(() {
+                  animationDuration = 0;
                   mgr.addFavorite(widget.gaugeId);
                 });
               }
