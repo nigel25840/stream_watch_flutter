@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:streamwatcher/Util/Storage.dart';
+import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
@@ -25,12 +27,16 @@ class ChartManager {
   var isCfs = true;
   String gaugeId;
   bool containsAllData = false;
+  bool isFavorite = false;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
 
     var json;
     var timeSeries;
     int count;
+
+    List<String> favorites = await Storage.getList(kFavoritesKey);
+    isFavorite = favorites.contains(gaugeId);
 
     if (seriesStageData == null || seriesStageData == null || refresh) {
       json = await DataProvider().gaugeJson(gaugeId, hours);
@@ -48,9 +54,7 @@ class ChartManager {
     }
 
     containsAllData = (gaugeStageReadings.length > 0 && gaugeFlowReadings.length > 0);
-
     isCfs = gaugeFlowReadings.length > 0;
-
     seriesFlowData = await generateChartSeries(gaugeFlowReadings, 'FlowReadings');
     seriesStageData = await generateChartSeries(gaugeStageReadings, 'StageReadings');
   }
@@ -100,27 +104,22 @@ class ChartManager {
     }
 
   }
-
-  List<double> _setTickValues(double high, double low, int numberOfTicks) {
-    double increase = 1.01;
-    double _low = low;
-    double _high = high * increase;
-    double spread = _high - _low;
-    double delta = spread / numberOfTicks;
-    List<double> tickValues = [_low];
-    for (int i = 0; i < numberOfTicks; i++) {
-      _low += delta;
-      tickValues.add(_low);
-    }
-    return tickValues;
-  }
-
   bool containsFlowData() {
     return gaugeFlowReadings.length > 0;
   }
 
   bool containsStageData() {
     return gaugeStageReadings.length > 0;
+  }
+
+  Future<void> addFavorite(String faveId) async {
+    await Storage.putFavorite(kFavoritesKey, faveId);
+    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+  }
+
+  Future<bool> removeFavorite(String faveId) async {
+    await Storage.removeFromPrefs(kFavoritesKey, faveId);
+    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
   }
 
   String getCurrentStats() {
@@ -143,4 +142,6 @@ class ChartManager {
     }
     return currentFlow + currentStage;
   }
+
+
 }

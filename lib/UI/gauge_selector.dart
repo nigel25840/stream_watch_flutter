@@ -1,7 +1,6 @@
-import 'dart:convert';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import '../chart/gauge_detail.dart';
@@ -12,22 +11,27 @@ import '../dataServices/data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
+//  final DoubleHolder offset = new DoubleHolder();
+//  final int _itemCount;
+//  final IndexedWidgetBuilder _indexedWidgetBuilder;
   Future<List<GaugeModel>> _data;
-  GaugeSelector({this.stateAbbreviation}) {
+
+  GaugeSelector(this.stateAbbreviation) {
     _data = DataProvider().stateGauges(stateAbbreviation);
   }
   _GaugeSelector createState() => _GaugeSelector();
 }
 
-class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderStateMixin {
-
+class _GaugeSelector extends State<GaugeSelector>
+    with SingleTickerProviderStateMixin {
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
   PageController _pageController;
-  int _page = 0;
-  Widget _list;
 
-  @override initState(){
+  _GaugeSelector();
+
+  @override
+  initState() {
     super.initState();
     _pageController = new PageController();
   }
@@ -38,11 +42,12 @@ class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderState
     super.dispose();
   }
 
-  Future<List<GaugeModel>> _getStateList() async {
-    if(_stateGuageList.containsKey(widget.stateAbbreviation)) {
+  Future _getGaugesForState() async {
+    if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
       return _stateGuageList[widget.stateAbbreviation];
     }
-    List<GaugeModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
+    List<GaugeModel> gaugeModels =
+        await DataProvider().stateGauges(widget.stateAbbreviation);
     _stateGuageList[widget.stateAbbreviation] = gaugeModels;
     return gaugeModels;
   }
@@ -51,19 +56,40 @@ class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderState
     faves = await Storage.getList(kFavoritesKey);
   }
 
-  ListView showStateGauges() {
-    ListView lv = ListView.separated(
-        itemBuilder: (BuildContext context, int index) {
-          return new Column(
-            children: [
-              new ListTile(
-                title: new Text("$index"),
-              )
-            ],
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-        itemCount: null);
+  var listener = ItemPositionsListener.create();
+  var scroller = ItemScrollController();
+
+  ScrollablePositionedList _listView(
+      AsyncSnapshot snapshot, BuildContext context) {
+    var list = ScrollablePositionedList.builder(
+      itemCount: snapshot.data.length,
+      itemBuilder: (context, index) {
+        GaugeModel gauge = snapshot.data[index];
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
+            title: Text(gauge.gaugeName),
+            subtitle: Text(gauge.gaugeId),
+            trailing: Icon(Icons.arrow_forward),
+            onTap: () {
+              print(gauge.gaugeId);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return GaugeDetail(
+                    gaugeId: gauge.gaugeId,
+                    gaugeName: gauge.gaugeName);
+              }));
+            },
+          ),
+        );
+      },
+      itemPositionsListener: listener,
+      itemScrollController: scroller,
+    );
+
+    if (list != null) {
+      //scroller.jumpTo(index: 1); // error here
+    }
+    return list;
   }
 
   @override
@@ -74,7 +100,7 @@ class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderState
         title: Text(kAllStates[widget.stateAbbreviation]),
       ),
       body: FutureBuilder(
-        future: _getStateList(),
+        future: _getGaugesForState(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return _listView(snapshot, context);
@@ -86,30 +112,6 @@ class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderState
       endDrawer: RFDrawer(),
     );
   }
-
-  ListView _listView(AsyncSnapshot snapshot, BuildContext context) {
-    return ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (_, index) {
-              return ListTile(
-                title: Text(snapshot.data[index].gaugeName),
-                subtitle: Text(snapshot.data[index].gaugeId),
-                trailing: IconButton(icon: Icon(faves.contains(snapshot.data[index].gaugeId) ? Icons.star : Icons.star_border), onPressed: () {
-                  setState(() {
-                    Storage.putFavorite(kFavoritesKey, snapshot.data[index].gaugeId);
-                  });
-                },),
-                onTap: () {
-                  print(snapshot.data[index].gaugeId);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) {
-                    return GaugeDetail(
-                        gaugeId: snapshot.data[index].gaugeId,
-                        gaugeName: snapshot.data[index].gaugeName);
-                  }));
-                },
-              );
-            },
-          );
-  }
 }
+
+

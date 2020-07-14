@@ -62,4 +62,9 @@ class Storage {
     }
     return false;
   }
+
+  static Future<bool> contains(String ket, String val) async {
+    List<String> list = await getList(kFavoritesKey);
+    return list.contains(val);
+  }
 }

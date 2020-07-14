@@ -30,7 +30,7 @@ class _StatePicker extends State<StatePicker> {
               trailing: Icon(Icons.keyboard_arrow_right),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GaugeSelector(stateAbbreviation: key);
+                  return GaugeSelector(key);
                 }));
               },
             )

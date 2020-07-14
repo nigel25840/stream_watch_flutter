@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:material_segmented_control/material_segmented_control.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
@@ -21,16 +22,19 @@ class GaugeDetail extends StatefulWidget {
 class _GaugeDetail extends State<GaugeDetail> {
   ChartManager mgr = ChartManager();
   bool refresh = false;
-  bool isFavorite = true;
+  bool isFavorite;
   int segmentedControlIndex = 0;
+  List<String> faves;
 
-  Future<void> _confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
+  Future<List<String>> getFavorites(String id) async {
+    List<String> favorites = await Storage.getList(kFavoritesKey);
+    return favorites;
+  }
+
+  Future<void> confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
     String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
     String successMessage = '${widget.gaugeName} was just added to you favorites';
     List<FlatButton> buttons = [];
-
-    // if it's a favorite, then remove it
-    // if it's not a favorite, then add it
 
     var okButton = FlatButton(
       child: Text('OK',
@@ -41,14 +45,15 @@ class _GaugeDetail extends State<GaugeDetail> {
       },
     );
 
-    var approveButton = FlatButton(
-      child: Text('Approve',
+    var approveRemovalButton = FlatButton(
+      child: Text('Remove',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
       onPressed: () {
-//        Storage.putFavorite(kFavoritesKey, widget.gaugeId);
-      Storage.removeFromPrefs(kFavoritesKey, widget.gaugeId);
-        Navigator.pop(context);
+        setState(() {
+          mgr.removeFavorite(widget.gaugeId);
+          Navigator.pop(context);
+        });
       },
     );
 
@@ -60,7 +65,7 @@ class _GaugeDetail extends State<GaugeDetail> {
     if (favorite) {
       // if this IS a favorite, apply removal buttons
       buttons.add(cancelButton);
-      buttons.add(approveButton);
+      buttons.add(approveRemovalButton);
     } else {
       // otherwise show a confirmation button
       buttons.add(okButton);
@@ -184,7 +189,6 @@ class _GaugeDetail extends State<GaugeDetail> {
             backgroundColor: Colors.blue,
             onTap: () {
               setState(() {
-                mgr.isCfs = true;
                 segmentedControlIndex = 0;
                 mgr.seriesStageData = null;
                 mgr.seriesFlowData = null;
@@ -194,15 +198,15 @@ class _GaugeDetail extends State<GaugeDetail> {
             labelBackgroundColor: Colors.blue,
           ),
           SpeedDialChild(
-            child: Icon(isFavorite ? Icons.star : Icons.star_border),
+            child: Icon(mgr.isFavorite ? Icons.star : Icons.star_border),
             backgroundColor: Colors.blue,
             onTap: () {
-              print("Add Fave");
-              Storage.putFavorite(kFavoritesKey, widget.gaugeId);
-              _confirmAddRemoveFavorite(isFavorite, widget.gaugeId);
-              setState(() {
-                isFavorite = !isFavorite;
-              });
+              if(!mgr.isFavorite) {
+                setState(() {
+                  mgr.addFavorite(widget.gaugeId);
+                });
+              }
+              confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
             },
             labelBackgroundColor: Colors.blue,
           ),
@@ -212,16 +216,3 @@ class _GaugeDetail extends State<GaugeDetail> {
     );
   }
 }
-
-class RFSegmentedControl extends CupertinoSegmentedControl {}
-
-//CupertinoSegmentedControl(
-//padding: EdgeInsets.all(10.0),
-//children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },
-//selectedColor: Colors.lightBlueAccent,
-//onValueChanged: (value) {
-//setState(() {
-//mgr.isCfs = !mgr.isCfs;
-//});
-//},
-//)
