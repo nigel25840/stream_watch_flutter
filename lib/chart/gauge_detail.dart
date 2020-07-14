@@ -210,6 +210,9 @@ class _GaugeDetail extends State<GaugeDetail> {
             },
             labelBackgroundColor: Colors.blue,
           ),
+          SpeedDialChild(
+            child: Icon(Icons.map)
+          )
         ],
       ),
       endDrawer: RFDrawer(),
