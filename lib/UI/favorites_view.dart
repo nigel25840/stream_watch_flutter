@@ -4,6 +4,8 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/dataServices/data_provider.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
 
 class FavoritesView extends StatefulWidget {
   @override
@@ -24,11 +26,7 @@ class _FavoritesView extends State<FavoritesView> {
     var list = ScrollablePositionedList.builder(
         itemCount: faves.length,
         itemBuilder: (context, index) {
-          return Padding(
-              padding: EdgeInsets.all(8.0),
-              child: ListTile(
-                title: Text(faves[index]),
-              ));
+          return FavoriteCell(faves[index]);
         });
     return list;
   }
@@ -56,17 +54,32 @@ class _FavoritesView extends State<FavoritesView> {
 
 class FavoriteCell extends StatefulWidget {
   final String favoriteGaugeId;
-  FavoriteCell(this.favoriteGaugeId) {}
   _FavoriteCell createState() => _FavoriteCell();
-
-
-
+  FavoriteCell(this.favoriteGaugeId);
 }
 
 class _FavoriteCell extends State<FavoriteCell> {
+  var _cellData;
+
+  Future<GaugeModel> _getFavorite() async {
+    _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 1);
+    var timeSeries = _cellData['value']['timeSeries'];
+    print('');
+  }
+
   @override
   Widget build(BuildContext context) {
-
+    return FutureBuilder(
+      future: _getFavorite(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        GaugeModel fave = snapshot.data;
+        if(snapshot.connectionState == ConnectionState.done) {
+          return Text(fave.gaugeName);
+        } else {
+          return Align(child: CircularProgressIndicator(), widthFactor: 2,);
+        }
+      },
+    );
   }
 
 }

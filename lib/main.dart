@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/state_picker.dart';
+import 'package:streamwatcher/Util/Storage.dart';
+import 'package:streamwatcher/Util/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,8 +39,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  Future<void> _initializePreferences() async {
+    var faves = await Storage.getList(kFavoritesKey);
+    if (faves == null) {
+      await Storage.initializeList(kFavoritesKey);
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    _initializePreferences();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("River Watch"),

@@ -42,6 +42,13 @@ class Storage {
     }
   }
 
+  static Future<void> initializeList(String key) async {
+    if (_prefs == null) {
+      _prefs = await SharedPreferences.getInstance();
+    }
+    _prefs.setStringList(key, List<String>());
+  }
+
   static Future<void> removeFromPrefs(String prefs, String key) async {
     if (_prefs == null) {
       _prefs = await SharedPreferences.getInstance();
