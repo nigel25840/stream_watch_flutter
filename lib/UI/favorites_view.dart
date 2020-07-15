@@ -31,6 +31,8 @@ class _FavoritesView extends State<FavoritesView> {
     return list;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +66,33 @@ class _FavoriteCell extends State<FavoriteCell> {
   Future<GaugeModel> _getFavorite() async {
     _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 1);
     var timeSeries = _cellData['value']['timeSeries'];
-    print('');
+    //value.timeSeries[0].sourceInfo.siteName
+    print('SITE NAME');
+    print(timeSeries[0]['sourceInfo']['siteName']);
+    return await GaugeModel(gaugeName: timeSeries[0]['sourceInfo']['siteName'], gaugeState: 'DC', gaugeId: '1234');
+  }
+
+  Card _faveCardView(AsyncSnapshot snapshot, BuildContext context) {
+    GaugeModel model = snapshot.data;
+    var card = Card(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(model.gaugeName),
+                Text(model.gaugeState),
+              ],
+            ),
+          ),
+          Icon(Icons.arrow_forward)
+        ],
+      ),
+    );
+    return card;
   }
 
   @override
@@ -72,9 +100,9 @@ class _FavoriteCell extends State<FavoriteCell> {
     return FutureBuilder(
       future: _getFavorite(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        GaugeModel fave = snapshot.data;
+        //GaugeModel fave = snapshot.data;
         if(snapshot.connectionState == ConnectionState.done) {
-          return Text(fave.gaugeName);
+          return _faveCardView(snapshot, context); //Text(fave.gaugeName);
         } else {
           return Align(child: CircularProgressIndicator(), widthFactor: 2,);
         }
