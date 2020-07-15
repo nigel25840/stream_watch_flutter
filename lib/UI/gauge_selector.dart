@@ -11,9 +11,6 @@ import '../dataServices/data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
-//  final DoubleHolder offset = new DoubleHolder();
-//  final int _itemCount;
-//  final IndexedWidgetBuilder _indexedWidgetBuilder;
   Future<List<GaugeModel>> _data;
 
   GaugeSelector(this.stateAbbreviation) {
