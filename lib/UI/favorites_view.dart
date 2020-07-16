@@ -41,7 +41,10 @@ class _FavoritesView extends State<FavoritesView> {
         future: _getFavorites(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return _faveListView(snapshot, context);
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _faveListView(snapshot, context),
+            );
           } else {
             return Align(child: CircularProgressIndicator());
           }
@@ -63,25 +66,10 @@ class _FavoriteCell extends State<FavoriteCell> {
   TextStyle style = TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
 
   Future<GaugeModel> _getFavorite() async {
-    _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 1);
+    _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
     var timeSeries = _cellData['value']['timeSeries'];
     double lastFlowReading;
     double lastStageReading;
-
-    // TODO: add exception handling here
-//    for (int index = 0; index < timeSeries.length; index++) {
-//      String varName = timeSeries[index]['variable']['variableName'];
-//      if (varName.toLowerCase().contains('streamflow')) {
-//        try{
-//          var flowVal = timeSeries[index]['values'][0]['value'][0]['value'];
-//          lastFlowReading = double.parse(flowVal);
-//          print('*********************\n LAST FLOW: $flowVal');
-//        } catch (e) {
-//          print('EXCEPTION: ${e.toString()}');
-//        }
-//      }
-//    }
-
 
     for (int index = 0; index < timeSeries.length; index++) {
       String varName = timeSeries[index]['variable']['variableName'];
@@ -93,15 +81,12 @@ class _FavoriteCell extends State<FavoriteCell> {
           var stageVal = timeSeries[index]['values'][0]['value'][0]['value'];
           lastStageReading = double.parse(stageVal);
         }
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
 
     GaugeModel model = await GaugeModel(
         gaugeName: timeSeries[0]['sourceInfo']['siteName'],
-        gaugeState: 'DC',
-        gaugeId: '1234');
+        gaugeId: widget.favoriteGaugeId);
     model.lastFlowReading = lastFlowReading;
     model.lastStageReading = lastStageReading;
 
@@ -111,41 +96,63 @@ class _FavoriteCell extends State<FavoriteCell> {
   Card _faveCardView(AsyncSnapshot snapshot, BuildContext context) {
     GaugeModel model = snapshot.data;
     var card = Card(
-      elevation: 2,
-      color: Colors.tealAccent,
-      shadowColor: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 2,
+        color: Colors.tealAccent,
+        shadowColor: Colors.black,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        child: Column(
+          children: [
+            Row(
               children: [
-                Text(model.gaugeName),
-                Text(model.gaugeState),
                 Padding(
-                  padding: const EdgeInsets.only(top: 15),
+                  padding: const EdgeInsets.only(top: 10, bottom: 10, left: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}', style: style),
-                      Text('${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}', style: style),
+                      Text(model.gaugeName, style: style),
+                      Text(model.gaugeId),
                     ],
                   ),
                 )
               ],
             ),
-          ),
-          Row(
-            children: [
-              Icon(Icons.arrow_forward),
-            ],
-          ),
-        ],
-      ),
-    );
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: <Widget> [
+                  Expanded(
+                    flex: 9,
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}',
+                              style: style),
+                          Text(
+                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}',
+                              style: style),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Icon(Icons.arrow_forward)
+                        ],
+                      ),
+                    )
+                  )
+                ],
+              ),
+            )
+          ],
+        ));
     return card;
   }
 
