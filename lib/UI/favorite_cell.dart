@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/Util/Storage.dart';
+import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
@@ -32,7 +34,9 @@ class _FavoriteCell extends State<FavoriteCell> {
           var stageVal = timeSeries[index]['values'][0]['value'][0]['value'];
           lastStageReading = double.parse(stageVal);
         }
-      } catch (e) {}
+      } catch (e) {
+        print(e.toString());
+      }
     }
 
     GaugeModel model = await GaugeModel(
@@ -104,7 +108,7 @@ class _FavoriteCell extends State<FavoriteCell> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Icon(Icons.arrow_forward),
+                            Icon(Icons.play_arrow, color: Colors.blue,),
                           ],
                         ),
                       )
@@ -124,16 +128,22 @@ class _FavoriteCell extends State<FavoriteCell> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         GaugeModel gaugeModel = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugeDetail(
-                  gaugeId: gaugeModel.gaugeId,
-                  gaugeName: gaugeModel.gaugeName,
-                );
-              }));
+          return Dismissible(
+            key: Key(gaugeModel.gaugeId),
+            onDismissed: (dir) {
+              Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
             },
-            child: _faveCardView(gaugeModel, context),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return GaugeDetail(
+                    gaugeId: gaugeModel.gaugeId,
+                    gaugeName: gaugeModel.gaugeName,
+                  );
+                }));
+              },
+              child: _faveCardView(gaugeModel, context),
+            ),
           ); //Text(fave.gaugeName);
         } else {
           return Card(
