@@ -63,7 +63,9 @@ class FavoriteCell extends StatefulWidget {
 
 class _FavoriteCell extends State<FavoriteCell> {
   var _cellData;
-  TextStyle style = TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
+
+  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
 
   Future<GaugeModel> _getFavorite() async {
     _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
@@ -110,7 +112,7 @@ class _FavoriteCell extends State<FavoriteCell> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(model.gaugeName, style: style),
+                      Text(model.gaugeName, style: titleStyle),
                       Text(model.gaugeId),
                     ],
                   ),
@@ -120,34 +122,15 @@ class _FavoriteCell extends State<FavoriteCell> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
-                children: <Widget> [
-                  Expanded(
-                    flex: 9,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}',
-                              style: style),
-                          Text(
-                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}',
-                              style: style),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(Icons.arrow_forward)
-                        ],
-                      ),
-                    )
-                  )
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                      '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}',
+                      style: subStyle),
+                  Text(
+                      '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}',
+                      style: subStyle),
+                  Icon(Icons.arrow_forward)
                 ],
               ),
             )
