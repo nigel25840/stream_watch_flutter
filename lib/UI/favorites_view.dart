@@ -131,7 +131,7 @@ class _FavoriteCell extends State<FavoriteCell> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}',
+                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'CFS: N/A'}',
                               style: subStyle),
                         ],
                       ),
@@ -144,7 +144,7 @@ class _FavoriteCell extends State<FavoriteCell> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}',
+                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'Ft.: N/A'}',
                               style: subStyle),
                         ],
                       ),
@@ -174,9 +174,12 @@ class _FavoriteCell extends State<FavoriteCell> {
     return FutureBuilder(
       future: _getFavorite(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        //GaugeModel fave = snapshot.data;
+        GaugeModel fave = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
-          return _faveCardView(snapshot, context); //Text(fave.gaugeName);
+          return GestureDetector(
+            onTap: () => print(fave.gaugeId),
+            child: _faveCardView(snapshot, context),
+          ); //Text(fave.gaugeName);
         } else {
           return Card(
             shape: RoundedRectangleBorder(
