@@ -65,7 +65,7 @@ class _FavoriteCell extends State<FavoriteCell> {
   var _cellData;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
 
   Future<GaugeModel> _getFavorite() async {
     _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
@@ -101,8 +101,7 @@ class _FavoriteCell extends State<FavoriteCell> {
         elevation: 2,
         color: Colors.tealAccent,
         shadowColor: Colors.black,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: Column(
           children: [
             Row(
@@ -148,9 +147,15 @@ class _FavoriteCell extends State<FavoriteCell> {
         if (snapshot.connectionState == ConnectionState.done) {
           return _faveCardView(snapshot, context); //Text(fave.gaugeName);
         } else {
-          return Align(
-            child: CircularProgressIndicator(),
-            widthFactor: 2,
+          return Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+            elevation: 2,
+            color: Colors.tealAccent,
+            shadowColor: Colors.black,
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Align(child: CircularProgressIndicator(strokeWidth: 2, )),
+            ),
           );
         }
       },
