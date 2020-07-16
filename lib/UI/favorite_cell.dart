@@ -132,7 +132,9 @@ class _FavoriteCell extends State<FavoriteCell> {
             key: Key(gaugeModel.gaugeId),
             onDismissed: (dir) {
               Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
+              Scaffold.of(context).showSnackBar(SnackBar(content: Text('${gaugeModel.gaugeName} was removed from favorites')));
             },
+            background: Container(color: Colors.red),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
