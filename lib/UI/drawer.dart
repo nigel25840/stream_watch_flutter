@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/UI/favorites_view.dart';
 import 'package:streamwatcher/main.dart';
 
-import '../state_picker.dart';
+import 'state_picker.dart';
 
 class RFDrawer extends StatefulWidget {
   @override
@@ -50,7 +51,7 @@ class _RFDrawerState extends State<RFDrawer> {
               leading: Icon(Icons.favorite),
               title: Text('Favorites', style: style),
               onTap: () {
-                print('*FAVORITES*');
+                _handleTap(FavoritesView());
               },
             ),
             divider,

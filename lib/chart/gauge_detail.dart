@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:material_segmented_control/material_segmented_control.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/UI/drawer.dart';
+import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_manager.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+import '../Util/constants.dart';
 
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
@@ -17,7 +22,72 @@ class GaugeDetail extends StatefulWidget {
 class _GaugeDetail extends State<GaugeDetail> {
   ChartManager mgr = ChartManager();
   bool refresh = false;
+  bool isFavorite;
   int segmentedControlIndex = 0;
+  List<String> faves;
+  int animationDuration = 700;
+
+  Future<List<String>> getFavorites(String id) async {
+    List<String> favorites = await Storage.getList(kFavoritesKey);
+    return favorites;
+  }
+
+  Future<void> confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
+    String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
+    String successMessage = '${widget.gaugeName} was just added to you favorites';
+    List<FlatButton> buttons = [];
+
+    var okButton = FlatButton(
+      child: Text('OK',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    var approveRemovalButton = FlatButton(
+      child: Text('Remove',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+      ),
+      onPressed: () {
+        setState(() {
+          animationDuration = 0;
+          mgr.removeFavorite(widget.gaugeId);
+          Navigator.pop(context);
+        });
+      },
+    );
+
+    var cancelButton = FlatButton(
+      child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+      onPressed: () => Navigator.pop(context),
+    );
+
+    if (favorite) {
+      // if this IS a favorite, apply removal buttons
+      buttons.add(cancelButton);
+      buttons.add(approveRemovalButton);
+    } else {
+      // otherwise show a confirmation button
+      buttons.add(okButton);
+    }
+
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text(favorite ? 'Confirm?' : 'Success!'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [Text(!favorite ? successMessage : deleteMessage)],
+              ),
+            ),
+            actions: buttons,
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +130,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                       child: charts.TimeSeriesChart(
                         mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
                         animate: true,
-                        animationDuration: Duration(milliseconds: 700),
+                        animationDuration: Duration(milliseconds: animationDuration),
                         primaryMeasureAxis: charts.NumericAxisSpec(
                             tickProviderSpec:
                                 charts.BasicNumericTickProviderSpec(
@@ -75,19 +145,28 @@ class _GaugeDetail extends State<GaugeDetail> {
                       )),
                   Visibility(
                     visible: mgr.containsAllData,
-                    child: MaterialSegmentedControl(
-                      horizontalPadding: EdgeInsets.all(20),
-                      children: {0: Text("CFS"), 1: Text("  Stage in feet  ")},
-                      selectionIndex: segmentedControlIndex,
-                      borderRadius: 10.0,
-                      selectedColor: Colors.blue,
-                      unselectedColor: Colors.white,
-                      onSegmentChosen: (index) {
-                        setState(() {
-                          mgr.isCfs = !mgr.isCfs;
-                          segmentedControlIndex = index;
-                        });
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        MaterialSegmentedControl(
+                          horizontalPadding: EdgeInsets.all(20),
+                          children: {
+                            0: Text("CFS"),
+                            1: Text("  Stage in feet  ")
+                          },
+                          selectionIndex: segmentedControlIndex,
+                          borderRadius: 10.0,
+                          selectedColor: Colors.blue,
+                          unselectedColor: Colors.white,
+                          onSegmentChosen: (index) {
+                            setState(() {
+                              animationDuration = 700;
+                              mgr.isCfs = !mgr.isCfs;
+                              segmentedControlIndex = index;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -96,32 +175,51 @@ class _GaugeDetail extends State<GaugeDetail> {
               return Align(child: CircularProgressIndicator());
             }
           }),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.refresh),
-        onPressed: () {
-          setState(() {
-            mgr.isCfs = true;
-            segmentedControlIndex = 0;
-            mgr.seriesStageData = null;
-            mgr.seriesFlowData = null;
-            mgr.getGaugeData(widget.gaugeId, refresh: true);
-          });
+      floatingActionButton: SpeedDial(
+        child: Icon(Icons.keyboard_arrow_up),
+        animatedIconTheme: IconThemeData(size: 22.0),
+        onOpen: () {
+          print("OPENING GAUGE MENU");
         },
+        onClose: () {
+          print("CLOSING GAUGE MENU");
+        },
+        visible: true,
+        curve: Curves.bounceIn,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.refresh),
+            backgroundColor: Colors.blue,
+            onTap: () {
+              setState(() {
+                segmentedControlIndex = 0;
+                mgr.seriesStageData = null;
+                mgr.seriesFlowData = null;
+                mgr.getGaugeData(widget.gaugeId, refresh: true);
+              });
+            },
+            labelBackgroundColor: Colors.blue,
+          ),
+          SpeedDialChild(
+            child: Icon(mgr.isFavorite ? Icons.star : Icons.star_border),
+            backgroundColor: Colors.blue,
+            onTap: () {
+              if(!mgr.isFavorite) {
+                setState(() {
+                  animationDuration = 0;
+                  mgr.addFavorite(widget.gaugeId);
+                });
+              }
+              confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
+            },
+            labelBackgroundColor: Colors.blue,
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.map)
+          )
+        ],
       ),
       endDrawer: RFDrawer(),
     );
   }
 }
-
-class RFSegmentedControl extends CupertinoSegmentedControl {}
-
-//CupertinoSegmentedControl(
-//padding: EdgeInsets.all(10.0),
-//children: { 0: Text("CFS"), 1: Text("  Stage in feet  ") },
-//selectedColor: Colors.lightBlueAccent,
-//onValueChanged: (value) {
-//setState(() {
-//mgr.isCfs = !mgr.isCfs;
-//});
-//},
-//)

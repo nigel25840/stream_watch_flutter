@@ -3,8 +3,8 @@ import 'dart:core';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 
-import 'package:streamwatcher/constants.dart';
-import 'package:streamwatcher/gauge_model.dart';
+import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
 
 // let url = URL(string: "\(Constants.BASE_URL)&stateCd=\(state)&parameterCd=00060,00065&siteType=ST&siteStatus=all")!
 

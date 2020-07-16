@@ -20,6 +20,8 @@ dependencies:
   intl: ^0.15.8
   material_segmented_control: ^2.1.0
   shared_preferences: ^0.5.4+8
+  flutter_speed_dial: ^1.2.5
+  scrollable_positioned_list: ^0.1.6
 
 dev_dependencies:
   flutter_test:
