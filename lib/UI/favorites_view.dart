@@ -101,7 +101,8 @@ class _FavoriteCell extends State<FavoriteCell> {
         elevation: 2,
         color: Colors.tealAccent,
         shadowColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: Column(
           children: [
             Row(
@@ -123,13 +124,43 @@ class _FavoriteCell extends State<FavoriteCell> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                      '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}',
-                      style: subStyle),
-                  Text(
-                      '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}',
-                      style: subStyle),
-                  Icon(Icons.arrow_forward)
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'N/A'}',
+                              style: subStyle),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'N/A'}',
+                              style: subStyle),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                      flex: 4,
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Icon(Icons.arrow_forward),
+                          ],
+                        ),
+                      )
+                  )
                 ],
               ),
             )
@@ -148,13 +179,17 @@ class _FavoriteCell extends State<FavoriteCell> {
           return _faveCardView(snapshot, context); //Text(fave.gaugeName);
         } else {
           return Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0)),
             elevation: 2,
             color: Colors.tealAccent,
             shadowColor: Colors.black,
             child: Padding(
               padding: const EdgeInsets.all(30.0),
-              child: Align(child: CircularProgressIndicator(strokeWidth: 2, )),
+              child: Align(
+                  child: CircularProgressIndicator(
+                strokeWidth: 2,
+              )),
             ),
           );
         }
