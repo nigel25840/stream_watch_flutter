@@ -95,8 +95,7 @@ class _FavoriteCell extends State<FavoriteCell> {
     return model;
   }
 
-  Card _faveCardView(AsyncSnapshot snapshot, BuildContext context) {
-    GaugeModel model = snapshot.data;
+  Card _faveCardView(GaugeModel model, BuildContext context) {
     var card = Card(
         elevation: 2,
         color: Colors.tealAccent,
@@ -174,11 +173,11 @@ class _FavoriteCell extends State<FavoriteCell> {
     return FutureBuilder(
       future: _getFavorite(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        GaugeModel fave = snapshot.data;
+        GaugeModel gaugeModel = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
           return GestureDetector(
-            onTap: () => print(fave.gaugeId),
-            child: _faveCardView(snapshot, context),
+            onTap: () => print(gaugeModel.gaugeId),
+            child: _faveCardView(gaugeModel, context),
           ); //Text(fave.gaugeName);
         } else {
           return Card(
