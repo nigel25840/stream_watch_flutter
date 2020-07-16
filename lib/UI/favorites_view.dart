@@ -4,6 +4,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 
@@ -176,7 +177,14 @@ class _FavoriteCell extends State<FavoriteCell> {
         GaugeModel gaugeModel = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
           return GestureDetector(
-            onTap: () => print(gaugeModel.gaugeId),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return GaugeDetail(
+                  gaugeId: gaugeModel.gaugeId,
+                  gaugeName: gaugeModel.gaugeName,
+                );
+              }));
+            },
             child: _faveCardView(gaugeModel, context),
           ); //Text(fave.gaugeName);
         } else {
@@ -190,10 +198,10 @@ class _FavoriteCell extends State<FavoriteCell> {
               padding: const EdgeInsets.all(30.0),
               child: Align(
                   child: CircularProgressIndicator(
-                strokeWidth: 2,
-              )),
+                    strokeWidth: 2,
+                  ),
             ),
-          );
+          ));
         }
       },
     );
