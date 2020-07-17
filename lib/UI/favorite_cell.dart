@@ -54,7 +54,7 @@ class _FavoriteCell extends State<FavoriteCell> {
         color: Colors.tealAccent,
         shadowColor: Colors.black,
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: Column(
           children: [
             Row(
@@ -108,11 +108,13 @@ class _FavoriteCell extends State<FavoriteCell> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Icon(Icons.play_arrow, color: Colors.blue,),
+                            Icon(
+                              Icons.play_arrow,
+                              color: Colors.blue,
+                            ),
                           ],
                         ),
-                      )
-                  )
+                      ))
                 ],
               ),
             )
@@ -132,9 +134,19 @@ class _FavoriteCell extends State<FavoriteCell> {
             key: Key(gaugeModel.gaugeId),
             onDismissed: (dir) {
               Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
-              Scaffold.of(context).showSnackBar(SnackBar(content: Text('${gaugeModel.gaugeName} was removed from favorites')));
+              Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      '${gaugeModel.gaugeName} was removed from favorites')));
             },
-            background: Container(color: Colors.red),
+            background: Container(
+              color: Colors.red,
+              child: Center(
+                child: Text(
+                  'Deleting',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ),
+            ),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -146,7 +158,7 @@ class _FavoriteCell extends State<FavoriteCell> {
               },
               child: _faveCardView(gaugeModel, context),
             ),
-          ); //Text(fave.gaugeName);
+          );
         } else {
           return Card(
               shape: RoundedRectangleBorder(
