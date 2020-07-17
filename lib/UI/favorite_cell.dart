@@ -143,9 +143,17 @@ class _FavoriteCell extends State<FavoriteCell> {
             background: Container(
               color: Colors.red,
               child: Center(
-                child: Text(
-                  'Deleting',
-                  style: TextStyle(fontSize: 20, color: Colors.white),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Text(
+                        'Deleting...',
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
