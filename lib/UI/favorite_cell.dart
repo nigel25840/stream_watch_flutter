@@ -8,8 +8,9 @@ import 'package:streamwatcher/model/gauge_model.dart';
 
 class FavoriteCell extends StatefulWidget {
   final String favoriteGaugeId;
+  final Key key;
   _FavoriteCell createState() => _FavoriteCell();
-  FavoriteCell(this.favoriteGaugeId);
+  FavoriteCell(this.favoriteGaugeId, this.key);
 }
 
 class _FavoriteCell extends State<FavoriteCell> {
@@ -131,6 +132,7 @@ class _FavoriteCell extends State<FavoriteCell> {
         GaugeModel gaugeModel = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
           return Dismissible(
+            direction: DismissDirection.endToStart,
             key: Key(gaugeModel.gaugeId),
             onDismissed: (dir) {
               Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);

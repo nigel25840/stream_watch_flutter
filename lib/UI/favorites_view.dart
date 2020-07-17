@@ -20,6 +20,7 @@ class _FavoritesView extends State<FavoritesView> {
 
   Future _getFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
+    favorites = faveIds;
     return faveIds;
   }
 
@@ -29,9 +30,25 @@ class _FavoritesView extends State<FavoritesView> {
     var list = ScrollablePositionedList.builder(
         itemCount: faves.length,
         itemBuilder: (context, index) {
-          return FavoriteCell(faves[index]);
+          return FavoriteCell(faves[index], Key(faves[index]));
         });
     return list;
+
+    ReorderableListView _roListView() {
+
+    }
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(
+          () {
+        if (newIndex > oldIndex) {
+          newIndex -= 1;
+        }
+        final String item = favorites.removeAt(oldIndex);
+        favorites.insert(newIndex, item);
+      },
+    );
   }
 
   @override
@@ -44,9 +61,16 @@ class _FavoritesView extends State<FavoritesView> {
         future: _getFavorites(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _faveListView(snapshot, context),
+            return ReorderableListView (
+              onReorder: (val1, val2) {
+                this._onReorder(val1, val2);
+              },
+              children: List.generate(favorites.length, (index){
+                String key = favorites[index];
+                FavoriteCell cell = FavoriteCell(key, Key(key));
+                return cell;
+              }),
+              scrollDirection: Axis.vertical,
             );
           } else {
             return Align(child: CircularProgressIndicator());
@@ -57,4 +81,8 @@ class _FavoritesView extends State<FavoritesView> {
     );
   }
 }
+
+//Padding(
+//padding: const EdgeInsets.all(8.0),
+//child: _faveListView(snapshot, context),
 
