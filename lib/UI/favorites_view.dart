@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
-import 'package:streamwatcher/dataServices/data_provider.dart';
-import 'package:streamwatcher/model/gauge_model.dart';
+import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
   @override
@@ -15,22 +12,34 @@ class FavoritesView extends StatefulWidget {
 
 class _FavoritesView extends State<FavoritesView> {
   List<String> favorites;
+  List<FavoriteCard> faveCards = [];
+  int cardCount;
 
   Future _getFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
+    favorites = faveIds;
     return faveIds;
   }
 
-  ScrollablePositionedList _faveListView(
-      AsyncSnapshot snapshot, BuildContext context) {
-    var faves = snapshot.data;
-    var list = ScrollablePositionedList.builder(
-        itemCount: faves.length,
-        itemBuilder: (context, index) {
-          return FavoriteCell(faves[index]);
-        });
-    return list;
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(
+      () {
+        if (newIndex > oldIndex) {
+          newIndex -= 1;
+        }
+        final String item = favorites.removeAt(oldIndex);
+        favorites.insert(newIndex, item);
+
+        final FavoriteCard card = faveCards.removeAt(oldIndex);
+        faveCards.insert(newIndex, card);
+
+        Storage.initializeList(kFavoritesKey, favorites);
+      },
+    );
+    _updatePrefs(oldIndex, newIndex);
   }
+
+  Future<void> _updatePrefs(int oldIndex, int newIndex) {}
 
   @override
   Widget build(BuildContext context) {
@@ -42,168 +51,40 @@ class _FavoritesView extends State<FavoritesView> {
         future: _getFavorites(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _faveListView(snapshot, context),
-            );
+            if (faveCards.length < 1) {
+              return ReorderableListView(
+                onReorder: this._onReorder,
+                children: List.generate(favorites.length, (index) {
+                  print("BUILDING FRESH LIST");
+                  String key = favorites[index];
+                  FavoriteCard cell = FavoriteCard(key, Key(key));
+                  faveCards.add(cell);
+                  return cell;
+                }),
+                scrollDirection: Axis.vertical,
+              );
+            } else {
+              return ReorderableListView(
+                  onReorder: this._onReorder,
+                  children: List.generate(faveCards.length, (index) {
+                    print("REORDERING CACHED LIST");
+                    return faveCards[index];
+                  }));
+            }
           } else {
             return Align(child: CircularProgressIndicator());
           }
         },
       ),
       endDrawer: RFDrawer(),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        child: Icon(Icons.refresh),
+      ),
     );
   }
 }
 
-class FavoriteCell extends StatefulWidget {
-  final String favoriteGaugeId;
-  _FavoriteCell createState() => _FavoriteCell();
-  FavoriteCell(this.favoriteGaugeId);
-}
-
-class _FavoriteCell extends State<FavoriteCell> {
-  var _cellData;
-
-  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
-
-  Future<GaugeModel> _getFavorite() async {
-    _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
-    var timeSeries = _cellData['value']['timeSeries'];
-    double lastFlowReading;
-    double lastStageReading;
-
-    for (int index = 0; index < timeSeries.length; index++) {
-      String varName = timeSeries[index]['variable']['variableName'];
-      try {
-        if (varName.toLowerCase().contains('streamflow')) {
-          var flowVal = timeSeries[index]['values'][0]['value'][0]['value'];
-          lastFlowReading = double.parse(flowVal);
-        } else if (varName.toLowerCase().contains('gage')) {
-          var stageVal = timeSeries[index]['values'][0]['value'][0]['value'];
-          lastStageReading = double.parse(stageVal);
-        }
-      } catch (e) {}
-    }
-
-    GaugeModel model = await GaugeModel(
-        gaugeName: timeSeries[0]['sourceInfo']['siteName'],
-        gaugeId: widget.favoriteGaugeId);
-    model.lastFlowReading = lastFlowReading;
-    model.lastStageReading = lastStageReading;
-
-    return model;
-  }
-
-  Card _faveCardView(GaugeModel model, BuildContext context) {
-    var card = Card(
-        elevation: 2,
-        color: Colors.tealAccent,
-        shadowColor: Colors.black,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 10, left: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(model.gaugeName, style: titleStyle),
-                      Text(model.gaugeId),
-                    ],
-                  ),
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'CFS: N/A'}',
-                              style: subStyle),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'Ft.: N/A'}',
-                              style: subStyle),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                      flex: 4,
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(Icons.arrow_forward),
-                          ],
-                        ),
-                      )
-                  )
-                ],
-              ),
-            )
-          ],
-        ));
-    return card;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _getFavorite(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        GaugeModel gaugeModel = snapshot.data;
-        if (snapshot.connectionState == ConnectionState.done) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugeDetail(
-                  gaugeId: gaugeModel.gaugeId,
-                  gaugeName: gaugeModel.gaugeName,
-                );
-              }));
-            },
-            child: _faveCardView(gaugeModel, context),
-          ); //Text(fave.gaugeName);
-        } else {
-          return Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0)),
-            elevation: 2,
-            color: Colors.tealAccent,
-            shadowColor: Colors.black,
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Align(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                  ),
-            ),
-          ));
-        }
-      },
-    );
-  }
-}
+//Padding(
+//padding: const EdgeInsets.all(8.0),
+//child: _faveListView(snapshot, context),
