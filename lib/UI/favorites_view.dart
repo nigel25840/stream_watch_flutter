@@ -1,13 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
-import 'package:streamwatcher/dataServices/data_provider.dart';
-import 'package:streamwatcher/model/gauge_model.dart';
-
 import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
@@ -17,7 +12,8 @@ class FavoritesView extends StatefulWidget {
 
 class _FavoritesView extends State<FavoritesView> {
   List<String> favorites;
-  Map<String, dynamic> favesMap;
+  List<FavoriteCard> faveCards = [];
+  int cardCount;
 
   Future _getFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
@@ -25,29 +21,23 @@ class _FavoritesView extends State<FavoritesView> {
     return faveIds;
   }
 
-  ScrollablePositionedList _faveListView(
-      AsyncSnapshot snapshot, BuildContext context) {
-    var faves = snapshot.data;
-    var list = ScrollablePositionedList.builder(
-        itemCount: faves.length,
-        itemBuilder: (context, index) {
-          return FavoriteCell(faves[index], Key(faves[index]));
-        });
-    return list;
-
-    ReorderableListView _roListView() {}
-  }
-
   void _onReorder(int oldIndex, int newIndex) {
-//    setState(() {
-    if (newIndex > oldIndex) {
-      newIndex -= 1;
-    }
-    final String item = favorites.removeAt(oldIndex);
-    favorites.insert(newIndex, item);
-//      },
-//    );
+    setState(
+      () {
+        if (newIndex > oldIndex) {
+          newIndex -= 1;
+        }
+        final String item = favorites.removeAt(oldIndex);
+        favorites.insert(newIndex, item);
+
+        final FavoriteCard card = faveCards.removeAt(oldIndex);
+        faveCards.insert(newIndex, card);
+      },
+    );
+    _updatePrefs(oldIndex, newIndex);
   }
+
+  Future<void> _updatePrefs(int oldIndex, int newIndex) {}
 
   @override
   Widget build(BuildContext context) {
@@ -59,15 +49,26 @@ class _FavoritesView extends State<FavoritesView> {
         future: _getFavorites(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return ReorderableListView(
-              onReorder: this._onReorder,
-              children: List.generate(favorites.length, (index) {
-                String key = favorites[index];
-                FavoriteCell cell = FavoriteCell(key, Key(key));
-                return cell;
-              }),
-              scrollDirection: Axis.vertical,
-            );
+            if (faveCards.length < 1) {
+              return ReorderableListView(
+                onReorder: this._onReorder,
+                children: List.generate(favorites.length, (index) {
+                  print("BUILDING FRESH LIST");
+                  String key = favorites[index];
+                  FavoriteCard cell = FavoriteCard(key, Key(key));
+                  faveCards.add(cell);
+                  return cell;
+                }),
+                scrollDirection: Axis.vertical,
+              );
+            } else {
+              return ReorderableListView(
+                  onReorder: this._onReorder,
+                  children: List.generate(faveCards.length, (index) {
+                    print("REORDERING CACHED LIST");
+                    return faveCards[index];
+                  }));
+            }
           } else {
             return Align(child: CircularProgressIndicator());
           }

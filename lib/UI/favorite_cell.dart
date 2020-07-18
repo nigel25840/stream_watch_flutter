@@ -6,22 +6,23 @@ import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 
-class FavoriteCell extends StatefulWidget {
+class FavoriteCard extends StatefulWidget {
   final String favoriteGaugeId;
   final Key key;
-  _FavoriteCell createState() => _FavoriteCell();
-  FavoriteCell(this.favoriteGaugeId, this.key);
+  GaugeModel model;
+  _FavoriteCard createState() => _FavoriteCard();
+  FavoriteCard(this.favoriteGaugeId, this.key);
 }
 
-class _FavoriteCell extends State<FavoriteCell> {
+class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
-  GaugeModel model;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
 
   Future<GaugeModel> _getFavorite() async {
-    if(model == null) {
+    if(widget.model == null) {
+      print('MODEL IS REBUIDING');
       if (_cellData == null) {
         _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
       }
@@ -44,16 +45,16 @@ class _FavoriteCell extends State<FavoriteCell> {
         }
       }
 
-      if (model == null) {
-        model = await GaugeModel(
+      if (widget.model == null) {
+        widget.model = await GaugeModel(
             gaugeName: timeSeries[0]['sourceInfo']['siteName'],
             gaugeId: widget.favoriteGaugeId);
-        model.lastFlowReading = lastFlowReading;
-        model.lastStageReading = lastStageReading;
+        widget.model.lastFlowReading = lastFlowReading;
+        widget.model.lastStageReading = lastStageReading;
       }
     }
 
-    return model;
+    return widget.model;
   }
 
   Card _faveCardView(GaugeModel model, BuildContext context) {
