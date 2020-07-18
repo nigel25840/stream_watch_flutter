@@ -40,15 +40,14 @@ class _FavoritesView extends State<FavoritesView> {
   }
 
   void _onReorder(int oldIndex, int newIndex) {
-    setState(
-          () {
+//    setState(() {
         if (newIndex > oldIndex) {
           newIndex -= 1;
         }
         final String item = favorites.removeAt(oldIndex);
         favorites.insert(newIndex, item);
-      },
-    );
+//      },
+//    );
   }
 
   @override
@@ -62,9 +61,7 @@ class _FavoritesView extends State<FavoritesView> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ReorderableListView (
-              onReorder: (val1, val2) {
-                this._onReorder(val1, val2);
-              },
+              onReorder: this._onReorder,
               children: List.generate(favorites.length, (index){
                 String key = favorites[index];
                 FavoriteCell cell = FavoriteCell(key, Key(key));

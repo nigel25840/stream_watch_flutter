@@ -15,36 +15,43 @@ class FavoriteCell extends StatefulWidget {
 
 class _FavoriteCell extends State<FavoriteCell> {
   var _cellData;
+  GaugeModel model;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
 
   Future<GaugeModel> _getFavorite() async {
-    _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
-    var timeSeries = _cellData['value']['timeSeries'];
-    double lastFlowReading;
-    double lastStageReading;
+    if(model == null) {
+      if (_cellData == null) {
+        _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
+      }
+      var timeSeries = _cellData['value']['timeSeries'];
+      double lastFlowReading;
+      double lastStageReading;
 
-    for (int index = 0; index < timeSeries.length; index++) {
-      String varName = timeSeries[index]['variable']['variableName'];
-      try {
-        if (varName.toLowerCase().contains('streamflow')) {
-          var flowVal = timeSeries[index]['values'][0]['value'][0]['value'];
-          lastFlowReading = double.parse(flowVal);
-        } else if (varName.toLowerCase().contains('gage')) {
-          var stageVal = timeSeries[index]['values'][0]['value'][0]['value'];
-          lastStageReading = double.parse(stageVal);
+      for (int index = 0; index < timeSeries.length; index++) {
+        String varName = timeSeries[index]['variable']['variableName'];
+        try {
+          if (varName.toLowerCase().contains('streamflow')) {
+            var flowVal = timeSeries[index]['values'][0]['value'][0]['value'];
+            lastFlowReading = double.parse(flowVal);
+          } else if (varName.toLowerCase().contains('gage')) {
+            var stageVal = timeSeries[index]['values'][0]['value'][0]['value'];
+            lastStageReading = double.parse(stageVal);
+          }
+        } catch (e) {
+          print(e.toString());
         }
-      } catch (e) {
-        print(e.toString());
+      }
+
+      if (model == null) {
+        model = await GaugeModel(
+            gaugeName: timeSeries[0]['sourceInfo']['siteName'],
+            gaugeId: widget.favoriteGaugeId);
+        model.lastFlowReading = lastFlowReading;
+        model.lastStageReading = lastStageReading;
       }
     }
-
-    GaugeModel model = await GaugeModel(
-        gaugeName: timeSeries[0]['sourceInfo']['siteName'],
-        gaugeId: widget.favoriteGaugeId);
-    model.lastFlowReading = lastFlowReading;
-    model.lastStageReading = lastStageReading;
 
     return model;
   }
@@ -131,43 +138,49 @@ class _FavoriteCell extends State<FavoriteCell> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         GaugeModel gaugeModel = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
-          return Dismissible(
-            direction: DismissDirection.endToStart,
-            key: Key(gaugeModel.gaugeId),
-            onDismissed: (dir) {
-              Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
-              Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      '${gaugeModel.gaugeName} was removed from favorites')));
-            },
-            background: Container(
-              color: Colors.red,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Text(
-                        'Deleting...',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Dismissible(
+                direction: DismissDirection.endToStart,
+                key: Key(gaugeModel.gaugeId),
+                onDismissed: (dir) {
+                  Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          '${gaugeModel.gaugeName} was removed from favorites')));
+                },
+                background: Container(
+                  color: Colors.red,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Text(
+                            'Deleting...',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return GaugeDetail(
+                        gaugeId: gaugeModel.gaugeId,
+                        gaugeName: gaugeModel.gaugeName,
+                      );
+                    }));
+                  },
+                  child: _faveCardView(gaugeModel, context),
                 ),
               ),
-            ),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GaugeDetail(
-                    gaugeId: gaugeModel.gaugeId,
-                    gaugeName: gaugeModel.gaugeName,
-                  );
-                }));
-              },
-              child: _faveCardView(gaugeModel, context),
-            ),
+            ],
           );
         } else {
           return Card(
