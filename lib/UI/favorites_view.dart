@@ -17,6 +17,7 @@ class FavoritesView extends StatefulWidget {
 
 class _FavoritesView extends State<FavoritesView> {
   List<String> favorites;
+  Map<String, dynamic> favesMap;
 
   Future _getFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
@@ -34,18 +35,16 @@ class _FavoritesView extends State<FavoritesView> {
         });
     return list;
 
-    ReorderableListView _roListView() {
-
-    }
+    ReorderableListView _roListView() {}
   }
 
   void _onReorder(int oldIndex, int newIndex) {
 //    setState(() {
-        if (newIndex > oldIndex) {
-          newIndex -= 1;
-        }
-        final String item = favorites.removeAt(oldIndex);
-        favorites.insert(newIndex, item);
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final String item = favorites.removeAt(oldIndex);
+    favorites.insert(newIndex, item);
 //      },
 //    );
   }
@@ -60,9 +59,9 @@ class _FavoritesView extends State<FavoritesView> {
         future: _getFavorites(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return ReorderableListView (
+            return ReorderableListView(
               onReorder: this._onReorder,
-              children: List.generate(favorites.length, (index){
+              children: List.generate(favorites.length, (index) {
                 String key = favorites[index];
                 FavoriteCell cell = FavoriteCell(key, Key(key));
                 return cell;
@@ -75,6 +74,10 @@ class _FavoritesView extends State<FavoritesView> {
         },
       ),
       endDrawer: RFDrawer(),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        child: Icon(Icons.refresh),
+      ),
     );
   }
 }
@@ -82,4 +85,3 @@ class _FavoritesView extends State<FavoritesView> {
 //Padding(
 //padding: const EdgeInsets.all(8.0),
 //child: _faveListView(snapshot, context),
-
