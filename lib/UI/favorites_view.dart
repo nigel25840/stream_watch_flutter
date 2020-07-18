@@ -32,6 +32,8 @@ class _FavoritesView extends State<FavoritesView> {
 
         final FavoriteCard card = faveCards.removeAt(oldIndex);
         faveCards.insert(newIndex, card);
+
+        Storage.initializeList(kFavoritesKey, favorites);
       },
     );
     _updatePrefs(oldIndex, newIndex);
