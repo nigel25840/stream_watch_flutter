@@ -1,3 +1,4 @@
+import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:streamwatcher/UI/drawer.dart';
@@ -7,6 +8,7 @@ import 'package:streamwatcher/Util/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  DartNotificationCenter.registerChannel(channel: kFavoriteUpdateNotification);
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
       .then((_) {
     runApp(new MyApp());
