@@ -18,16 +18,20 @@ class FavoritesViewModel extends ChangeNotifier {
     if (favorites == null) favorites = [];
     favorites.add(id);
     Storage.initializeList(kFavoritesKey, favorites);
+    notifyListeners();
   }
 
   void removeFavorite(String id) {
     if (favorites.contains(id)) favorites.remove(id);
     Storage.initializeList(kFavoritesKey, favorites);
+    print('remove=ing favorite');
+    notifyListeners();
   }
 
   void reorderFavorites(int oldIndex, int newIndex) {
     final String item = favorites.removeAt(oldIndex);
     favorites.insert(newIndex, item);
+    notifyListeners();
   }
 
 }

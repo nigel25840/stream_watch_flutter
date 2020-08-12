@@ -6,6 +6,8 @@ import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
+import 'package:streamwatcher/services/service_locator.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class ChartViewModel extends ChangeNotifier {
   List<charts.Series<GaugeReading, DateTime>> seriesFlowData;
@@ -29,6 +31,8 @@ class ChartViewModel extends ChangeNotifier {
   String gaugeId;
   bool containsAllData = false;
   bool isFavorite = false;
+
+  FavoritesViewModel favesVM;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
 
@@ -121,10 +125,8 @@ class ChartViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> removeFavorite(String faveId) async {
-    await Storage.removeFromPrefs(kFavoritesKey, faveId);
-    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
-    notifyListeners();
+  void removeFavorite(String faveId) async {
+    favesVM.removeFavorite(faveId);
   }
 
   String getCurrentStats() {

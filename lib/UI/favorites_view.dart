@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +9,6 @@ import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
-
   _FavoritesView favesState = new _FavoritesView();
 
   @override
@@ -18,7 +16,6 @@ class FavoritesView extends StatefulWidget {
 }
 
 class _FavoritesView extends State<FavoritesView> {
-
   List<String> favorites;
   List<FavoriteCard> faveCards = [];
   int cardCount;
@@ -28,12 +25,6 @@ class _FavoritesView extends State<FavoritesView> {
   void initState() {
     viewModel.loadFavorites();
     super.initState();
-  }
-
-  refresh() {
-    setState(() {
-      print('UPDATING FAVORITES VIEW');
-    });
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -55,32 +46,41 @@ class _FavoritesView extends State<FavoritesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('=Favorites='),
-      ),
-      body: buildNotifiedListListView(),
-      endDrawer: RFDrawer(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red,
-        child: Icon(Icons.refresh),
-      ),
-    );
+    return ChangeNotifierProvider<FavoritesViewModel>(
+        create: (context) => viewModel,
+        child: Consumer<FavoritesViewModel>(
+          builder: (context, model, index) => Scaffold(
+            appBar: AppBar(
+              title: Text('=Favorites='),
+            ),
+            body: ListView.builder(
+              itemCount: model.favorites.length,
+              itemBuilder: (context, index) {
+                return FavoriteCard(model.favorites[index], Key(model.favorites[index]));
+              },
+            ),
+            endDrawer: RFDrawer(),
+            floatingActionButton: FloatingActionButton(
+              backgroundColor: Colors.red,
+              child: Icon(Icons.refresh),
+            ),
+          ),
+        ));
   }
 
-  Widget buildNotifiedListListView(){
-    return ChangeNotifierProvider<FavoritesViewModel> (
-      create: (context) => viewModel,
-      child: Consumer<FavoritesViewModel>(
-        builder: (context, model, index) => ListView.builder(
-          itemCount: viewModel.favorites.length,
-          itemBuilder: (context, index){
-            return FavoriteCard(viewModel.favorites[index], Key(viewModel.favorites[index]));
-          },
-        ),
-      )
-    );
-  }
+//  Widget buildNotifiedListListView(FavoritesViewModel vm) {
+//    return ChangeNotifierProvider<FavoritesViewModel>(
+//        create: (context) => viewModel,
+//        child: Consumer<FavoritesViewModel>(
+//          builder: (context, model, index) => ListView.builder(
+//            itemCount: model.favorites.length,
+//            itemBuilder: (context, index) {
+//              return FavoriteCard(
+//                  model.favorites[index], Key(model.favorites[index]));
+//            },
+//          ),
+//        ));
+//  }
 }
 
 //  Widget buildListView() {

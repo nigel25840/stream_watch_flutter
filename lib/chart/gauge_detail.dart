@@ -9,6 +9,8 @@ import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:streamwatcher/services/service_locator.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 import '../Util/constants.dart';
 
@@ -29,10 +31,7 @@ class _GaugeDetail extends State<GaugeDetail> {
   List<String> faves;
   int animationDuration = 700;
 
-  Future<List<String>> getFavorites(String id) async {
-    List<String> favorites = await Storage.getList(kFavoritesKey);
-    return favorites;
-  }
+  FavoritesViewModel favesVM = serviceLocator<FavoritesViewModel>();
 
   Future<void> confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
     String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
@@ -56,6 +55,7 @@ class _GaugeDetail extends State<GaugeDetail> {
         setState(() {
           animationDuration = 0;
           mgr.removeFavorite(widget.gaugeId);
+          favesVM.removeFavorite(widget.gaugeId);
           Navigator.pop(context);
         });
       },
