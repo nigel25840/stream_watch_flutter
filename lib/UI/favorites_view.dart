@@ -8,11 +8,6 @@ import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
 
-  void _processNotification(String result) {
-//    print('RECEIVED NOTIFICATION ON $kFavoriteUpdateNotification CHANNEL ~ RESULT: $result');
-//    favesState.updateState();
-  }
-
   _FavoritesView favesState = new _FavoritesView();
 
   @override
@@ -67,35 +62,7 @@ class _FavoritesView extends State<FavoritesView> {
       appBar: AppBar(
         title: Text('=Favorites='),
       ),
-      body: FutureBuilder(
-        future: _getFavorites(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (faveCards.length < 1) {
-              return ReorderableListView(
-                onReorder: this._onReorder,
-                children: List.generate(favorites.length, (index) {
-                  print("BUILDING FRESH LIST");
-                  String key = favorites[index];
-                  FavoriteCard cell = FavoriteCard(key, Key(key));
-                  faveCards.add(cell);
-                  return cell;
-                }),
-                scrollDirection: Axis.vertical,
-              );
-            } else {
-              return ReorderableListView(
-                  onReorder: this._onReorder,
-                  children: List.generate(faveCards.length, (index) {
-                    print("REORDERING CACHED LIST");
-                    return faveCards[index];
-                  }));
-            }
-          } else {
-            return Align(child: CircularProgressIndicator());
-          }
-        },
-      ),
+      body: buildListView(),
       endDrawer: RFDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
@@ -103,6 +70,41 @@ class _FavoritesView extends State<FavoritesView> {
       ),
     );
   }
+
+//  Widget buildNotifiedListListView
+
+  Widget buildListView() {
+    return FutureBuilder(
+      future: _getFavorites(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (faveCards.length < 1) {
+            return ReorderableListView(
+              onReorder: this._onReorder,
+              children: List.generate(favorites.length, (index) {
+                print("BUILDING FRESH LIST");
+                String key = favorites[index];
+                FavoriteCard cell = FavoriteCard(key, Key(key));
+                faveCards.add(cell);
+                return cell;
+              }),
+              scrollDirection: Axis.vertical,
+            );
+          } else {
+            return ReorderableListView(
+                onReorder: this._onReorder,
+                children: List.generate(faveCards.length, (index) {
+                  print("REORDERING CACHED LIST");
+                  return faveCards[index];
+                }));
+          }
+        } else {
+          return Align(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
 }
 
 //Padding(
