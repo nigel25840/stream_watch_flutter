@@ -14,16 +14,25 @@ class FavoritesView extends StatefulWidget {
 
   void _processNotification(String result) {
     print('RECEIVED NOTIFICATION ON $kFavoriteUpdateNotification CHANNEL ~ RESULT: $result');
+    favesState.updateState();
   }
 
+  _FavoritesView favesState = new _FavoritesView();
+
   @override
-  State<StatefulWidget> createState() => _FavoritesView();
+  _FavoritesView createState() => favesState;
+//  State<StatefulWidget> createState() => _FavoritesView();
 }
 
 class _FavoritesView extends State<FavoritesView> {
   List<String> favorites;
   List<FavoriteCard> faveCards = [];
   int cardCount;
+
+  void updateState() {
+    print('UPDATING STATE');
+    setState(() { });
+  }
 
   Future _getFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);

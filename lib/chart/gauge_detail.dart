@@ -220,7 +220,12 @@ class _GaugeDetail extends State<GaugeDetail> {
             labelBackgroundColor: Colors.blue,
           ),
           SpeedDialChild(
-            child: Icon(Icons.map)
+            child: Icon(Icons.map),
+            onTap: () {
+              Navigator.pop(context, () {
+                setState(() {});
+              });
+            }
           )
         ],
       ),
