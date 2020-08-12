@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:streamwatcher/Util/Storage.dart';
@@ -6,7 +7,7 @@ import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
 
-class ChartManager {
+class ChartViewModel extends ChangeNotifier {
   List<charts.Series<GaugeReading, DateTime>> seriesFlowData;
   List<charts.Series<GaugeReading, DateTime>> seriesStageData;
 
@@ -57,6 +58,8 @@ class ChartManager {
     isCfs = gaugeFlowReadings.length > 0;
     seriesFlowData = await generateChartSeries(gaugeFlowReadings, 'FlowReadings');
     seriesStageData = await generateChartSeries(gaugeStageReadings, 'StageReadings');
+
+    notifyListeners();
   }
 
   List<charts.Series<GaugeReading, DateTime>> generateChartSeries(List<GaugeReading> readings, String identifier) {

@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
-import 'package:streamwatcher/chart/chart_manager.dart';
+import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../Util/constants.dart';
@@ -23,7 +23,7 @@ class GaugeDetail extends StatefulWidget {
 }
 
 class _GaugeDetail extends State<GaugeDetail> {
-  ChartManager mgr = ChartManager();
+  ChartViewModel mgr = ChartViewModel();
   bool refresh = false;
   bool isFavorite;
   int segmentedControlIndex = 0;
