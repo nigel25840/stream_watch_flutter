@@ -18,22 +18,16 @@ class FavoritesView extends StatefulWidget {
 }
 
 class _FavoritesView extends State<FavoritesView> {
+
   List<String> favorites;
   List<FavoriteCard> faveCards = [];
   int cardCount;
-
   FavoritesViewModel viewModel = serviceLocator<FavoritesViewModel>();
 
-//  void updateState() {
-//    print('UPDATING STATE');
-//    setState(() { });
-//  }
-
-  Future _getFavorites() async {
-//    List<String> faveIds = await Storage.getList(kFavoritesKey);
-//    favorites = faveIds;
-//    return faveIds;
-    return viewModel.favorites;
+  @override
+  void initState() {
+    viewModel.loadFavorites();
+    super.initState();
   }
 
   refresh() {
@@ -81,55 +75,42 @@ class _FavoritesView extends State<FavoritesView> {
         builder: (context, model, index) => ListView.builder(
           itemCount: viewModel.favorites.length,
           itemBuilder: (context, index){
-            return Card(
-              child: ListTile(
-                leading: SizedBox(width: 10, ),
-                title: Text('${viewModel.favorites[index].toString()}'),
-                onTap: () {
-                  print('TAPPED FAVORITE VIEW MODEL');
-                },
-              ),
-            );
+            return FavoriteCard(viewModel.favorites[index], Key(viewModel.favorites[index]));
           },
         ),
       )
     );
   }
-
-  Widget buildListView() {
-    return FutureBuilder(
-      future: _getFavorites(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (faveCards.length < 1) {
-            return ReorderableListView(
-              onReorder: this._onReorder,
-              children: List.generate(favorites.length, (index) {
-                print("BUILDING FRESH LIST");
-                String key = favorites[index];
-                FavoriteCard cell = FavoriteCard(key, Key(key));
-                faveCards.add(cell);
-                return cell;
-              }),
-              scrollDirection: Axis.vertical,
-            );
-          } else {
-            return ReorderableListView(
-                onReorder: this._onReorder,
-                children: List.generate(faveCards.length, (index) {
-                  print("REORDERING CACHED LIST");
-                  return faveCards[index];
-                }));
-          }
-        } else {
-          return Align(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-
 }
 
-//Padding(
-//padding: const EdgeInsets.all(8.0),
-//child: _faveListView(snapshot, context),
+//  Widget buildListView() {
+//    return FutureBuilder(
+//      future: _getFavorites(),
+//      builder: (BuildContext context, AsyncSnapshot snapshot) {
+//        if (snapshot.connectionState == ConnectionState.done) {
+//          if (faveCards.length < 1) {
+//            return ReorderableListView(
+//              onReorder: this._onReorder,
+//              children: List.generate(favorites.length, (index) {
+//                print("BUILDING FRESH LIST");
+//                String key = favorites[index];
+//                FavoriteCard cell = FavoriteCard(key, Key(key));
+//                faveCards.add(cell);
+//                return cell;
+//              }),
+//              scrollDirection: Axis.vertical,
+//            );
+//          } else {
+//            return ReorderableListView(
+//                onReorder: this._onReorder,
+//                children: List.generate(faveCards.length, (index) {
+//                  print("REORDERING CACHED LIST");
+//                  return faveCards[index];
+//                }));
+//          }
+//        } else {
+//          return Align(child: CircularProgressIndicator());
+//        }
+//      },
+//    );
+//  }

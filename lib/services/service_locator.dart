@@ -1,5 +1,3 @@
-
-
 import 'package:get_it/get_it.dart';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';

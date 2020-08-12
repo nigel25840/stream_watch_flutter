@@ -8,13 +8,10 @@ class FavoritesViewModel extends ChangeNotifier {
 
   List<String> favorites;
 
-  FavoritesViewModel() {
-    _loadFavorites();
-  }
-
-  void _loadFavorites() async {
+  void loadFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
     favorites = faveIds;
+    notifyListeners();
   }
 
   void addFavorite(String id) {

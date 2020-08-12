@@ -118,11 +118,13 @@ class ChartViewModel extends ChangeNotifier {
   Future<void> addFavorite(String faveId) async {
     await Storage.putFavorite(kFavoritesKey, faveId);
     this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+    notifyListeners();
   }
 
   Future<bool> removeFavorite(String faveId) async {
     await Storage.removeFromPrefs(kFavoritesKey, faveId);
     this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+    notifyListeners();
   }
 
   String getCurrentStats() {
