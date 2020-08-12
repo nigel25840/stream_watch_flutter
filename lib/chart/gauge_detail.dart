@@ -1,4 +1,3 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -55,7 +54,6 @@ class _GaugeDetail extends State<GaugeDetail> {
       ),
       onPressed: () {
         setState(() {
-          DartNotificationCenter.post(channel: kFavoriteUpdateNotification);
           animationDuration = 0;
           mgr.removeFavorite(widget.gaugeId);
           Navigator.pop(context);
@@ -212,7 +210,6 @@ class _GaugeDetail extends State<GaugeDetail> {
                 setState(() {
                   animationDuration = 0;
                   mgr.addFavorite(widget.gaugeId);
-                  DartNotificationCenter.post(channel: kFavoriteUpdateNotification);
                 });
               }
               confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);

@@ -24,7 +24,6 @@ dependencies:
   scrollable_positioned_list: ^0.1.6
   get_it: ^4.0.4
   provider: ^4.0.1
-  dart_notification_center: ^1.0.0+1
 
 
 dev_dependencies:

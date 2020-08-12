@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:core';
-import 'package:flutter/rendering.dart';
 import 'package:http/http.dart';
 
 import 'package:streamwatcher/Util/constants.dart';

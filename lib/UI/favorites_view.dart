@@ -1,4 +1,4 @@
-import 'package:dart_notification_center/dart_notification_center.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/drawer.dart';
@@ -8,20 +8,15 @@ import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
 
-  FavoritesView(){
-    DartNotificationCenter.subscribe(channel: kFavoriteUpdateNotification, observer: this, onNotification: (result) => _processNotification(result));
-  }
-
   void _processNotification(String result) {
-    print('RECEIVED NOTIFICATION ON $kFavoriteUpdateNotification CHANNEL ~ RESULT: $result');
-    favesState.updateState();
+//    print('RECEIVED NOTIFICATION ON $kFavoriteUpdateNotification CHANNEL ~ RESULT: $result');
+//    favesState.updateState();
   }
 
   _FavoritesView favesState = new _FavoritesView();
 
   @override
   _FavoritesView createState() => favesState;
-//  State<StatefulWidget> createState() => _FavoritesView();
 }
 
 class _FavoritesView extends State<FavoritesView> {
