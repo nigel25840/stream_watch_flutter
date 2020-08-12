@@ -1,3 +1,4 @@
+import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/drawer.dart';
@@ -6,8 +7,21 @@ import 'package:streamwatcher/Util/constants.dart';
 import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
+
+  FavoritesView(){
+    DartNotificationCenter.subscribe(channel: kFavoriteUpdateNotification, observer: this, onNotification: (result) => _processNotification(result));
+  }
+
+  void _processNotification(String result) {
+    print('RECEIVED NOTIFICATION ON $kFavoriteUpdateNotification CHANNEL ~ RESULT: $result');
+    favesState.updateState();
+  }
+
+  _FavoritesView favesState = new _FavoritesView();
+
   @override
-  State<StatefulWidget> createState() => _FavoritesView();
+  _FavoritesView createState() => favesState;
+//  State<StatefulWidget> createState() => _FavoritesView();
 }
 
 class _FavoritesView extends State<FavoritesView> {
@@ -15,10 +29,21 @@ class _FavoritesView extends State<FavoritesView> {
   List<FavoriteCard> faveCards = [];
   int cardCount;
 
+  void updateState() {
+    print('UPDATING STATE');
+    setState(() { });
+  }
+
   Future _getFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
     favorites = faveIds;
     return faveIds;
+  }
+
+  refresh() {
+    setState(() {
+      print('UPDATING FAVORITES VIEW');
+    });
   }
 
   void _onReorder(int oldIndex, int newIndex) {

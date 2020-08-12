@@ -1,3 +1,4 @@
+import 'package:dart_notification_center/dart_notification_center.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -15,7 +16,9 @@ import '../Util/constants.dart';
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
   final String gaugeName;
-  GaugeDetail({this.gaugeId, this.gaugeName});
+  final Function() notifyParent;
+
+  GaugeDetail({this.gaugeId, this.gaugeName, this.notifyParent});
   _GaugeDetail createState() => _GaugeDetail();
 }
 
@@ -52,6 +55,7 @@ class _GaugeDetail extends State<GaugeDetail> {
       ),
       onPressed: () {
         setState(() {
+          DartNotificationCenter.post(channel: kFavoriteUpdateNotification);
           animationDuration = 0;
           mgr.removeFavorite(widget.gaugeId);
           Navigator.pop(context);
@@ -208,6 +212,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                 setState(() {
                   animationDuration = 0;
                   mgr.addFavorite(widget.gaugeId);
+                  DartNotificationCenter.post(channel: kFavoriteUpdateNotification);
                 });
               }
               confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
@@ -215,7 +220,12 @@ class _GaugeDetail extends State<GaugeDetail> {
             labelBackgroundColor: Colors.blue,
           ),
           SpeedDialChild(
-            child: Icon(Icons.map)
+            child: Icon(Icons.map),
+            onTap: () {
+              Navigator.pop(context, () {
+                setState(() {});
+              });
+            }
           )
         ],
       ),
