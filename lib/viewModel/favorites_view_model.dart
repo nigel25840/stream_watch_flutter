@@ -8,7 +8,11 @@ class FavoritesViewModel extends ChangeNotifier {
 
   List<String> favorites;
 
-  void loadFavorites() async {
+  FavoritesViewModel() {
+    _loadFavorites();
+  }
+
+  void _loadFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
     favorites = faveIds;
   }
@@ -22,6 +26,11 @@ class FavoritesViewModel extends ChangeNotifier {
   void removeFavorite(String id) {
     if (favorites.contains(id)) favorites.remove(id);
     Storage.initializeList(kFavoritesKey, favorites);
+  }
+
+  void reorderFavorites(int oldIndex, int newIndex) {
+    final String item = favorites.removeAt(oldIndex);
+    favorites.insert(newIndex, item);
   }
 
 }

@@ -1,9 +1,12 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/services/service_locator.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'favorite_cell.dart';
 
 class FavoritesView extends StatefulWidget {
@@ -19,15 +22,18 @@ class _FavoritesView extends State<FavoritesView> {
   List<FavoriteCard> faveCards = [];
   int cardCount;
 
-  void updateState() {
-    print('UPDATING STATE');
-    setState(() { });
-  }
+  FavoritesViewModel viewModel = serviceLocator<FavoritesViewModel>();
+
+//  void updateState() {
+//    print('UPDATING STATE');
+//    setState(() { });
+//  }
 
   Future _getFavorites() async {
-    List<String> faveIds = await Storage.getList(kFavoritesKey);
-    favorites = faveIds;
-    return faveIds;
+//    List<String> faveIds = await Storage.getList(kFavoritesKey);
+//    favorites = faveIds;
+//    return faveIds;
+    return viewModel.favorites;
   }
 
   refresh() {
@@ -51,10 +57,7 @@ class _FavoritesView extends State<FavoritesView> {
         Storage.initializeList(kFavoritesKey, favorites);
       },
     );
-    _updatePrefs(oldIndex, newIndex);
   }
-
-  Future<void> _updatePrefs(int oldIndex, int newIndex) {}
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +65,7 @@ class _FavoritesView extends State<FavoritesView> {
       appBar: AppBar(
         title: Text('=Favorites='),
       ),
-      body: buildListView(),
+      body: buildNotifiedListListView(),
       endDrawer: RFDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
@@ -71,7 +74,27 @@ class _FavoritesView extends State<FavoritesView> {
     );
   }
 
-//  Widget buildNotifiedListListView
+  Widget buildNotifiedListListView(){
+    return ChangeNotifierProvider<FavoritesViewModel> (
+      create: (context) => viewModel,
+      child: Consumer<FavoritesViewModel>(
+        builder: (context, model, index) => ListView.builder(
+          itemCount: viewModel.favorites.length,
+          itemBuilder: (context, index){
+            return Card(
+              child: ListTile(
+                leading: SizedBox(width: 10, ),
+                title: Text('${viewModel.favorites[index].toString()}'),
+                onTap: () {
+                  print('TAPPED FAVORITE VIEW MODEL');
+                },
+              ),
+            );
+          },
+        ),
+      )
+    );
+  }
 
   Widget buildListView() {
     return FutureBuilder(
