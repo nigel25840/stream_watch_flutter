@@ -6,6 +6,7 @@ import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/UI/drawer.dart';
+import 'package:streamwatcher/UI/gauge_preferences.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
@@ -221,13 +222,12 @@ class _GaugeDetail extends State<GaugeDetail> {
             labelBackgroundColor: Colors.blue,
           ),
           SpeedDialChild(
-            child: Icon(Icons.map),
+            child: Icon(Icons.settings),
             onTap: () {
-              Navigator.pop(context, () {
-                setState(() {});
-              });
-            }
-          )
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return GaugePreferences(widget.gaugeName, widget.gaugeId);
+              }));
+            })
         ],
       ),
       endDrawer: RFDrawer(),

@@ -227,8 +227,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return GaugeDetail(
                         gaugeId: gaugeModel.gaugeId,
                         gaugeName: gaugeModel.gaugeName,
