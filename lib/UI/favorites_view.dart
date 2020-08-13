@@ -16,57 +16,55 @@ class FavoritesView extends StatefulWidget {
 }
 
 class _FavoritesView extends State<FavoritesView> {
-  List<String> favorites;
-  List<FavoriteCard> faveCards = [];
-  int cardCount;
-  FavoritesViewModel viewModel = serviceLocator<FavoritesViewModel>();
+
+  FavoritesViewModel viewModel;
 
   @override
   void initState() {
+    viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
     viewModel.loadFavorites();
     super.initState();
   }
 
-  void _onReorder(int oldIndex, int newIndex) {
-    setState(
-      () {
-        if (newIndex > oldIndex) {
-          newIndex -= 1;
-        }
-        final String item = favorites.removeAt(oldIndex);
-        favorites.insert(newIndex, item);
+  @override
+  Widget build(BuildContext context) {
 
-        final FavoriteCard card = faveCards.removeAt(oldIndex);
-        faveCards.insert(newIndex, card);
-
-        Storage.initializeList(kFavoritesKey, favorites);
-      },
+    return Consumer<FavoritesViewModel>(
+      builder: (context, model, child) => Scaffold(
+        appBar: AppBar(
+          title: Text('=Favorites='),
+        ),
+        body: ListView.builder(
+          itemCount: model.favorites.length,
+          itemBuilder: (context, index) {
+            return FavoriteCard(model.favorites[index], Key(model.favorites[index]));
+          },
+        ),
+        endDrawer: RFDrawer(),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.red,
+          child: Icon(Icons.refresh),
+        ),
+      ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<FavoritesViewModel>(
-        create: (context) => viewModel,
-        child: Consumer<FavoritesViewModel>(
-          builder: (context, model, index) => Scaffold(
-            appBar: AppBar(
-              title: Text('=Favorites='),
-            ),
-            body: ListView.builder(
-              itemCount: model.favorites.length,
-              itemBuilder: (context, index) {
-                return FavoriteCard(model.favorites[index], Key(model.favorites[index]));
-              },
-            ),
-            endDrawer: RFDrawer(),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.red,
-              child: Icon(Icons.refresh),
-            ),
-          ),
-        ));
-  }
+//  void _onReorder(int oldIndex, int newIndex) {
+//    setState(
+//          () {
+//        if (newIndex > oldIndex) {
+//          newIndex -= 1;
+//        }
+//        final String item = favorites.removeAt(oldIndex);
+//        favorites.insert(newIndex, item);
+//
+//        final FavoriteCard card = faveCards.removeAt(oldIndex);
+//        faveCards.insert(newIndex, card);
+//
+//        Storage.initializeList(kFavoritesKey, favorites);
+//      },
+//    );
+//  }
 
 //  Widget buildNotifiedListListView(FavoritesViewModel vm) {
 //    return ChangeNotifierProvider<FavoritesViewModel>(

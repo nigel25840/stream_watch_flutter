@@ -126,7 +126,7 @@ class ChartViewModel extends ChangeNotifier {
   }
 
   void removeFavorite(String faveId) async {
-    favesVM.removeFavorite(faveId);
+    favesVM.deleteFavorite(faveId);
   }
 
   String getCurrentStats() {

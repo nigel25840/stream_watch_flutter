@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:material_segmented_control/material_segmented_control.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
@@ -31,7 +32,13 @@ class _GaugeDetail extends State<GaugeDetail> {
   List<String> faves;
   int animationDuration = 700;
 
-  FavoritesViewModel favesVM = serviceLocator<FavoritesViewModel>();
+  FavoritesViewModel favesVM; // serviceLocator<FavoritesViewModel>();
+
+  @override
+  initState() {
+    favesVM = Provider.of<FavoritesViewModel>(context, listen: false);
+    super.initState();
+  }
 
   Future<void> confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
     String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
@@ -52,12 +59,10 @@ class _GaugeDetail extends State<GaugeDetail> {
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
       onPressed: () {
-        setState(() {
+//        if (favesVM == null) favesVM = Provider.of<FavoritesViewModel>(context);
           animationDuration = 0;
-          mgr.removeFavorite(widget.gaugeId);
-          favesVM.removeFavorite(widget.gaugeId);
+          favesVM.deleteFavorite(widget.gaugeId);
           Navigator.pop(context);
-        });
       },
     );
 
