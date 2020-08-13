@@ -10,7 +10,6 @@ import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:streamwatcher/services/service_locator.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 import '../Util/constants.dart';

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
-import 'package:streamwatcher/services/service_locator.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'favorite_cell.dart';
 

@@ -6,7 +6,6 @@ import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
-import 'package:streamwatcher/services/service_locator.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class ChartViewModel extends ChangeNotifier {
