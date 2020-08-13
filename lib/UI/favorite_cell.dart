@@ -26,7 +26,7 @@ class _FavoriteCard extends State<FavoriteCard> {
     if(widget.model == null) {
       print('MODEL IS REBUIDING');
       if (_cellData == null || widget.refresh) {
-        _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
+        _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
       }
       var timeSeries = _cellData['value']['timeSeries'];
       double lastFlowReading;
@@ -81,6 +81,7 @@ class _FavoriteCard extends State<FavoriteCard> {
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
         child: Column(
+
           children: [
             Row(
               children: [
@@ -89,8 +90,16 @@ class _FavoriteCard extends State<FavoriteCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(model.gaugeName, style: titleStyle),
-                      Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}'),
+                      Wrap(
+                        direction: Axis.vertical,
+                        children: [
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width * .9,
+                              child: Text(model.gaugeName, style: titleStyle, overflow: TextOverflow.ellipsis, maxLines: 1, softWrap: false,)
+                          ),
+                          Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}')
+                        ],
+                      ),
                     ],
                   ),
                 )
