@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:streamwatcher/Util/Storage.dart';
@@ -5,8 +6,10 @@ import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
+import 'package:streamwatcher/services/service_locator.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
-class ChartManager {
+class ChartViewModel extends ChangeNotifier {
   List<charts.Series<GaugeReading, DateTime>> seriesFlowData;
   List<charts.Series<GaugeReading, DateTime>> seriesStageData;
 
@@ -28,6 +31,8 @@ class ChartManager {
   String gaugeId;
   bool containsAllData = false;
   bool isFavorite = false;
+
+  FavoritesViewModel favesVM;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
 
@@ -57,6 +62,8 @@ class ChartManager {
     isCfs = gaugeFlowReadings.length > 0;
     seriesFlowData = await generateChartSeries(gaugeFlowReadings, 'FlowReadings');
     seriesStageData = await generateChartSeries(gaugeStageReadings, 'StageReadings');
+
+    notifyListeners();
   }
 
   List<charts.Series<GaugeReading, DateTime>> generateChartSeries(List<GaugeReading> readings, String identifier) {
@@ -115,11 +122,11 @@ class ChartManager {
   Future<void> addFavorite(String faveId) async {
     await Storage.putFavorite(kFavoritesKey, faveId);
     this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+    notifyListeners();
   }
 
-  Future<bool> removeFavorite(String faveId) async {
-    await Storage.removeFromPrefs(kFavoritesKey, faveId);
-    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+  void removeFavorite(String faveId) async {
+    favesVM.deleteFavorite(faveId);
   }
 
   String getCurrentStats() {
