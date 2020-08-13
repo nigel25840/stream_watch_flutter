@@ -18,32 +18,51 @@ class FavoritesView extends StatefulWidget {
 class _FavoritesView extends State<FavoritesView> {
 
   FavoritesViewModel viewModel;
+  bool refreshAll = false;
 
   @override
   void initState() {
-    viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
-    viewModel.loadFavorites();
+    _loadData();
     super.initState();
+  }
+
+  void _refreshButtonTapped() {
+    refreshAll = true;
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
+      viewModel.loadFavorites();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
+    bool reload = refreshAll;
+    refreshAll = false;
     return Consumer<FavoritesViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
           title: Text('=Favorites='),
         ),
-        body: ListView.builder(
-          itemCount: model.favorites.length,
-          itemBuilder: (context, index) {
-            return FavoriteCard(model.favorites[index], Key(model.favorites[index]));
-          },
+        body: RefreshIndicator(
+          child: ListView.builder(
+            itemCount: model.favorites.length,
+            itemBuilder: (context, index) {
+              String gaugeId = model.favorites[index];
+              Key key = Key(model.favorites[index]);
+              return FavoriteCard(gaugeId, key, reload);
+            },
+          ),
+          onRefresh: _loadData,
         ),
         endDrawer: RFDrawer(),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.red,
           child: Icon(Icons.refresh),
+          onPressed: _refreshButtonTapped,
         ),
       ),
     );

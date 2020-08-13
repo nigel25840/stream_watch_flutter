@@ -8,11 +8,12 @@ import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 
 class FavoriteCard extends StatefulWidget {
+  bool refresh;
   final String favoriteGaugeId;
   final Key key;
   GaugeModel model;
   _FavoriteCard createState() => _FavoriteCard();
-  FavoriteCard(this.favoriteGaugeId, this.key);
+  FavoriteCard(this.favoriteGaugeId, this.key, [this.refresh]);
 }
 
 class _FavoriteCard extends State<FavoriteCard> {
@@ -24,7 +25,7 @@ class _FavoriteCard extends State<FavoriteCard> {
   Future<GaugeModel> _getFavorite() async {
     if(widget.model == null) {
       print('MODEL IS REBUIDING');
-      if (_cellData == null) {
+      if (_cellData == null || widget.refresh) {
         _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 2);
       }
       var timeSeries = _cellData['value']['timeSeries'];
