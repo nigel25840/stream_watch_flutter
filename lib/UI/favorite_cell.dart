@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
@@ -29,16 +30,24 @@ class _FavoriteCard extends State<FavoriteCard> {
       var timeSeries = _cellData['value']['timeSeries'];
       double lastFlowReading;
       double lastStageReading;
+      DateTime timeStamp;
+
+      // value.timeSeries[1].values[0].value[0].dateTime
 
       for (int index = 0; index < timeSeries.length; index++) {
         String varName = timeSeries[index]['variable']['variableName'];
         try {
+          var values = timeSeries[index]['values'][0]['value'][0];
           if (varName.toLowerCase().contains('streamflow')) {
-            var flowVal = timeSeries[index]['values'][0]['value'][0]['value'];
+            var flowVal = values['value'];
             lastFlowReading = double.parse(flowVal);
+            timeStamp = DateTime.parse(values['dateTime']);
+            print('DATE: $timeStamp');
           } else if (varName.toLowerCase().contains('gage')) {
-            var stageVal = timeSeries[index]['values'][0]['value'][0]['value'];
+            var stageVal = values['value'];
             lastStageReading = double.parse(stageVal);
+            timeStamp = DateTime.parse(values['dateTime']);
+            print('DATE: $timeStamp');
           }
         } catch (e) {
           print(e.toString());
@@ -51,10 +60,16 @@ class _FavoriteCard extends State<FavoriteCard> {
             gaugeId: widget.favoriteGaugeId);
         widget.model.lastFlowReading = lastFlowReading;
         widget.model.lastStageReading = lastStageReading;
+        widget.model.lastUpdated = timeStamp;
       }
     }
 
     return widget.model;
+  }
+
+  String formatTimeStamp(DateTime date, String format) {
+    DateFormat formatter = DateFormat(format);
+    return formatter.format(date);
   }
 
   Card _faveCardView(GaugeModel model, BuildContext context) {
@@ -74,7 +89,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(model.gaugeName, style: titleStyle),
-                      Text(model.gaugeId),
+                      Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}'),
                     ],
                   ),
                 )
