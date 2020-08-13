@@ -33,7 +33,8 @@ class _FavoriteCard extends State<FavoriteCard> {
       double lastStageReading;
       DateTime timeStamp;
 
-      // value.timeSeries[1].values[0].value[0].dateTime
+      List<int> readingValues = [];
+      bool gaugeRising = false;
 
       for (int index = 0; index < timeSeries.length; index++) {
         String varName = timeSeries[index]['variable']['variableName'];
@@ -43,12 +44,11 @@ class _FavoriteCard extends State<FavoriteCard> {
             var flowVal = values['value'];
             lastFlowReading = double.parse(flowVal);
             timeStamp = DateTime.parse(values['dateTime']);
-            print('DATE: $timeStamp');
           } else if (varName.toLowerCase().contains('gage')) {
             var stageVal = values['value'];
             lastStageReading = double.parse(stageVal);
             timeStamp = DateTime.parse(values['dateTime']);
-            print('DATE: $timeStamp');
+            gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
           }
         } catch (e) {
           print(e.toString());
@@ -62,10 +62,28 @@ class _FavoriteCard extends State<FavoriteCard> {
         widget.model.lastFlowReading = lastFlowReading;
         widget.model.lastStageReading = lastStageReading;
         widget.model.lastUpdated = timeStamp;
+        widget.model.trendingUp = gaugeRising;
       }
     }
 
     return widget.model;
+  }
+
+  bool _isTrendingUp(List<dynamic> values) {
+    int upCount = 0;
+    int downCount = 0;
+    for(int index = 0; index < values.length; index++) {
+      if (index > 0) {
+        double newVal = double.parse(values[index]['value']);
+        double oldVal = double.parse(values[index - 1]['value']);
+        if (newVal > oldVal) {
+          upCount++;
+        } else if (newVal < oldVal) {
+          downCount++;
+        }
+      }
+    }
+    return upCount > downCount;
   }
 
   String formatTimeStamp(DateTime date, String format) {
@@ -93,11 +111,21 @@ class _FavoriteCard extends State<FavoriteCard> {
                       Wrap(
                         direction: Axis.vertical,
                         children: [
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width * .9,
-                              child: Text(model.gaugeName, style: titleStyle, overflow: TextOverflow.ellipsis, maxLines: 1, softWrap: false,)
+                          Row(
+                            children: [
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width * .95,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(model.gaugeName, style: titleStyle, overflow: TextOverflow.ellipsis, maxLines: 1, softWrap: false,),
+                                      Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}')
+                                    ],
+                                  )
+                              ),
+                            ],
                           ),
-                          Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}')
+
                         ],
                       ),
                     ],
@@ -111,7 +139,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +152,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                     ),
                   ),
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -137,7 +165,11 @@ class _FavoriteCard extends State<FavoriteCard> {
                     ),
                   ),
                   Expanded(
-                      flex: 4,
+                    flex: 3,
+                    child: Icon(model.trendingUp ? Icons.arrow_upward : Icons.arrow_downward),
+                  ),
+                  Expanded(
+                      flex: 3,
                       child: Container(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,

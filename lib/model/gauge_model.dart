@@ -7,6 +7,7 @@ class GaugeModel {
   final String gaugeState;
   final String gaugeId;
 
+  bool trendingUp = false;
   bool isFavorite = false;
   bool isAcceptableLevel;
   double lastFlowReading;
