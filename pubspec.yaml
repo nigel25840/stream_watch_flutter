@@ -24,6 +24,7 @@ dependencies:
   scrollable_positioned_list: ^0.1.6
   get_it: ^4.0.4
   provider: ^4.0.1
+  google_maps_flutter: ^0.5.30
 
 
 dev_dependencies:
