@@ -3,14 +3,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 
 class FavoritesViewModel extends ChangeNotifier {
 
   List<String> favorites;
+  Map<String, FavoriteModel> favoriteModels;
 
   FavoritesViewModel() {
     loadFavorites();
   }
+
+  void _loadFavoriteModelList() async {
+    List<String> faveIds = await Storage.getList(kFavoritesKey);
+
+    for (String id in faveIds) {
+
+    }
+  }
+
+  void _addFavoriteModel(String id) {
+    favoriteModels.putIfAbsent(id, () => FavoriteModel(id));
+  }
+
+  void _deleteFavoriteModel(String id) {
+    favoriteModels.remove(id);
+  }
+
+  FavoriteModel getFavorite(String id) {
+    return favoriteModels[id];
+  }
+
+  // ******** favorite string values ********
 
   void loadFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
@@ -18,8 +42,10 @@ class FavoritesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFavorite(String id) {
-    if (favorites == null) favorites = [];
+  void addFavorite(String id, [FavoriteModel model]) {
+    if (favorites == null) {
+      favorites = [];
+    }
     favorites.add(id);
     Storage.initializeList(kFavoritesKey, favorites);
     notifyListeners();

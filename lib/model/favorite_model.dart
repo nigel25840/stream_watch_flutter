@@ -1,7 +1,7 @@
 
 class FavoriteModel {
   final String favoriteId;
-  final String favoriteName;
+  String favoriteName;
 
   double currentFlow;
   double currentStage;
@@ -11,5 +11,5 @@ class FavoriteModel {
   Map<String, double> prefStage = {'high': null, 'low': null};
   Map<String, double> prefFlow = {'high': null, 'low': null};
 
-  FavoriteModel(this.favoriteId, this.favoriteName);
+  FavoriteModel(this.favoriteId, [this.favoriteName]);
 }

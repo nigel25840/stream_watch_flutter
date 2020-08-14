@@ -87,6 +87,9 @@ class _FavoriteCard extends State<FavoriteCard> {
   }
 
   String formatTimeStamp(DateTime date, String format) {
+    if (date == null){
+      return 'N/A';
+    }
     DateFormat formatter = DateFormat(format);
     return formatter.format(date);
   }
@@ -139,7 +142,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +155,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                     ),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -169,7 +172,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                     child: Icon(model.trendingUp ? Icons.arrow_upward : Icons.arrow_downward),
                   ),
                   Expanded(
-                      flex: 3,
+                      flex: 1,
                       child: Container(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
