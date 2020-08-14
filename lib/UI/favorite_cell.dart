@@ -29,6 +29,12 @@ class _FavoriteCard extends State<FavoriteCard> {
 
     FavoritesViewModel favesVM = Provider.of<FavoritesViewModel>(context);
 
+    // if refresh is true, then the user has selected refresh
+    // so invalidate the model to initiate a reload of the item
+    if (widget.refresh) {
+      widget.model = null;
+    }
+
     // TODO: This all needs to be refactored in next version
 
     FavoriteModel fModel = favesVM.favoriteModels[widget.favoriteGaugeId];
@@ -38,11 +44,6 @@ class _FavoriteCard extends State<FavoriteCard> {
       widget.model.lastUpdated = fModel.lastUpdated;
       widget.model.lastStageReading = fModel.currentStage;
       widget.model.lastFlowReading = fModel.currentFlow;
-
-      print('═══════════════════════════════════════════════════════');
-      print(fModel.favoriteName);
-      print('═══════════════════════════════════════════════════════');
-
     } else {
       if (widget.model == null) {
         print('MODEL IS REBUIDING');

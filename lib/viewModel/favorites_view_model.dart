@@ -59,25 +59,17 @@ class FavoritesViewModel extends ChangeNotifier {
     } else {
       fModel = FavoriteModel(id);
     }
-    // update favorite models
-//    favoriteModels.putIfAbsent(id, () => fModel);
-
+    // update favorite models, ensure overwrite
     favoriteModels.remove(id);
     favoriteModels[id] = fModel;
 
     // update user preferences
     Storage.initializeList(kFavoritesKey, favorites);
-
     notifyListeners();
   }
 
   void deleteFavorite(String id) {
     if (favorites.contains(id)) {
-
-      print('==========================================');
-      print(favoriteModels);
-      print('==========================================');
-
       this.favorites.remove(id);
       this.favoriteModels.remove(id);
     }
