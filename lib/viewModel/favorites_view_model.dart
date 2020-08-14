@@ -34,6 +34,11 @@ class FavoritesViewModel extends ChangeNotifier {
     return favoriteModels[id];
   }
 
+  void updateFavorite(String id, FavoriteModel model) {
+    // overwrite existing model at index, new model will have all necessary data
+    favoriteModels[id] = model;
+  }
+
   // ******** favorite string values ********
 
   void loadFavorites() async {
