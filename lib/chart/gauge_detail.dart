@@ -106,6 +106,33 @@ class _GaugeDetail extends State<GaugeDetail> {
         });
   }
 
+  Future<void> showSaveFavoriteError(BuildContext context) async {
+    Widget okButton = FlatButton(
+      child: Text('OK'),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('Error saving gauge'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Text('${widget.gaugeName} is malfunctioning and cannot be saved to favorites. Please contact the USGS regarding this gauge is the problem persists')
+                ],
+              ),
+            ),
+            actions: [okButton],
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,7 +154,8 @@ class _GaugeDetail extends State<GaugeDetail> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             widget.gaugeName,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16.0),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             softWrap: false,
@@ -229,30 +257,51 @@ class _GaugeDetail extends State<GaugeDetail> {
             child: Icon(mgr.isFavorite ? Icons.star : Icons.star_border),
             backgroundColor: Colors.blue,
             onTap: () {
+              bool error = false;
               if (!mgr.isFavorite) {
                 setState(() {
-                  animationDuration = 0;
-                  FavoriteModel model = FavoriteModel(widget.gaugeId);
-                  model.favoriteName = widget.gaugeName;
+                  try {
+                    animationDuration = 0;
+                    FavoriteModel model = FavoriteModel(widget.gaugeId);
+                    model.favoriteName = widget.gaugeName;
 
-                  double flow = mgr.gaugeFlowReadings.last.dFlow;
-                  double stage = mgr.gaugeStageReadings.last.dFlow;
+                    print("${model.favoriteName}");
 
-                  model.currentFlow = (flow != null && flow > 0) ? flow : null;
-                  model.currentStage = (stage != null && stage > 0) ? stage : null;
-                  model.lastUpdated = DateTime.now();
+                    double flow = -9999;
 
-                  favesVM.addFavorite(widget.gaugeId, model);
+                    try {
+                      if (mgr.gaugeFlowReadings != null) {
+                        if (mgr.gaugeFlowReadings.last != null) {
+                          if (mgr.gaugeFlowReadings.last.dFlow != null) {
+                            flow = mgr.gaugeFlowReadings.last.dFlow;
+                          }
+                        }
+                      }
+                    } catch (ex) { }
+
+                    double stage = (mgr.gaugeStageReadings != null) ? mgr.gaugeStageReadings.last.dFlow:0;
+//                    double flow = (mgr.gaugeFlowReadings != null) ? mgr.gaugeFlowReadings.last.dFlow:0;
+
+                    model.currentFlow = flow;
+                    model.currentStage = stage;
+                    model.lastUpdated = DateTime.now();
+
+                    favesVM.addFavorite(widget.gaugeId, model);
+                  } catch (e) {
+                    showSaveFavoriteError(context);
+                    error = true;
+                  }
                 });
               }
-              confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
+              if (!error)
+                confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
             },
             labelBackgroundColor: Colors.blue,
           ),
         ],
       ),
 
-          // TODO: revive this button in next version of app
+      // TODO: revive this button in next version of app
 //          SpeedDialChild(
 //              child: Icon(Icons.settings),
 //              onTap: () {

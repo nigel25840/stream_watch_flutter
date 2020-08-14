@@ -151,7 +151,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                           Row(
                             children: [
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * .95,
+                                  width: MediaQuery.of(context).size.width * .9,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
