@@ -38,6 +38,7 @@ class _FavoriteCard extends State<FavoriteCard> {
       widget.model.lastUpdated = fModel.lastUpdated;
       widget.model.lastStageReading = fModel.currentStage;
       widget.model.lastFlowReading = fModel.currentFlow;
+      favesVM.favoriteModels[widget.favoriteGaugeId].buildFromGauge(widget.model);
 
       print('═══════════════════════════════════════════════════════');
       print(fModel.favoriteName);
@@ -87,6 +88,9 @@ class _FavoriteCard extends State<FavoriteCard> {
           widget.model.lastStageReading = lastStageReading;
           widget.model.lastUpdated = timeStamp;
           widget.model.trendingUp = gaugeRising;
+          if (favesVM.favoriteModels.containsKey(widget.favoriteGaugeId)) {
+            favesVM.favoriteModels[widget.favoriteGaugeId].buildFromGauge(widget.model);
+          }
         }
       }
     }

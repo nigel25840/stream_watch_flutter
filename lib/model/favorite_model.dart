@@ -1,6 +1,8 @@
 
+import 'package:streamwatcher/model/gauge_model.dart';
+
 class FavoriteModel {
-  final String favoriteId;
+  String favoriteId;
   String favoriteName;
 
   double currentFlow;
@@ -17,5 +19,13 @@ class FavoriteModel {
     return (
       favoriteId != null && favoriteName != null
     );
+  }
+
+  void buildFromGauge(GaugeModel gauge) {
+    favoriteId = gauge.gaugeId;
+    favoriteName = gauge.gaugeName;
+    lastUpdated = gauge.lastUpdated;
+    currentFlow = gauge.lastFlowReading;
+    currentStage = gauge.lastStageReading;
   }
 }

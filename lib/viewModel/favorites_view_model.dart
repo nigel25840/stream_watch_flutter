@@ -14,14 +14,6 @@ class FavoritesViewModel extends ChangeNotifier {
     loadFavorites();
   }
 
-  void _loadFavoriteModelList() async {
-    List<String> faveIds = await Storage.getList(kFavoritesKey);
-
-    for (String id in faveIds) {
-
-    }
-  }
-
   FavoriteModel getFavorite(String id) {
     return favoriteModels[id];
   }
@@ -40,7 +32,10 @@ class FavoritesViewModel extends ChangeNotifier {
     if (favoriteModels == null) {
       favoriteModels = {};
       for (String id in faveIds) {
-        favoriteModels.putIfAbsent(id, () => FavoriteModel(id));
+        if (favoriteModels.containsKey(id)) {
+          favoriteModels.remove(id);
+        }
+        favoriteModels[id] = FavoriteModel(id);
       }
     }
 
