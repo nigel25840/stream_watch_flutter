@@ -22,14 +22,6 @@ class FavoritesViewModel extends ChangeNotifier {
     }
   }
 
-  void _addFavoriteModel(String id) {
-    favoriteModels.putIfAbsent(id, () => FavoriteModel(id));
-  }
-
-  void _deleteFavoriteModel(String id) {
-    favoriteModels.remove(id);
-  }
-
   FavoriteModel getFavorite(String id) {
     return favoriteModels[id];
   }
@@ -48,17 +40,30 @@ class FavoritesViewModel extends ChangeNotifier {
   }
 
   void addFavorite(String id, [FavoriteModel model]) {
+    FavoriteModel fModel;
     if (favorites == null) {
       favorites = [];
     }
     favorites.add(id);
+
+    if (model != null) {
+      fModel = model;
+    } else {
+      fModel = FavoriteModel(id);
+    }
+    // update favorite models
+    favoriteModels.putIfAbsent(id, () => fModel);
+
+    // update user preferences
     Storage.initializeList(kFavoritesKey, favorites);
+
     notifyListeners();
   }
 
   void deleteFavorite(String id) {
     if (favorites.contains(id)) {
       this.favorites.remove(id);
+      this.favoriteModels.remove(id);
     }
     Storage.initializeList(kFavoritesKey, favorites);
     notifyListeners();

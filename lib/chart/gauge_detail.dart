@@ -41,13 +41,17 @@ class _GaugeDetail extends State<GaugeDetail> {
   }
 
   Future<void> confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
-    String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
-    String successMessage = '${widget.gaugeName} was just added to you favorites';
+    String deleteMessage =
+        'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
+    String successMessage =
+        '${widget.gaugeName} was just added to you favorites';
     List<FlatButton> buttons = [];
 
     var okButton = FlatButton(
-      child: Text('OK',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+      child: Text(
+        'OK',
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
       ),
       onPressed: () {
         Navigator.pop(context);
@@ -55,19 +59,22 @@ class _GaugeDetail extends State<GaugeDetail> {
     );
 
     var approveRemovalButton = FlatButton(
-      child: Text('Remove',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+      child: Text(
+        'Remove',
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
       onPressed: () {
-//        if (favesVM == null) favesVM = Provider.of<FavoritesViewModel>(context);
-          animationDuration = 0;
-          favesVM.deleteFavorite(widget.gaugeId);
-          Navigator.pop(context);
+        animationDuration = 0;
+        favesVM.deleteFavorite(widget.gaugeId);
+        Navigator.pop(context);
       },
     );
 
     var cancelButton = FlatButton(
-      child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+      child: Text('Cancel',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
       onPressed: () => Navigator.pop(context),
     );
 
@@ -111,11 +118,18 @@ class _GaugeDetail extends State<GaugeDetail> {
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(widget.gaugeName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0)),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .95,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.gaugeName,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -137,7 +151,8 @@ class _GaugeDetail extends State<GaugeDetail> {
                       child: charts.TimeSeriesChart(
                         mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
                         animate: true,
-                        animationDuration: Duration(milliseconds: animationDuration),
+                        animationDuration:
+                            Duration(milliseconds: animationDuration),
                         primaryMeasureAxis: charts.NumericAxisSpec(
                             tickProviderSpec:
                                 charts.BasicNumericTickProviderSpec(
@@ -211,7 +226,7 @@ class _GaugeDetail extends State<GaugeDetail> {
             child: Icon(mgr.isFavorite ? Icons.star : Icons.star_border),
             backgroundColor: Colors.blue,
             onTap: () {
-              if(!mgr.isFavorite) {
+              if (!mgr.isFavorite) {
                 setState(() {
                   animationDuration = 0;
                   mgr.addFavorite(widget.gaugeId);
@@ -222,12 +237,12 @@ class _GaugeDetail extends State<GaugeDetail> {
             labelBackgroundColor: Colors.blue,
           ),
           SpeedDialChild(
-            child: Icon(Icons.settings),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugePreferences(widget.gaugeName, widget.gaugeId);
-              }));
-            })
+              child: Icon(Icons.settings),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return GaugePreferences(widget.gaugeName, widget.gaugeId);
+                }));
+              })
         ],
       ),
       endDrawer: RFDrawer(),
