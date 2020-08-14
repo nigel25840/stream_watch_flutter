@@ -11,6 +11,7 @@ import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 import '../Util/constants.dart';
@@ -33,21 +34,27 @@ class _GaugeDetail extends State<GaugeDetail> {
   int animationDuration = 700;
 
   FavoritesViewModel favesVM; // serviceLocator<FavoritesViewModel>();
+  FavoriteModel model;
 
   @override
   initState() {
     favesVM = Provider.of<FavoritesViewModel>(context, listen: false);
+
     super.initState();
   }
 
   Future<void> confirmAddRemoveFavorite(bool favorite, String gaugeId) async {
-    String deleteMessage = 'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
-    String successMessage = '${widget.gaugeName} was just added to you favorites';
+    String deleteMessage =
+        'You\'re about to remove ${widget.gaugeName} from your favorites. Would you like to continue?';
+    String successMessage =
+        '${widget.gaugeName} was just added to you favorites';
     List<FlatButton> buttons = [];
 
     var okButton = FlatButton(
-      child: Text('OK',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+      child: Text(
+        'OK',
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
       ),
       onPressed: () {
         Navigator.pop(context);
@@ -55,19 +62,22 @@ class _GaugeDetail extends State<GaugeDetail> {
     );
 
     var approveRemovalButton = FlatButton(
-      child: Text('Remove',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+      child: Text(
+        'Remove',
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
       ),
       onPressed: () {
-//        if (favesVM == null) favesVM = Provider.of<FavoritesViewModel>(context);
-          animationDuration = 0;
-          favesVM.deleteFavorite(widget.gaugeId);
-          Navigator.pop(context);
+        animationDuration = 0;
+        favesVM.deleteFavorite(widget.gaugeId);
+        Navigator.pop(context);
       },
     );
 
     var cancelButton = FlatButton(
-      child: Text('Cancel', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+      child: Text('Cancel',
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
       onPressed: () => Navigator.pop(context),
     );
 
@@ -96,6 +106,33 @@ class _GaugeDetail extends State<GaugeDetail> {
         });
   }
 
+  Future<void> showSaveFavoriteError(BuildContext context) async {
+    Widget okButton = FlatButton(
+      child: Text('OK'),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text('Error saving gauge'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Text('${widget.gaugeName} is malfunctioning and cannot be saved to favorites. Please contact the USGS regarding this gauge is the problem persists')
+                ],
+              ),
+            ),
+            actions: [okButton],
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,11 +148,19 @@ class _GaugeDetail extends State<GaugeDetail> {
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(widget.gaugeName,
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .95,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.gaugeName,
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0)),
+                                fontWeight: FontWeight.bold, fontSize: 16.0),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
                       )
                     ],
                   ),
@@ -137,7 +182,8 @@ class _GaugeDetail extends State<GaugeDetail> {
                       child: charts.TimeSeriesChart(
                         mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
                         animate: true,
-                        animationDuration: Duration(milliseconds: animationDuration),
+                        animationDuration:
+                            Duration(milliseconds: animationDuration),
                         primaryMeasureAxis: charts.NumericAxisSpec(
                             tickProviderSpec:
                                 charts.BasicNumericTickProviderSpec(
@@ -211,25 +257,59 @@ class _GaugeDetail extends State<GaugeDetail> {
             child: Icon(mgr.isFavorite ? Icons.star : Icons.star_border),
             backgroundColor: Colors.blue,
             onTap: () {
-              if(!mgr.isFavorite) {
+              bool error = false;
+              if (!mgr.isFavorite) {
                 setState(() {
-                  animationDuration = 0;
-                  mgr.addFavorite(widget.gaugeId);
+                  try {
+                    animationDuration = 0;
+                    FavoriteModel model = FavoriteModel(widget.gaugeId);
+                    model.favoriteName = widget.gaugeName;
+
+                    print("${model.favoriteName}");
+
+                    double flow = -9999;
+
+                    try {
+                      if (mgr.gaugeFlowReadings != null) {
+                        if (mgr.gaugeFlowReadings.last != null) {
+                          if (mgr.gaugeFlowReadings.last.dFlow != null) {
+                            flow = mgr.gaugeFlowReadings.last.dFlow;
+                          }
+                        }
+                      }
+                    } catch (ex) { }
+
+                    double stage = (mgr.gaugeStageReadings != null) ? mgr.gaugeStageReadings.last.dFlow:0;
+//                    double flow = (mgr.gaugeFlowReadings != null) ? mgr.gaugeFlowReadings.last.dFlow:0;
+
+                    model.currentFlow = flow;
+                    model.currentStage = stage;
+                    model.lastUpdated = DateTime.now();
+
+                    favesVM.addFavorite(widget.gaugeId, model);
+                  } catch (e) {
+                    showSaveFavoriteError(context);
+                    error = true;
+                  }
                 });
               }
-              confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
+              if (!error)
+                confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
             },
             labelBackgroundColor: Colors.blue,
           ),
-          SpeedDialChild(
-            child: Icon(Icons.settings),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugePreferences(widget.gaugeName, widget.gaugeId);
-              }));
-            })
         ],
       ),
+
+      // TODO: revive this button in next version of app
+//          SpeedDialChild(
+//              child: Icon(Icons.settings),
+//              onTap: () {
+//                Navigator.push(context, MaterialPageRoute(builder: (context) {
+//                  return GaugePreferences(widget.gaugeName, widget.gaugeId);
+//                }));
+//              })
+
       endDrawer: RFDrawer(),
     );
   }

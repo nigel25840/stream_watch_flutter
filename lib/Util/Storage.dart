@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 
 class Storage {
   static Storage _storage;
@@ -24,6 +25,8 @@ class Storage {
   Future _init() async {
     _prefs = await SharedPreferences.getInstance();
   }
+
+  // ******** favorite string values ********
 
   static Future<List<String>> getList(String key) async {
     if (_prefs == null) {
@@ -77,7 +80,7 @@ class Storage {
     return false;
   }
 
-  static Future<bool> contains(String ket, String val) async {
+  static Future<bool> contains(String key, String val) async {
     List<String> list = await getList(kFavoritesKey);
     return list.contains(val);
   }

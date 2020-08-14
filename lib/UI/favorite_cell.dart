@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class FavoriteCard extends StatefulWidget {
   bool refresh;
@@ -23,46 +26,77 @@ class _FavoriteCard extends State<FavoriteCard> {
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
 
   Future<GaugeModel> _getFavorite() async {
-    if(widget.model == null) {
-      print('MODEL IS REBUIDING');
-      if (_cellData == null || widget.refresh) {
-        _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
-      }
-      var timeSeries = _cellData['value']['timeSeries'];
-      double lastFlowReading;
-      double lastStageReading;
-      DateTime timeStamp;
 
-      List<int> readingValues = [];
-      bool gaugeRising = false;
+    FavoritesViewModel favesVM = Provider.of<FavoritesViewModel>(context);
 
-      for (int index = 0; index < timeSeries.length; index++) {
-        String varName = timeSeries[index]['variable']['variableName'];
-        try {
-          var values = timeSeries[index]['values'][0]['value'][0];
-          if (varName.toLowerCase().contains('streamflow')) {
-            var flowVal = values['value'];
-            lastFlowReading = double.parse(flowVal);
-            timeStamp = DateTime.parse(values['dateTime']);
-          } else if (varName.toLowerCase().contains('gage')) {
-            var stageVal = values['value'];
-            lastStageReading = double.parse(stageVal);
-            timeStamp = DateTime.parse(values['dateTime']);
-            gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
-          }
-        } catch (e) {
-          print(e.toString());
-        }
-      }
+    // TODO: This all needs to be refactored in next version
 
+    FavoriteModel fModel = favesVM.favoriteModels[widget.favoriteGaugeId];
+
+    if(widget.refresh) {
+      fModel = null;
+      widget.refresh = false;
+    }
+
+    if(fModel != null && fModel.isPopulated()) {
+      widget.model = GaugeModel(gaugeName: fModel.favoriteName, gaugeId: fModel.favoriteId);
+      widget.model.lastUpdated = fModel.lastUpdated;
+      widget.model.lastStageReading = fModel.currentStage;
+      widget.model.lastFlowReading = fModel.currentFlow;
+      favesVM.favoriteModels[widget.favoriteGaugeId].buildFromGauge(widget.model);
+
+      print('═══════════════════════════════════════════════════════');
+      print(fModel.favoriteName);
+      print('═══════════════════════════════════════════════════════');
+
+    } else {
       if (widget.model == null) {
-        widget.model = await GaugeModel(
-            gaugeName: timeSeries[0]['sourceInfo']['siteName'],
-            gaugeId: widget.favoriteGaugeId);
-        widget.model.lastFlowReading = lastFlowReading;
-        widget.model.lastStageReading = lastStageReading;
-        widget.model.lastUpdated = timeStamp;
-        widget.model.trendingUp = gaugeRising;
+        print('MODEL IS REBUIDING');
+
+        if (_cellData == null || widget.refresh) {
+          _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
+        }
+
+        var timeSeries = _cellData['value']['timeSeries'];
+        double lastFlowReading;
+        double lastStageReading;
+        DateTime timeStamp;
+
+        List<int> readingValues = [];
+        bool gaugeRising = false;
+
+        for (int index = 0; index < timeSeries.length; index++) {
+          String varName = timeSeries[index]['variable']['variableName'];
+          try {
+            var values = timeSeries[index]['values'][0]['value'][0];
+            if (varName.toLowerCase().contains('streamflow')) {
+              var flowVal = values['value'];
+              lastFlowReading = double.parse(flowVal);
+              timeStamp = DateTime.parse(values['dateTime']);
+            } else if (varName.toLowerCase().contains('gage')) {
+              var stageVal = values['value'];
+              lastStageReading = double.parse(stageVal);
+              timeStamp = DateTime.parse(values['dateTime']);
+              gaugeRising =
+                  _isTrendingUp(timeSeries[index]['values'][0]['value']);
+            }
+          } catch (e) {
+            print(e.toString());
+          }
+        }
+
+        if (widget.model == null) {
+          widget.model = await GaugeModel(
+              gaugeName: timeSeries[0]['sourceInfo']['siteName'],
+              gaugeId: widget.favoriteGaugeId);
+          widget.model.lastFlowReading = lastFlowReading;
+          widget.model.lastStageReading = lastStageReading;
+          widget.model.lastUpdated = timeStamp;
+          widget.model.trendingUp = gaugeRising;
+          if (favesVM.favoriteModels.containsKey(widget.favoriteGaugeId)) {
+            favesVM.favoriteModels[widget.favoriteGaugeId].buildFromGauge(widget.model);
+          }
+        }
       }
     }
 
@@ -87,6 +121,9 @@ class _FavoriteCard extends State<FavoriteCard> {
   }
 
   String formatTimeStamp(DateTime date, String format) {
+    if (date == null){
+      return 'N/A';
+    }
     DateFormat formatter = DateFormat(format);
     return formatter.format(date);
   }
@@ -114,7 +151,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                           Row(
                             children: [
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * .95,
+                                  width: MediaQuery.of(context).size.width * .9,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -139,7 +176,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +189,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                     ),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 3,
                     child: Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -169,7 +206,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                     child: Icon(model.trendingUp ? Icons.arrow_upward : Icons.arrow_downward),
                   ),
                   Expanded(
-                      flex: 3,
+                      flex: 1,
                       child: Container(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,

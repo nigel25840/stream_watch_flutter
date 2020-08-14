@@ -1,6 +1,7 @@
 
 const kBaseUrl = 'https://waterservices.usgs.gov/nwis/iv/?format=json';
 const kFavoritesKey = 'favorites';
+const kFaveKey = 'favoriteModelList';
 const Map<String,String> kAllStates = {
   'AL': 'Alabama',
   'AK': 'Alaska',
