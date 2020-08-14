@@ -33,6 +33,11 @@ class _FavoriteCard extends State<FavoriteCard> {
 
     FavoriteModel fModel = favesVM.favoriteModels[widget.favoriteGaugeId];
 
+    if(widget.refresh) {
+      fModel = null;
+      widget.refresh = false;
+    }
+
     if(fModel != null && fModel.isPopulated()) {
       widget.model = GaugeModel(gaugeName: fModel.favoriteName, gaugeId: fModel.favoriteId);
       widget.model.lastUpdated = fModel.lastUpdated;
