@@ -11,6 +11,7 @@ import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 import '../Util/constants.dart';
@@ -33,10 +34,12 @@ class _GaugeDetail extends State<GaugeDetail> {
   int animationDuration = 700;
 
   FavoritesViewModel favesVM; // serviceLocator<FavoritesViewModel>();
+  FavoriteModel model;
 
   @override
   initState() {
     favesVM = Provider.of<FavoritesViewModel>(context, listen: false);
+
     super.initState();
   }
 
@@ -229,22 +232,35 @@ class _GaugeDetail extends State<GaugeDetail> {
               if (!mgr.isFavorite) {
                 setState(() {
                   animationDuration = 0;
-                  mgr.addFavorite(widget.gaugeId);
+                  FavoriteModel model = FavoriteModel(widget.gaugeId);
+                  model.favoriteName = widget.gaugeName;
+
+                  double flow = mgr.gaugeFlowReadings.last.dFlow;
+                  double stage = mgr.gaugeStageReadings.last.dFlow;
+
+                  model.currentFlow = (flow != null && flow > 0) ? flow : null;
+                  model.currentStage = (stage != null && stage > 0) ? stage : null;
+                  model.lastUpdated = DateTime.now();
+
+                  favesVM.addFavorite(widget.gaugeId, model);
                 });
               }
               confirmAddRemoveFavorite(mgr.isFavorite, widget.gaugeId);
             },
             labelBackgroundColor: Colors.blue,
           ),
-          SpeedDialChild(
-              child: Icon(Icons.settings),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GaugePreferences(widget.gaugeName, widget.gaugeId);
-                }));
-              })
         ],
       ),
+
+          // TODO: revive this button in next version of app
+//          SpeedDialChild(
+//              child: Icon(Icons.settings),
+//              onTap: () {
+//                Navigator.push(context, MaterialPageRoute(builder: (context) {
+//                  return GaugePreferences(widget.gaugeName, widget.gaugeId);
+//                }));
+//              })
+
       endDrawer: RFDrawer(),
     );
   }

@@ -36,6 +36,14 @@ class FavoritesViewModel extends ChangeNotifier {
   void loadFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
     favorites = faveIds;
+
+    if (favoriteModels == null) {
+      favoriteModels = {};
+      for (String id in faveIds) {
+        favoriteModels.putIfAbsent(id, () => FavoriteModel(id));
+      }
+    }
+
     notifyListeners();
   }
 
@@ -52,7 +60,10 @@ class FavoritesViewModel extends ChangeNotifier {
       fModel = FavoriteModel(id);
     }
     // update favorite models
-    favoriteModels.putIfAbsent(id, () => fModel);
+//    favoriteModels.putIfAbsent(id, () => fModel);
+
+    favoriteModels.remove(id);
+    favoriteModels[id] = fModel;
 
     // update user preferences
     Storage.initializeList(kFavoritesKey, favorites);
@@ -62,6 +73,11 @@ class FavoritesViewModel extends ChangeNotifier {
 
   void deleteFavorite(String id) {
     if (favorites.contains(id)) {
+
+      print('==========================================');
+      print(favoriteModels);
+      print('==========================================');
+
       this.favorites.remove(id);
       this.favoriteModels.remove(id);
     }

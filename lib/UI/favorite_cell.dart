@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class FavoriteCard extends StatefulWidget {
   bool refresh;
@@ -23,46 +26,68 @@ class _FavoriteCard extends State<FavoriteCard> {
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
 
   Future<GaugeModel> _getFavorite() async {
-    if(widget.model == null) {
-      print('MODEL IS REBUIDING');
-      if (_cellData == null || widget.refresh) {
-        _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
-      }
-      var timeSeries = _cellData['value']['timeSeries'];
-      double lastFlowReading;
-      double lastStageReading;
-      DateTime timeStamp;
 
-      List<int> readingValues = [];
-      bool gaugeRising = false;
+    FavoritesViewModel favesVM = Provider.of<FavoritesViewModel>(context);
 
-      for (int index = 0; index < timeSeries.length; index++) {
-        String varName = timeSeries[index]['variable']['variableName'];
-        try {
-          var values = timeSeries[index]['values'][0]['value'][0];
-          if (varName.toLowerCase().contains('streamflow')) {
-            var flowVal = values['value'];
-            lastFlowReading = double.parse(flowVal);
-            timeStamp = DateTime.parse(values['dateTime']);
-          } else if (varName.toLowerCase().contains('gage')) {
-            var stageVal = values['value'];
-            lastStageReading = double.parse(stageVal);
-            timeStamp = DateTime.parse(values['dateTime']);
-            gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
-          }
-        } catch (e) {
-          print(e.toString());
-        }
-      }
+    // TODO: This all needs to be refactored in next version
 
+    FavoriteModel fModel = favesVM.favoriteModels[widget.favoriteGaugeId];
+
+    if(fModel != null && fModel.isPopulated()) {
+      widget.model = GaugeModel(gaugeName: fModel.favoriteName, gaugeId: fModel.favoriteId);
+      widget.model.lastUpdated = fModel.lastUpdated;
+      widget.model.lastStageReading = fModel.currentStage;
+      widget.model.lastFlowReading = fModel.currentFlow;
+
+      print('═══════════════════════════════════════════════════════');
+      print(fModel.favoriteName);
+      print('═══════════════════════════════════════════════════════');
+
+    } else {
       if (widget.model == null) {
-        widget.model = await GaugeModel(
-            gaugeName: timeSeries[0]['sourceInfo']['siteName'],
-            gaugeId: widget.favoriteGaugeId);
-        widget.model.lastFlowReading = lastFlowReading;
-        widget.model.lastStageReading = lastStageReading;
-        widget.model.lastUpdated = timeStamp;
-        widget.model.trendingUp = gaugeRising;
+        print('MODEL IS REBUIDING');
+
+        if (_cellData == null || widget.refresh) {
+          _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
+        }
+
+        var timeSeries = _cellData['value']['timeSeries'];
+        double lastFlowReading;
+        double lastStageReading;
+        DateTime timeStamp;
+
+        List<int> readingValues = [];
+        bool gaugeRising = false;
+
+        for (int index = 0; index < timeSeries.length; index++) {
+          String varName = timeSeries[index]['variable']['variableName'];
+          try {
+            var values = timeSeries[index]['values'][0]['value'][0];
+            if (varName.toLowerCase().contains('streamflow')) {
+              var flowVal = values['value'];
+              lastFlowReading = double.parse(flowVal);
+              timeStamp = DateTime.parse(values['dateTime']);
+            } else if (varName.toLowerCase().contains('gage')) {
+              var stageVal = values['value'];
+              lastStageReading = double.parse(stageVal);
+              timeStamp = DateTime.parse(values['dateTime']);
+              gaugeRising =
+                  _isTrendingUp(timeSeries[index]['values'][0]['value']);
+            }
+          } catch (e) {
+            print(e.toString());
+          }
+        }
+
+        if (widget.model == null) {
+          widget.model = await GaugeModel(
+              gaugeName: timeSeries[0]['sourceInfo']['siteName'],
+              gaugeId: widget.favoriteGaugeId);
+          widget.model.lastFlowReading = lastFlowReading;
+          widget.model.lastStageReading = lastStageReading;
+          widget.model.lastUpdated = timeStamp;
+          widget.model.trendingUp = gaugeRising;
+        }
       }
     }
 

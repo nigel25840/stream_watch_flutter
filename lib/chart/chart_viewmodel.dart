@@ -4,6 +4,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
+import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
@@ -118,9 +119,12 @@ class ChartViewModel extends ChangeNotifier {
     return gaugeStageReadings.length > 0;
   }
 
-  Future<void> addFavorite(String faveId) async {
-    await Storage.putFavorite(kFavoritesKey, faveId);
-    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+  Future<void> addFavorite(String faveId, [FavoriteModel model]) async {
+//    await Storage.putFavorite(kFavoritesKey, faveId);
+//    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
+
+    favesVM.addFavorite(faveId, model);
+
     notifyListeners();
   }
 

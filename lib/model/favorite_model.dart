@@ -12,4 +12,10 @@ class FavoriteModel {
   Map<String, double> prefFlow = {'high': null, 'low': null};
 
   FavoriteModel(this.favoriteId, [this.favoriteName]);
+
+  bool isPopulated() {
+    return (
+      favoriteId != null && favoriteName != null
+    );
+  }
 }
