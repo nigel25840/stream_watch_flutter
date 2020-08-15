@@ -44,7 +44,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  CarouselSlider getSlider(List<int> items) {
+  CarouselSlider getSlider(FavoritesViewModel model) {
+
     return CarouselSlider(
       options: CarouselOptions(
         height: 120.0,
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         viewportFraction: 1.0,
         enlargeCenterPage: false,
       ),
-      items: getFavoriteCards(viewModel.favorites, context).map((card) {
+      items: getFavoriteCards(model.favorites, context).map((card) {
         return Builder(
           builder: (BuildContext context) {
             return Padding(
@@ -80,12 +81,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _initializePreferences();
 
-    List<int> items = [1,2,3,4];
-
-    print('********************************************');
-    print(getFavoriteCards(viewModel.favorites, context));
-    print('********************************************');
-
     return Scaffold(
       appBar: AppBar(
         title: Text("River Watch"),
@@ -110,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                   builder: (context, model, child) => SizedBox(
                       height: double.infinity,
                       width: double.infinity,
-                      child: getSlider(items)),
+                      child: getSlider(model)),
                 )),
           ],
         ),
