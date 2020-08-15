@@ -1,8 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/favorite_cell.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
+import 'package:streamwatcher/model/favorite_model%202.dart';
+import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,11 +26,65 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  FavoritesViewModel viewModel;
+  List<FavoriteCard> cards;
+  bool animate = true;
+  var autoPlay = true;
+
+  @override
+  void initState() {
+    _loadData();
+    super.initState();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
+      viewModel.loadFavorites();
+    });
+  }
+
+  CarouselSlider getSlider(List<int> items) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 120.0,
+        autoPlay: autoPlay,
+        autoPlayInterval: Duration(seconds: 8),
+        autoPlayAnimationDuration: Duration(milliseconds: 800),
+        viewportFraction: 1.0,
+        enlargeCenterPage: false,
+      ),
+      items: getFavoriteCards(viewModel.favorites, context).map((card) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: card,
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  List<FavoriteCard> getFavoriteCards(List<String> items, BuildContext context) {
+    if (items == null) return [];
+    List<FavoriteCard> cards = [];
+    for (int index = 0; index < items.length; index++) {
+      cards.add(FavoriteCard(items[index], Key(items[index]), true));
+    }
+    return cards;
+  }
+
   @override
   Widget build(BuildContext context) {
     _initializePreferences();
 
     List<int> items = [1,2,3,4];
+
+    print('********************************************');
+    print(getFavoriteCards(viewModel.favorites, context));
+    print('********************************************');
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +95,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Flexible(
-              flex: 6,
+              flex: 8,
               child: SizedBox(
                 height: double.infinity,
                 width: double.infinity,
@@ -47,34 +105,11 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Flexible(
-                flex: 4,
+                flex: 2,
                 child: SizedBox(
                     height: double.infinity,
                     width: double.infinity,
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                          height: 120.0,
-                          autoPlay: (items.length > 1),
-                          autoPlayInterval: Duration(seconds: 5),
-                          autoPlayAnimationDuration: Duration(milliseconds: 800),
-                          viewportFraction: 1.0,
-                      ),
-                      items: items.map((i) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                                decoration: BoxDecoration(
-                                    color: Colors.lightBlueAccent),
-                                child: Text(
-                                  'text $i',
-                                  style: TextStyle(fontSize: 16.0),
-                                ));
-                          },
-                        );
-                      }).toList(),
-                    )))
+                    child: getSlider(items))),
           ],
         ),
       ),

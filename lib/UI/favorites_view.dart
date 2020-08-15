@@ -42,7 +42,7 @@ class _FavoritesView extends State<FavoritesView> {
     return Consumer<FavoritesViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
-          title: Text('=Favorites='),
+          title: Text('Favorites'),
         ),
         body: RefreshIndicator(
           child: ListView.builder(
