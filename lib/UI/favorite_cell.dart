@@ -14,7 +14,6 @@ class FavoriteCard extends StatefulWidget {
   bool refresh;
   final String favoriteGaugeId;
   final Key key;
-  bool isDismissable = true;
   GaugeModel model;
   _FavoriteCard createState() => _FavoriteCard();
   FavoriteCard(this.favoriteGaugeId, this.key, [this.refresh]);
@@ -227,62 +226,6 @@ class _FavoriteCard extends State<FavoriteCard> {
     return card;
   }
 
-  Widget showCard(bool dismissable, GaugeModel gaugeModel) {
-    return dismissable ? Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Dismissible(
-          direction: DismissDirection.endToStart,
-          key: Key(gaugeModel.gaugeId),
-          onDismissed: (dir) {
-            Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
-            Scaffold.of(context).showSnackBar(SnackBar(
-                content: Text(
-                    '${gaugeModel.gaugeName} was removed from favorites')));
-          },
-          background: Container(
-            color: Colors.red,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: Text(
-                      'Deleting...',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugeDetail(
-                  gaugeId: gaugeModel.gaugeId,
-                  gaugeName: gaugeModel.gaugeName,
-                );
-              }));
-            },
-            child: _faveCardView(gaugeModel, context),
-          ),
-        ),
-      ],
-    ) : GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return GaugeDetail(
-            gaugeId: gaugeModel.gaugeId,
-            gaugeName: gaugeModel.gaugeName,
-          );
-        }));
-      },
-      child: _faveCardView(gaugeModel, context),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -290,7 +233,49 @@ class _FavoriteCard extends State<FavoriteCard> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         GaugeModel gaugeModel = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done) {
-          return showCard(widget.isDismissable, gaugeModel);
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Dismissible(
+                direction: DismissDirection.endToStart,
+                key: Key(gaugeModel.gaugeId),
+                onDismissed: (dir) {
+                  Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          '${gaugeModel.gaugeName} was removed from favorites')));
+                },
+                background: Container(
+                  color: Colors.red,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Text(
+                            'Deleting...',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return GaugeDetail(
+                        gaugeId: gaugeModel.gaugeId,
+                        gaugeName: gaugeModel.gaugeName,
+                      );
+                    }));
+                  },
+                  child: _faveCardView(gaugeModel, context),
+                ),
+              ),
+            ],
+          );
         } else {
           return Card(
               shape: RoundedRectangleBorder(

@@ -71,9 +71,7 @@ class _HomePageState extends State<HomePage> {
     if (items == null) return [];
     List<FavoriteCard> cards = [];
     for (int index = 0; index < items.length; index++) {
-      FavoriteCard card = FavoriteCard(items[index], Key(items[index]), true);
-      card.isDismissable = false;
-      cards.add(card);
+      cards.add(FavoriteCard(items[index], Key(items[index]), true));
     }
     return cards;
   }
