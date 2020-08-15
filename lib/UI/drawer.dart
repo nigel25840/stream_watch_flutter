@@ -3,16 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/favorites_view.dart';
 import 'package:streamwatcher/main.dart';
 
+import 'home_page_view.dart';
 import 'state_picker.dart';
 
 class RFDrawer extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _RFDrawerState();
   var _key = GlobalKey<ScaffoldState>();
-
-  _handleTapEvent() {
-//    _key.currentState.dr
-  }
 }
 
 class _RFDrawerState extends State<RFDrawer> {
@@ -63,14 +60,16 @@ class _RFDrawerState extends State<RFDrawer> {
               },
             ),
             divider,
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Preferences', style: style),
-              onTap: () {
-                print('*PREFERENCES*');
-              },
-            ),
-            divider,
+
+// TODO: revive this button in version 2
+//            ListTile(
+//              leading: Icon(Icons.settings),
+//              title: Text('Preferences', style: style),
+//              onTap: () {
+//                print('*PREFERENCES*');
+//              },
+//            ),
+//            divider,
           ],
         ),
       ),

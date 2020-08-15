@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
-
 import 'drawer.dart';
 
 class HomePage extends StatefulWidget {
