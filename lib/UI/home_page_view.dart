@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/Util/constants.dart';
@@ -14,7 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   Future<void> _initializePreferences() async {
     var faves = await Storage.getList(kFavoritesKey);
     if (faves == null) {
@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     _initializePreferences();
 
     return Scaffold(
@@ -35,11 +34,49 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text('Opening page'),
+            Flexible(
+              flex: 5,
+              child: SizedBox(
+                height: double.infinity,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Home Page Title View'),
+                ),
+              ),
+            ),
+            Flexible(
+                flex: 5,
+                child: SizedBox(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                          height: 120.0,
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 5),
+                          autoPlayAnimationDuration: Duration(milliseconds: 800)
+                      ),
+                      items: [1, 2, 3, 4, 5].map((i) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                decoration: BoxDecoration(
+                                    color: Colors.lightBlueAccent),
+                                child: Text(
+                                  'text $i',
+                                  style: TextStyle(fontSize: 16.0),
+                                ));
+                          },
+                        );
+                      }).toList(),
+                    )))
           ],
         ),
       ),
-      endDrawer: RFDrawer(),// This trailing comma makes auto-formatting nicer for build methods.
+      endDrawer:
+          RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
