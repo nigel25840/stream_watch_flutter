@@ -106,10 +106,12 @@ class _HomePageState extends State<HomePage> {
             ),
             Flexible(
                 flex: 2,
-                child: SizedBox(
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: getSlider(items))),
+                child: Consumer<FavoritesViewModel>(
+                  builder: (context, model, child) => SizedBox(
+                      height: double.infinity,
+                      width: double.infinity,
+                      child: getSlider(items)),
+                )),
           ],
         ),
       ),
