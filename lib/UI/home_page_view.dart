@@ -26,6 +26,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _initializePreferences();
 
+    List<int> items = [1,2,3,4];
+
     return Scaffold(
       appBar: AppBar(
         title: Text("River Watch"),
@@ -35,7 +37,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Flexible(
-              flex: 5,
+              flex: 6,
               child: SizedBox(
                 height: double.infinity,
                 width: double.infinity,
@@ -45,18 +47,19 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Flexible(
-                flex: 5,
+                flex: 4,
                 child: SizedBox(
                     height: double.infinity,
                     width: double.infinity,
                     child: CarouselSlider(
                       options: CarouselOptions(
                           height: 120.0,
-                          autoPlay: true,
+                          autoPlay: (items.length > 1),
                           autoPlayInterval: Duration(seconds: 5),
-                          autoPlayAnimationDuration: Duration(milliseconds: 800)
+                          autoPlayAnimationDuration: Duration(milliseconds: 800),
+                          viewportFraction: 1.0,
                       ),
-                      items: [1, 2, 3, 4, 5].map((i) {
+                      items: items.map((i) {
                         return Builder(
                           builder: (BuildContext context) {
                             return Container(
