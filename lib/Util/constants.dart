@@ -2,7 +2,7 @@
 const kBaseUrl = 'https://waterservices.usgs.gov/nwis/iv/?format=json';
 const kFavoritesKey = 'favorites';
 const kFaveKey = 'favoriteModelList';
-const double kCardHeight = 125.0;
+const double kCardHeight = 130.0;
 const Map<String,String> kAllStates = {
   'AL': 'Alabama',
   'AK': 'Alaska',

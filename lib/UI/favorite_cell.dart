@@ -22,9 +22,10 @@ class FavoriteCard extends StatefulWidget {
 
 class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
+  double cardRadius = 10;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
 
   Future<GaugeModel> _getFavorite() async {
 
@@ -131,9 +132,8 @@ class _FavoriteCard extends State<FavoriteCard> {
         color: Colors.tealAccent,
         shadowColor: Colors.black,
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius)),
         child: Column(
-
           children: [
             Row(
               children: [
@@ -276,12 +276,12 @@ class _FavoriteCard extends State<FavoriteCard> {
         } else {
           return Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
+                  borderRadius: BorderRadius.circular(cardRadius)),
               elevation: 2,
               color: Colors.tealAccent,
               shadowColor: Colors.black,
               child: Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Align(
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
