@@ -48,15 +48,8 @@ class _FavoriteCard extends State<FavoriteCard> {
       widget.model.lastStageReading = fModel.currentStage;
       widget.model.lastFlowReading = fModel.currentFlow;
       favesVM.favoriteModels[widget.favoriteGaugeId].buildFromGauge(widget.model);
-
-      print('═══════════════════════════════════════════════════════');
-      print(fModel.favoriteName);
-      print('═══════════════════════════════════════════════════════');
-
     } else {
       if (widget.model == null) {
-        print('MODEL IS REBUIDING');
-
         if (_cellData == null || widget.refresh) {
           _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
         }
