@@ -45,7 +45,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   CarouselSlider getSlider(FavoritesViewModel model) {
-
     return CarouselSlider(
       options: CarouselOptions(
         height: 120.0,
@@ -68,7 +67,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<FavoriteCard> getFavoriteCards(List<String> items, BuildContext context) {
+  List<FavoriteCard> getFavoriteCards(
+      List<String> items, BuildContext context) {
     if (items == null) return [];
     List<FavoriteCard> cards = [];
     for (int index = 0; index < items.length; index++) {
@@ -82,36 +82,36 @@ class _HomePageState extends State<HomePage> {
     _initializePreferences();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("River Watch"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Flexible(
-              flex: 8,
-              child: SizedBox(
-                height: double.infinity,
-                width: double.infinity,
-                child: Center(
-                  child: Text('Home Page Title View'),
+        appBar: AppBar(
+          title: Text("River Watch"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Flexible(
+                flex: 8,
+                child: SizedBox(
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: Center(
+                    child: Text('Home Page Title View'),
+                  ),
                 ),
               ),
-            ),
-            Flexible(
-                flex: 2,
-                child: Consumer<FavoritesViewModel>(
-                  builder: (context, model, child) => SizedBox(
-                      height: double.infinity,
-                      width: double.infinity,
-                      child: getSlider(model)),
-                )),
-          ],
+              Flexible(
+                  flex: 2,
+                  child: Consumer<FavoritesViewModel>(
+                    builder: (context, model, child) => SizedBox(
+                        height: double.infinity,
+                        width: double.infinity,
+                        child: getSlider(model)),
+                  )),
+            ],
+          ),
         ),
-      ),
-      endDrawer:
-          RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        endDrawer:
+            RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
+        );
   }
 }
