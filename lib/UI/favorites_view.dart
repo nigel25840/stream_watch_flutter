@@ -50,7 +50,7 @@ class _FavoritesView extends State<FavoritesView> {
             itemBuilder: (context, index) {
               String gaugeId = model.favorites[index];
               Key key = Key(model.favorites[index]);
-              return FavoriteCard(gaugeId, key, reload);
+              return FavoriteCard(gaugeId, key, reload, true);
             },
           ),
           onRefresh: _loadData,

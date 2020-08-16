@@ -19,6 +19,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  TextStyle buttonStyle =
+      TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500);
+
   Future<void> _initializePreferences() async {
     var faves = await Storage.getList(kFavoritesKey);
     if (faves == null) {
@@ -47,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   CarouselSlider getSlider(FavoritesViewModel model) {
     return CarouselSlider(
       options: CarouselOptions(
-        height: 120.0,
+        height: kCardHeight,
         autoPlay: autoPlay,
         autoPlayInterval: Duration(seconds: 8),
         autoPlayAnimationDuration: Duration(milliseconds: 800),
@@ -58,8 +61,8 @@ class _HomePageState extends State<HomePage> {
         return Builder(
           builder: (BuildContext context) {
             return Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: card,
+              padding: const EdgeInsets.all(0.0),
+              child: Container(height: kCardHeight, child: card),
             );
           },
         );
@@ -72,7 +75,7 @@ class _HomePageState extends State<HomePage> {
     if (items == null) return [];
     List<FavoriteCard> cards = [];
     for (int index = 0; index < items.length; index++) {
-      cards.add(FavoriteCard(items[index], Key(items[index]), true));
+      cards.add(FavoriteCard(items[index], Key(items[index]), false, false));
     }
     return cards;
   }
@@ -80,38 +83,63 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _initializePreferences();
+    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("River Watch"),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Flexible(
-                flex: 8,
-                child: SizedBox(
-                  height: double.infinity,
-                  width: double.infinity,
-                  child: Center(
-                    child: Text('Home Page Title View'),
+      appBar: AppBar(
+        title: Text("River Watch"),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+              flex: 8,
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("images/splash.png"),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-              Flexible(
-                  flex: 2,
-                  child: Consumer<FavoritesViewModel>(
-                    builder: (context, model, child) => SizedBox(
-                        height: double.infinity,
-                        width: double.infinity,
-                        child: getSlider(model)),
-                  )),
-            ],
-          ),
+            ),
+            Flexible(
+                flex: 1,
+                child: Row(
+                  children: [
+                    SizedBox(width: size.width * .05),
+                    SizedBox(
+                      width: size.width * .4,
+                      child: OutlineButton(
+                          color: Colors.white,
+                          padding: EdgeInsets.all(10.0),
+                          child: Text('Search', style: buttonStyle)),
+                    ),
+                    SizedBox(width: size.width * .1),
+                    SizedBox(
+                      width: size.width * .4,
+                      child: OutlineButton(
+                          color: Colors.blue,
+                          padding: EdgeInsets.all(10.0),
+                          child: Text('Favorites', style: buttonStyle)),
+                    ),
+                    SizedBox(width: size.width * .05),
+                  ],
+                )),
+            Flexible(
+                flex: 2,
+                child: Consumer<FavoritesViewModel>(
+                  builder: (context, model, child) => SizedBox(
+                      height: double.infinity,
+                      width: double.infinity,
+                      child: getSlider(model)),
+                )),
+          ],
         ),
-        endDrawer:
-            RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
-        );
+      ),
+      endDrawer:
+          RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
+    );
   }
 }

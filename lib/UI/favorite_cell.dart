@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,14 +18,16 @@ class FavoriteCard extends StatefulWidget {
   final Key key;
   GaugeModel model;
   _FavoriteCard createState() => _FavoriteCard();
-  FavoriteCard(this.favoriteGaugeId, this.key, [this.refresh]);
+  bool dismissable = true;
+  FavoriteCard(this.favoriteGaugeId, this.key, [this.refresh, this.dismissable]);
 }
 
 class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
 
-  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
+  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  double cardRadius = 10.0;
 
   Future<GaugeModel> _getFavorite() async {
 
@@ -133,8 +137,7 @@ class _FavoriteCard extends State<FavoriteCard> {
         elevation: 2,
         color: Colors.tealAccent,
         shadowColor: Colors.black,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius)),
         child: Column(
 
           children: [
@@ -151,7 +154,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                           Row(
                             children: [
                               SizedBox(
-                                  width: MediaQuery.of(context).size.width * .9,
+                                  width: MediaQuery.of(context).size.width * .95,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -226,6 +229,57 @@ class _FavoriteCard extends State<FavoriteCard> {
     return card;
   }
 
+  Widget renderView(GaugeModel model) {
+    return widget.dismissable ? Dismissible(
+      direction: DismissDirection.endToStart,
+      key: Key(model.gaugeId),
+      onDismissed: (dir) {
+        Storage.removeFromPrefs(kFavoritesKey, model.gaugeId);
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text(
+                '${model.gaugeName} was removed from favorites')));
+      },
+      background: Container(
+        color: Colors.red,
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Text(
+                  'Deleting...',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      child: GestureDetector(
+        onTap: () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return GaugeDetail(
+          gaugeId: model.gaugeId,
+          gaugeName: model.gaugeName,
+        );
+      }));
+    },
+    child: _faveCardView(model, context),
+    ),
+    ) : GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return GaugeDetail(
+            gaugeId: model.gaugeId,
+            gaugeName: model.gaugeName,
+          );
+        }));
+      },
+      child: _faveCardView(model, context),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -236,50 +290,13 @@ class _FavoriteCard extends State<FavoriteCard> {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Dismissible(
-                direction: DismissDirection.endToStart,
-                key: Key(gaugeModel.gaugeId),
-                onDismissed: (dir) {
-                  Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          '${gaugeModel.gaugeName} was removed from favorites')));
-                },
-                background: Container(
-                  color: Colors.red,
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Text(
-                            'Deleting...',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return GaugeDetail(
-                        gaugeId: gaugeModel.gaugeId,
-                        gaugeName: gaugeModel.gaugeName,
-                      );
-                    }));
-                  },
-                  child: _faveCardView(gaugeModel, context),
-                ),
-              ),
+              Container(height: kCardHeight, child: renderView(gaugeModel))
             ],
           );
         } else {
           return Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
+                  borderRadius: BorderRadius.circular(cardRadius)),
               elevation: 2,
               color: Colors.tealAccent,
               shadowColor: Colors.black,
