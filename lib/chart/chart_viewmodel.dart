@@ -160,6 +160,22 @@ class ChartViewModel extends ChangeNotifier {
     favesVM.deleteFavorite(faveId);
   }
 
+  String getCurrentValue(String valueType) {
+    try {
+      if (valueType == 'stage') {
+        if(gaugeStageReadings.last.dFlow != null) {
+          return gaugeStageReadings.last.dFlow.toString() + 'ft';
+        }
+      } else if (valueType != 'stage') {
+        if(gaugeFlowReadings.last.dFlow != null) {
+          return gaugeFlowReadings.last.dFlow.toString() + 'cfs';
+        }
+      }
+    } catch (ex) {
+      return '';
+    }
+  }
+
   String getCurrentStats() {
     String currentFlow = '';
     String currentStage = '';

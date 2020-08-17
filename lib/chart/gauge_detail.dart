@@ -166,16 +166,20 @@ class _GaugeDetail extends State<GaugeDetail> {
                       )
                     ],
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            mgr.getCurrentStats(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${mgr.getCurrentValue('stage')}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                        Text('${mgr.getCurrentValue('')}',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0),
-                          )),
-                    ],
+                                fontWeight: FontWeight.bold, fontSize: 16.0))
+                      ],
+                    ),
                   ),
                   Column(
                     children: [
@@ -210,7 +214,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Center(child: Text('3 day values'),),
+                                  child: Center(child: Text('3 day values', style: TextStyle(fontWeight: FontWeight.bold),),),
                                 )
                               ],
                             ),
@@ -222,15 +226,17 @@ class _GaugeDetail extends State<GaugeDetail> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('Low stage: ${mgr.ultimateStages[0]}', style: dataStyle,),
-                                      Text('High stage: ${mgr.ultimateStages[1]}', style: dataStyle,),
+                                      Text('Low flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
+                                      SizedBox(height: 4,),
+                                      Text('High flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
                                     ],
                                   ),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('Low flow: ${mgr.ultimateFlows[0]}', style: dataStyle,),
-                                      Text('High flow: ${mgr.ultimateFlows[1]}', style: dataStyle,),
+                                      Text('Low flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.first : 'N/A'}', style: dataStyle,),
+                                      SizedBox(height: 4,),
+                                      Text('High flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.last : 'N/A'}', style: dataStyle,),
                                     ],
                                   ),
                                 ],
