@@ -55,7 +55,6 @@ class FavoritesViewModel extends ChangeNotifier {
       fModel = FavoriteModel(id);
     }
     // update favorite models
-//    favoriteModels.putIfAbsent(id, () => fModel);
 
     favoriteModels.remove(id);
     favoriteModels[id] = fModel;

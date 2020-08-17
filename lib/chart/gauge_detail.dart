@@ -219,6 +219,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                             });
                           },
                         ),
+                        Text('favesVM.favoriteModels[widget.gaugeId].increasing')
                       ],
                     ),
                   )
