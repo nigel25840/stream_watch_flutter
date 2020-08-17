@@ -137,7 +137,7 @@ class _GaugeDetail extends State<GaugeDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("STREAM WATCH"),
+        title: Text("Gauge Detail"),
         actions: <Widget>[],
       ),
       body: FutureBuilder(
@@ -231,12 +231,8 @@ class _GaugeDetail extends State<GaugeDetail> {
       floatingActionButton: SpeedDial(
         child: Icon(Icons.keyboard_arrow_up),
         animatedIconTheme: IconThemeData(size: 22.0),
-        onOpen: () {
-          print("OPENING GAUGE MENU");
-        },
-        onClose: () {
-          print("CLOSING GAUGE MENU");
-        },
+        onOpen: () { },
+        onClose: () { },
         visible: true,
         curve: Curves.bounceIn,
         children: [
@@ -264,11 +260,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                     animationDuration = 0;
                     FavoriteModel model = FavoriteModel(widget.gaugeId);
                     model.favoriteName = widget.gaugeName;
-
-                    print("${model.favoriteName}");
-
                     double flow = -9999;
-
                     try {
                       if (mgr.gaugeFlowReadings != null) {
                         if (mgr.gaugeFlowReadings.last != null) {

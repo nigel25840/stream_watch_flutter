@@ -12,18 +12,20 @@ import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class FavoriteCard extends StatefulWidget {
   bool refresh;
+  var dismissable = true;
   final String favoriteGaugeId;
   final Key key;
   GaugeModel model;
   _FavoriteCard createState() => _FavoriteCard();
-  FavoriteCard(this.favoriteGaugeId, this.key, [this.refresh]);
+  FavoriteCard(this.favoriteGaugeId, this.key, this.refresh, this.dismissable);
 }
 
 class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
+  double cardRadius = 10;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
 
   Future<GaugeModel> _getFavorite() async {
 
@@ -44,10 +46,6 @@ class _FavoriteCard extends State<FavoriteCard> {
       widget.model.lastStageReading = fModel.currentStage;
       widget.model.lastFlowReading = fModel.currentFlow;
       favesVM.favoriteModels[widget.favoriteGaugeId].buildFromGauge(widget.model);
-
-      print('═══════════════════════════════════════════════════════');
-      print(fModel.favoriteName);
-      print('═══════════════════════════════════════════════════════');
 
     } else {
       if (widget.model == null) {
@@ -134,9 +132,8 @@ class _FavoriteCard extends State<FavoriteCard> {
         color: Colors.tealAccent,
         shadowColor: Colors.black,
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(cardRadius)),
         child: Column(
-
           children: [
             Row(
               children: [
@@ -237,7 +234,7 @@ class _FavoriteCard extends State<FavoriteCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Dismissible(
-                direction: DismissDirection.endToStart,
+                direction: widget.dismissable ? DismissDirection.endToStart : null,
                 key: Key(gaugeModel.gaugeId),
                 onDismissed: (dir) {
                   Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
@@ -279,12 +276,12 @@ class _FavoriteCard extends State<FavoriteCard> {
         } else {
           return Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0)),
+                  borderRadius: BorderRadius.circular(cardRadius)),
               elevation: 2,
               color: Colors.tealAccent,
               shadowColor: Colors.black,
               child: Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Align(
                   child: CircularProgressIndicator(
                     strokeWidth: 2,

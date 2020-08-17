@@ -1,5 +1,6 @@
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
+import 'package:streamwatcher/UI/gauge_selector_card.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
@@ -62,22 +63,7 @@ class _GaugeSelector extends State<GaugeSelector>
       itemCount: snapshot.data.length,
       itemBuilder: (context, index) {
         GaugeModel gauge = snapshot.data[index];
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListTile(
-            title: Text(gauge.gaugeName),
-            subtitle: Text(gauge.gaugeId),
-            trailing: Icon(Icons.arrow_forward),
-            onTap: () {
-              print(gauge.gaugeId);
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugeDetail(
-                    gaugeId: gauge.gaugeId,
-                    gaugeName: gauge.gaugeName);
-              }));
-            },
-          ),
-        );
+        return GaugeSelectorCard(gauge);
       },
       itemPositionsListener: listener,
       itemScrollController: scroller,
@@ -110,5 +96,3 @@ class _GaugeSelector extends State<GaugeSelector>
     );
   }
 }
-
-

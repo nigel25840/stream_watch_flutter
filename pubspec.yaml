@@ -24,6 +24,7 @@ dependencies:
   scrollable_positioned_list: ^0.1.6
   get_it: ^4.0.4
   provider: ^4.0.1
+  carousel_slider: ^2.2.1
 
 
 dev_dependencies:
@@ -31,7 +32,8 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-
   uses-material-design: true
+  assets:
+     - images/splash.png
 
 

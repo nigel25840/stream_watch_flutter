@@ -42,7 +42,7 @@ class _FavoritesView extends State<FavoritesView> {
     return Consumer<FavoritesViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
-          title: Text('=Favorites='),
+          title: Text('Favorites'),
         ),
         body: RefreshIndicator(
           child: ListView.builder(
@@ -50,7 +50,7 @@ class _FavoritesView extends State<FavoritesView> {
             itemBuilder: (context, index) {
               String gaugeId = model.favorites[index];
               Key key = Key(model.favorites[index]);
-              return FavoriteCard(gaugeId, key, reload);
+              return FavoriteCard(gaugeId, key, reload, true);
             },
           ),
           onRefresh: _loadData,
