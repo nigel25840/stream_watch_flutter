@@ -26,6 +26,8 @@ class GaugeDetail extends StatefulWidget {
 }
 
 class _GaugeDetail extends State<GaugeDetail> {
+  TextStyle headingStyle = TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold);
+  TextStyle dataStyle = TextStyle(fontSize: 12.0);
   ChartViewModel mgr = ChartViewModel();
   bool refresh = false;
   bool isFavorite;
@@ -135,6 +137,7 @@ class _GaugeDetail extends State<GaugeDetail> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Gauge Detail"),
@@ -154,8 +157,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             widget.gaugeName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0),
+                            style: headingStyle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             softWrap: false,
@@ -164,38 +166,88 @@ class _GaugeDetail extends State<GaugeDetail> {
                       )
                     ],
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            mgr.getCurrentStats(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${mgr.getCurrentValue('stage')}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16.0),
+                        ),
+                        Text('${mgr.getCurrentValue('')}',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0),
-                          )),
-                    ],
+                                fontWeight: FontWeight.bold, fontSize: 16.0))
+                      ],
+                    ),
                   ),
-                  Container(
-                      height: MediaQuery.of(context).size.height * .5,
-                      alignment: Alignment(0.0, 0.0),
-                      color: Colors.lightBlueAccent,
-                      child: charts.TimeSeriesChart(
-                        mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
-                        animate: true,
-                        animationDuration:
-                            Duration(milliseconds: animationDuration),
-                        primaryMeasureAxis: charts.NumericAxisSpec(
-                            tickProviderSpec:
-                                charts.BasicNumericTickProviderSpec(
-                                    zeroBound: false,
-                                    dataIsInWholeNumbers: false,
-                                    desiredMaxTickCount: 8,
-                                    desiredMinTickCount: 5),
-                            renderSpec: charts.GridlineRendererSpec(
-                              tickLengthPx: 0,
-                              labelOffsetFromAxisPx: 5,
-                            )),
-                      )),
+                  Column(
+                    children: [
+                      Container(
+                          height: MediaQuery.of(context).size.height * .5,
+                          alignment: Alignment(0.0, 0.0),
+                          color: Colors.lightBlueAccent,
+                          child: charts.TimeSeriesChart(
+                            mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
+                            animate: true,
+                            animationDuration:
+                                Duration(milliseconds: animationDuration),
+                            primaryMeasureAxis: charts.NumericAxisSpec(
+                                tickProviderSpec:
+                                    charts.BasicNumericTickProviderSpec(
+                                        zeroBound: false,
+                                        dataIsInWholeNumbers: false,
+                                        desiredMaxTickCount: 8,
+                                        desiredMinTickCount: 5),
+                                renderSpec: charts.GridlineRendererSpec(
+                                  tickLengthPx: 0,
+                                  labelOffsetFromAxisPx: 5,
+                                )),
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Center(child: Text('3 day values', style: TextStyle(fontWeight: FontWeight.bold),),),
+                                )
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left:20, right: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Low flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
+                                      SizedBox(height: 4,),
+                                      Text('High flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
+                                    ],
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Low flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.first : 'N/A'}', style: dataStyle,),
+                                      SizedBox(height: 4,),
+                                      Text('High flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.last : 'N/A'}', style: dataStyle,),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+
+                  ),
                   Visibility(
                     visible: mgr.containsAllData,
                     child: Column(
@@ -219,7 +271,6 @@ class _GaugeDetail extends State<GaugeDetail> {
                             });
                           },
                         ),
-                        Text('favesVM.favoriteModels[widget.gaugeId].increasing')
                       ],
                     ),
                   )

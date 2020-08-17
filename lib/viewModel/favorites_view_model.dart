@@ -38,7 +38,6 @@ class FavoritesViewModel extends ChangeNotifier {
         favoriteModels[id] = FavoriteModel(id);
       }
     }
-
     notifyListeners();
   }
 
@@ -55,7 +54,6 @@ class FavoritesViewModel extends ChangeNotifier {
       fModel = FavoriteModel(id);
     }
     // update favorite models
-
     favoriteModels.remove(id);
     favoriteModels[id] = fModel;
 
@@ -67,11 +65,6 @@ class FavoritesViewModel extends ChangeNotifier {
 
   void deleteFavorite(String id) {
     if (favorites.contains(id)) {
-
-      print('==========================================');
-      print(favoriteModels);
-      print('==========================================');
-
       this.favorites.remove(id);
       this.favoriteModels.remove(id);
     }

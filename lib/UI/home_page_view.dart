@@ -6,7 +6,6 @@ import 'package:streamwatcher/UI/favorite_cell.dart';
 import 'package:streamwatcher/UI/state_picker.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
-import 'package:streamwatcher/model/favorite_model%202.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'drawer.dart';
 import 'favorites_view.dart';
@@ -22,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextStyle buttonStyle =
-      TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500);
+      TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500);
 
   Future<void> _initializePreferences() async {
     var faves = await Storage.getList(kFavoritesKey);
@@ -120,6 +119,8 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: size.width * .4,
                       child: OutlineButton(
+                          highlightedBorderColor: Colors.blue,
+                          disabledBorderColor: Colors.lightBlue,
                           onPressed: () {
                             _handleTap(StatePicker(title: "Choose a State"));
                           },
@@ -137,6 +138,8 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: size.width * .4,
                       child: OutlineButton(
+                          highlightedBorderColor: Colors.blue,
+                          disabledBorderColor: Colors.lightBlue,
                           onPressed: () {
                             _handleTap(FavoritesView());
                           },

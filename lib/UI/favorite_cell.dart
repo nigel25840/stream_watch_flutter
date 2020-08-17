@@ -24,8 +24,8 @@ class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
   double cardRadius = 10;
 
-  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
 
   Future<GaugeModel> _getFavorite() async {
 
@@ -75,8 +75,7 @@ class _FavoriteCard extends State<FavoriteCard> {
               var stageVal = values['value'];
               lastStageReading = double.parse(stageVal);
               timeStamp = DateTime.parse(values['dateTime']);
-              gaugeRising =
-                  _isTrendingUp(timeSeries[index]['values'][0]['value']);
+              gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
             }
           } catch (e) {
             print(e.toString());
