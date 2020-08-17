@@ -75,8 +75,7 @@ class _FavoriteCard extends State<FavoriteCard> {
               var stageVal = values['value'];
               lastStageReading = double.parse(stageVal);
               timeStamp = DateTime.parse(values['dateTime']);
-              gaugeRising =
-                  _isTrendingUp(timeSeries[index]['values'][0]['value']);
+              gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
             }
           } catch (e) {
             print(e.toString());

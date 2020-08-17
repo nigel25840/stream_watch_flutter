@@ -7,6 +7,12 @@ class FavoriteModel {
 
   double currentFlow;
   double currentStage;
+
+  double periodHighStage;
+  double periodHighFlow;
+  double periodLowStage;
+  double periodLowFlow;
+
   bool increasing;
   DateTime lastUpdated;
 

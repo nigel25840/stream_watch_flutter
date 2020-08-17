@@ -32,6 +32,10 @@ class ChartViewModel extends ChangeNotifier {
   bool containsAllData = false;
   bool isFavorite = false;
 
+  List<String> ultimateFlows;
+  List<String> ultimateStages;
+  double temperature;
+
   FavoritesViewModel favesVM;
 
   Future<void> getGaugeData(String gaugeId, {int hours = 72, bool refresh}) async {
@@ -66,6 +70,11 @@ class ChartViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  double getUltimateValue(List<double> allValues, bool high){
+    allValues.sort();
+    return high ? allValues.last : allValues.first;
+  }
+
   List<charts.Series<GaugeReading, DateTime>> generateChartSeries(List<GaugeReading> readings, String identifier) {
     var series = List<charts.Series<GaugeReading, DateTime>>();
     series.add(charts.Series(
@@ -80,25 +89,48 @@ class ChartViewModel extends ChangeNotifier {
   }
 
   _getFlowReadings(json) {
+    List<double> tempReadings = [];
     gaugeFlowReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeFlowReadings.add(GaugeReading(value, timestamp));
+      tempReadings.add(value);
     }
+    ultimateFlows = _getUltimateValues(tempReadings, 'cfs');
     setLocalVars(gaugeFlowReadings);
   }
 
   _getStageReadings(json) {
+    List<double> tempReadings = [];
     gaugeStageReadings.clear();
     for (int i = 0; i < json.length; i++) {
       var dict = json[i];
       var value = double.parse(dict['value']);
       var timestamp = DateTime.parse(dict['dateTime']);
       gaugeStageReadings.add(GaugeReading(value, timestamp));
+      tempReadings.add(value);
     }
+    ultimateStages = _getUltimateValues(tempReadings, 'ft');
     setLocalVars(gaugeStageReadings);
+  }
+
+  List<String> _getUltimateValues(List<double> readingValues, String suffix) {
+    List<String> temp = [];
+    if (readingValues == null || readingValues.length < 1){
+      temp.add('N/A');
+      temp.add('N/A');
+      return temp;
+    }
+    // CFS should be represented as int, but enters app as a double from USGS
+    String lowVal = (suffix == 'ft') ? readingValues.first.toString() : readingValues.first.round().toString();
+    String highVal = (suffix == 'ft') ? readingValues.last.toString() : readingValues.last.round().toString();
+
+    readingValues.sort();
+    temp.add('${lowVal}$suffix');
+    temp.add('${highVal}$suffix');
+    return temp;
   }
 
   void setLocalVars(List<GaugeReading> readings) {
@@ -120,11 +152,7 @@ class ChartViewModel extends ChangeNotifier {
   }
 
   Future<void> addFavorite(String faveId, [FavoriteModel model]) async {
-//    await Storage.putFavorite(kFavoritesKey, faveId);
-//    this.isFavorite = await Storage.contains(kFavoritesKey, faveId);
-
     favesVM.addFavorite(faveId, model);
-
     notifyListeners();
   }
 

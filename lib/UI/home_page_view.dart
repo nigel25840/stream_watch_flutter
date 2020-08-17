@@ -6,7 +6,6 @@ import 'package:streamwatcher/UI/favorite_cell.dart';
 import 'package:streamwatcher/UI/state_picker.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
-import 'package:streamwatcher/model/favorite_model%202.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'drawer.dart';
 import 'favorites_view.dart';
