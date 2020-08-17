@@ -26,7 +26,8 @@ class GaugeDetail extends StatefulWidget {
 }
 
 class _GaugeDetail extends State<GaugeDetail> {
-  TextStyle dataStyle = TextStyle(fontSize: 16.0);
+  TextStyle headingStyle = TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold);
+  TextStyle dataStyle = TextStyle(fontSize: 12.0);
   ChartViewModel mgr = ChartViewModel();
   bool refresh = false;
   bool isFavorite;
@@ -156,8 +157,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             widget.gaugeName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0),
+                            style: headingStyle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             softWrap: false,

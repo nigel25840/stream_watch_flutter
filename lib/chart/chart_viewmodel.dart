@@ -117,17 +117,18 @@ class ChartViewModel extends ChangeNotifier {
   }
 
   List<String> _getUltimateValues(List<double> readingValues, String suffix) {
+    var vals = readingValues;
     List<String> temp = [];
-    if (readingValues == null || readingValues.length < 1){
+    if (vals == null || vals.length < 1){
       temp.add('N/A');
       temp.add('N/A');
       return temp;
     }
+    vals.sort();
     // CFS should be represented as int, but enters app as a double from USGS
-    String lowVal = (suffix == 'ft') ? readingValues.first.toString() : readingValues.first.round().toString();
-    String highVal = (suffix == 'ft') ? readingValues.last.toString() : readingValues.last.round().toString();
+    String lowVal = (suffix == 'ft') ? vals.first.toString() : vals.first.round().toString();
+    String highVal = (suffix == 'ft') ? vals.last.toString() : vals.last.round().toString();
 
-    readingValues.sort();
     temp.add('${lowVal}$suffix');
     temp.add('${highVal}$suffix');
     return temp;

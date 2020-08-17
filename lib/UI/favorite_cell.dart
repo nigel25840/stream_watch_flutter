@@ -24,8 +24,8 @@ class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
   double cardRadius = 10;
 
-  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 16);
-  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
 
   Future<GaugeModel> _getFavorite() async {
 

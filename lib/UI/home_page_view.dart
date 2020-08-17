@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextStyle buttonStyle =
-      TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500);
+      TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500);
 
   Future<void> _initializePreferences() async {
     var faves = await Storage.getList(kFavoritesKey);
@@ -119,6 +119,8 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: size.width * .4,
                       child: OutlineButton(
+                          highlightedBorderColor: Colors.blue,
+                          disabledBorderColor: Colors.lightBlue,
                           onPressed: () {
                             _handleTap(StatePicker(title: "Choose a State"));
                           },
@@ -136,6 +138,8 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: size.width * .4,
                       child: OutlineButton(
+                          highlightedBorderColor: Colors.blue,
+                          disabledBorderColor: Colors.lightBlue,
                           onPressed: () {
                             _handleTap(FavoritesView());
                           },
