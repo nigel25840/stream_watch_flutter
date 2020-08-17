@@ -260,11 +260,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                     animationDuration = 0;
                     FavoriteModel model = FavoriteModel(widget.gaugeId);
                     model.favoriteName = widget.gaugeName;
-
-                    print("${model.favoriteName}");
-
                     double flow = -9999;
-
                     try {
                       if (mgr.gaugeFlowReadings != null) {
                         if (mgr.gaugeFlowReadings.last != null) {

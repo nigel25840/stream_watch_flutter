@@ -3,11 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/favorite_cell.dart';
+import 'package:streamwatcher/UI/state_picker.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/model/favorite_model%202.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'drawer.dart';
+import 'favorites_view.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -80,6 +82,12 @@ class _HomePageState extends State<HomePage> {
     return cards;
   }
 
+  _handleTap(Widget widget) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return widget;
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     _initializePreferences();
@@ -112,17 +120,35 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: size.width * .4,
                       child: OutlineButton(
+                          onPressed: () {
+                            _handleTap(StatePicker(title: "Choose a State"));
+                          },
                           color: Colors.white,
                           padding: EdgeInsets.all(10.0),
-                          child: Text('Search', style: buttonStyle)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.search),
+                              Text('Search', style: buttonStyle),
+                            ],
+                          )),
                     ),
                     SizedBox(width: size.width * .1),
                     SizedBox(
                       width: size.width * .4,
                       child: OutlineButton(
+                          onPressed: () {
+                            _handleTap(FavoritesView());
+                          },
                           color: Colors.blue,
                           padding: EdgeInsets.all(10.0),
-                          child: Text('Favorites', style: buttonStyle)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.star_border),
+                              Text('Favorites', style: buttonStyle),
+                            ],
+                          )),
                     ),
                     SizedBox(width: size.width * .05),
                   ],
