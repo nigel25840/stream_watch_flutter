@@ -26,10 +26,11 @@ class _FavoriteCard extends State<FavoriteCard> {
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
+  FavoritesViewModel favesVM;
 
   Future<GaugeModel> _getFavorite() async {
 
-    FavoritesViewModel favesVM = Provider.of<FavoritesViewModel>(context);
+    favesVM = Provider.of<FavoritesViewModel>(context);
 
     // TODO: This all needs to be refactored in next version
 
@@ -234,12 +235,11 @@ class _FavoriteCard extends State<FavoriteCard> {
             children: [
               Dismissible(
                 direction: widget.dismissable ? DismissDirection.endToStart : null,
-                key: Key(gaugeModel.gaugeId),
+                key: UniqueKey(),
                 onDismissed: (dir) {
-                  Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
+                  favesVM.deleteFavorite(gaugeModel.gaugeId);
                   Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          '${gaugeModel.gaugeName} was removed from favorites')));
+                      content: Text('${gaugeModel.gaugeName} was removed from favorites')));
                 },
                 background: Container(
                   color: Colors.red,
