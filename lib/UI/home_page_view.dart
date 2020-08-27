@@ -92,83 +92,67 @@ class _HomePageState extends State<HomePage> {
     _initializePreferences();
     Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("River Watch"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Flexible(
-              flex: 8,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("images/splash.png"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("images/splashImage.png"), fit: BoxFit.fitWidth)),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text("River Watch"),
+        ),
+        body: Column(
+          children: [
+            SizedBox(
+              height: size.height * .55,
             ),
-            Flexible(
-                flex: 1,
-                child: Row(
-                  children: [
-                    SizedBox(width: size.width * .05),
-                    SizedBox(
-                      width: size.width * .4,
-                      child: OutlineButton(
-                          highlightedBorderColor: Colors.blue,
-                          disabledBorderColor: Colors.lightBlue,
-                          onPressed: () {
-                            _handleTap(StatePicker(title: "Choose a State"));
-                          },
-                          color: Colors.white,
-                          padding: EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.search),
-                              Text('Search', style: buttonStyle),
-                            ],
-                          )),
-                    ),
-                    SizedBox(width: size.width * .1),
-                    SizedBox(
-                      width: size.width * .4,
-                      child: OutlineButton(
-                          highlightedBorderColor: Colors.blue,
-                          disabledBorderColor: Colors.lightBlue,
-                          onPressed: () {
-                            _handleTap(FavoritesView());
-                          },
-                          color: Colors.blue,
-                          padding: EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.star_border),
-                              Text('Favorites', style: buttonStyle),
-                            ],
-                          )),
-                    ),
-                    SizedBox(width: size.width * .05),
-                  ],
-                )),
-            Flexible(
-                flex: 2,
-                child: Consumer<FavoritesViewModel>(
-                  builder: (context, model, child) => SizedBox(
-                      height: double.infinity,
-                      width: double.infinity,
-                      child: getSlider(model)),
-                )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  width: size.width * .48,
+                  child: FlatButton(
+                      shape: RoundedRectangleBorder(side: BorderSide(color: Colors.black45, width: 2.0, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10.0)),
+                      onPressed: () {
+                        _handleTap(StatePicker(title: "Choose a State"));
+                      },
+                      color: Colors.white.withAlpha(150),
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search),
+                          Text('Search', style: buttonStyle),
+                        ],
+                      )),
+                ),
+                Container(
+                  width: size.width * .48,
+                  child: FlatButton(
+                    shape: RoundedRectangleBorder(side: BorderSide(color: Colors.black45, width: 2.0, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10.0)),
+                      onPressed: () {
+                        _handleTap(FavoritesView());
+                      },
+                      color: Colors.white.withAlpha(150),
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.star_border),
+                          Text('Favorites', style: buttonStyle),
+                        ],
+                      )),
+                ),
+              ],
+            ),
+            Consumer<FavoritesViewModel>(
+              builder: (context, model, child) => getSlider(model),
+            ),
           ],
         ),
+        endDrawer:
+            RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      endDrawer:
-          RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

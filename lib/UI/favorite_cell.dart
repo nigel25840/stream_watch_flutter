@@ -23,22 +23,23 @@ class FavoriteCard extends StatefulWidget {
 class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
   double cardRadius = 10;
+  bool reload;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
   FavoritesViewModel favesVM;
 
   Future<GaugeModel> _getFavorite() async {
-
+    reload = widget.refresh;
     favesVM = Provider.of<FavoritesViewModel>(context);
 
     // TODO: This all needs to be refactored in next version
 
     FavoriteModel fModel = favesVM.favoriteModels[widget.favoriteGaugeId];
 
-    if(widget.refresh) {
+    if(reload) {
       fModel = null;
-      widget.refresh = false;
+      reload = false;
     }
 
     if(fModel != null && fModel.isPopulated()) {
@@ -52,7 +53,7 @@ class _FavoriteCard extends State<FavoriteCard> {
       if (widget.model == null) {
         print('MODEL IS REBUIDING');
 
-        if (_cellData == null || widget.refresh) {
+        if (_cellData == null || reload) {
           _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
         }
 

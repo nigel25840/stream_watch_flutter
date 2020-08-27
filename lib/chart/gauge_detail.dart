@@ -4,10 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:streamwatcher/UI/drawer.dart';
-import 'package:streamwatcher/UI/gauge_preferences.dart';
-import 'package:streamwatcher/Util/Storage.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -28,6 +25,7 @@ class GaugeDetail extends StatefulWidget {
 class _GaugeDetail extends State<GaugeDetail> {
   TextStyle headingStyle = TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold);
   TextStyle dataStyle = TextStyle(fontSize: 12.0);
+  TextStyle readingStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0);
   ChartViewModel mgr = ChartViewModel();
   bool refresh = false;
   bool isFavorite;
@@ -140,7 +138,13 @@ class _GaugeDetail extends State<GaugeDetail> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Gauge Detail"),
+        title: Text(
+          widget.gaugeName,
+          style: headingStyle,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          softWrap: false,
+        ),
         actions: <Widget>[],
       ),
       body: FutureBuilder(
@@ -149,35 +153,14 @@ class _GaugeDetail extends State<GaugeDetail> {
             if (snapshot.connectionState == ConnectionState.done) {
               return Column(
                 children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .95,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            widget.gaugeName,
-                            style: headingStyle,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            softWrap: false,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${mgr.getCurrentValue('stage')}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16.0),
+                        Text('${mgr.getCurrentValue('stage')}', style: readingStyle,
                         ),
-                        Text('${mgr.getCurrentValue('')}',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16.0))
+                        Text('${mgr.getCurrentValue('')}', style: readingStyle,)
                       ],
                     ),
                   ),
@@ -254,7 +237,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         MaterialSegmentedControl(
-                          horizontalPadding: EdgeInsets.all(20),
+                          horizontalPadding: EdgeInsets.only(top: 5, bottom: 0, left: 20, right: 20),
                           children: {
                             0: Text("CFS"),
                             1: Text("  Stage in feet  ")
