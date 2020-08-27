@@ -39,7 +39,6 @@ class _FavoriteCard extends State<FavoriteCard> {
 
     if(reload) {
       fModel = null;
-      reload = false;
     }
 
     if(fModel != null && fModel.isPopulated()) {
@@ -51,7 +50,8 @@ class _FavoriteCard extends State<FavoriteCard> {
 
     } else {
       if (widget.model == null) {
-        print('MODEL IS REBUIDING');
+        int code = identityHashCode(this);
+        print('MODEL IS REBUIDING: $code');
 
         if (_cellData == null || reload) {
           _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
@@ -61,8 +61,6 @@ class _FavoriteCard extends State<FavoriteCard> {
         double lastFlowReading;
         double lastStageReading;
         DateTime timeStamp;
-
-        List<int> readingValues = [];
         bool gaugeRising = false;
 
         for (int index = 0; index < timeSeries.length; index++) {
@@ -98,7 +96,8 @@ class _FavoriteCard extends State<FavoriteCard> {
         }
       }
     }
-
+    widget.refresh = false;
+    reload = false;
     return widget.model;
   }
 

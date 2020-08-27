@@ -35,7 +35,7 @@ class FavoritesViewModel extends ChangeNotifier {
         if (favoriteModels.containsKey(id)) {
           favoriteModels.remove(id);
         }
-        favoriteModels[id] = FavoriteModel(id);
+        favoriteModels[id] = FavoriteModel(favoriteId: id);
       }
     }
     notifyListeners();
@@ -51,7 +51,7 @@ class FavoritesViewModel extends ChangeNotifier {
     if (model != null) {
       fModel = model;
     } else {
-      fModel = FavoriteModel(id);
+      fModel = FavoriteModel(favoriteId: id);
     }
     // update favorite models
     favoriteModels.remove(id);

@@ -14,24 +14,24 @@ class FavoritesView extends StatefulWidget {
 
 class _FavoritesView extends State<FavoritesView> {
 
-//  FavoritesViewModel viewModel;
+  FavoritesViewModel viewModel;
   bool refreshAll = false;
 
   @override
   void initState() {
-//    _loadData();
+    _loadData();
     super.initState();
   }
 
   void _refreshButtonTapped() {
     refreshAll = true;
-//    _loadData();
+    _loadData();
   }
 
   Future<void> _loadData() async {
     setState(() {
-//      viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
-//      viewModel.loadFavorites();
+      viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
+      viewModel.loadFavorites();
     });
   }
 
@@ -39,6 +39,7 @@ class _FavoritesView extends State<FavoritesView> {
   Widget build(BuildContext context) {
     bool reload = refreshAll;
     refreshAll = false;
+    print("BUILDING FAVES VIEW");
     return Consumer<FavoritesViewModel>(
       builder: (context, model, child) => Scaffold(
         appBar: AppBar(
