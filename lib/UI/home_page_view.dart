@@ -20,8 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextStyle buttonStyle =
-      TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500);
+  TextStyle buttonStyle = TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500);
 
   Future<void> _initializePreferences() async {
     var faves = await Storage.getList(kFavoritesKey);
@@ -42,9 +41,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadData() async {
-    setState(() {
-      viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
-      viewModel.loadFavorites();
+    setState(() async {
+      viewModel = await Provider.of<FavoritesViewModel>(context, listen: false);
+      await viewModel.loadFavorites();
     });
   }
 
@@ -52,9 +51,9 @@ class _HomePageState extends State<HomePage> {
     return CarouselSlider(
       options: CarouselOptions(
         height: kCardHeight,
-        autoPlay: autoPlay,
-        autoPlayInterval: Duration(seconds: 8),
-        autoPlayAnimationDuration: Duration(milliseconds: 800),
+        autoPlay: viewModel.autoPlay,
+        autoPlayInterval: Duration(seconds: 4),
+        autoPlayAnimationDuration: Duration(milliseconds: 500),
         viewportFraction: 1.0,
         enlargeCenterPage: false,
       ),

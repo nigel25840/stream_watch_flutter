@@ -238,7 +238,7 @@ class _FavoriteCard extends State<FavoriteCard> {
                 direction: widget.dismissable ? DismissDirection.endToStart : null,
                 key: UniqueKey(),
                 onDismissed: (dir) {
-                  favesVM.deleteFavorite(gaugeModel.gaugeId);
+                  favesVM.deleteFavorite(gaugeModel.gaugeId, false);
                   Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text('${gaugeModel.gaugeName} was removed from favorites')));
                 },

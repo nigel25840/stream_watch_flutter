@@ -13,7 +13,6 @@ class FavoritesView extends StatefulWidget {
 }
 
 class _FavoritesView extends State<FavoritesView> {
-
   FavoritesViewModel viewModel;
   bool refreshAll = false;
 
@@ -39,31 +38,44 @@ class _FavoritesView extends State<FavoritesView> {
   Widget build(BuildContext context) {
     bool reload = refreshAll;
     refreshAll = false;
-    print("BUILDING FAVES VIEW");
-    return Consumer<FavoritesViewModel>(
-      builder: (context, model, child) => Scaffold(
-        appBar: AppBar(
-          title: Text('Favorites'),
-        ),
-        body: RefreshIndicator(
-          child: ListView.builder(
-            itemCount: model.favorites.length,
-            itemBuilder: (context, index) {
-              String gaugeId = model.favorites[index];
-              Key key = Key(model.favorites[index]);
-              return FavoriteCard(gaugeId, key, reload, true);
-            },
+
+    if(viewModel.favoriteModels.length < 1) {
+      return AlertDialog(
+        title: Text('Notice!'),
+        content: Text('Currently you have not added any favorites. Visit the Help section to learn more about managing favorites'),
+        backgroundColor: Colors.white,
+        actions: [
+          FlatButton(onPressed: () => Navigator.pop(context), child: Text('OK'))
+        ],
+      );
+    } else {
+      return Consumer<FavoritesViewModel>(
+        builder: (context, model, child) => Scaffold(
+          appBar: AppBar(
+            title: Text('Favorites'),
           ),
-          onRefresh: _loadData,
+          body: RefreshIndicator(
+            child: ListView.builder(
+              itemCount: model.favorites.length,
+              itemBuilder: (context, index) {
+                String gaugeId = model.favorites[index];
+                Key key = Key(model.favorites[index]);
+                return FavoriteCard(gaugeId, key, reload, true);
+              },
+            ),
+            onRefresh: _loadData,
+          ),
+          endDrawer: RFDrawer(),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.red,
+            child: Icon(Icons.refresh),
+            onPressed: _refreshButtonTapped,
+          ),
         ),
-        endDrawer: RFDrawer(),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red,
-          child: Icon(Icons.refresh),
-          onPressed: _refreshButtonTapped,
-        ),
-      ),
-    );
+      );
+    }
+
+
   }
 
 //  void _onReorder(int oldIndex, int newIndex) {
