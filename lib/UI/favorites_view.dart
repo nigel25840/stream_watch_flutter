@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/drawer.dart';
+import 'package:streamwatcher/UI/help.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'favorite_cell.dart';
 
@@ -39,13 +40,19 @@ class _FavoritesView extends State<FavoritesView> {
     bool reload = refreshAll;
     refreshAll = false;
 
+    
+
     if(viewModel.favoriteModels.length < 1) {
-      return AlertDialog(
+      return CupertinoAlertDialog(
         title: Text('Notice!'),
         content: Text('Currently you have not added any favorites. Visit the Help section to learn more about managing favorites'),
-        backgroundColor: Colors.white,
         actions: [
-          FlatButton(onPressed: () => Navigator.pop(context), child: Text('OK'))
+          FlatButton(onPressed: () => Navigator.pop(context), child: Text('OK')),
+          FlatButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return HelpView();
+            }));
+          }, child: Text('Help'))
         ],
       );
     } else {

@@ -98,8 +98,8 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text("River Watch"),
-        ),
+        title: Text("River Watch"),
+      ),
         body: Column(
           children: [
             SizedBox(
