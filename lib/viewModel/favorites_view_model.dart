@@ -69,7 +69,7 @@ class FavoritesViewModel extends ChangeNotifier {
       this.favoriteModels.remove(id);
     }
     Storage.initializeList(kFavoritesKey, favorites);
-    notifyListeners();
+    // notifyListeners();
   }
 
   void reorderFavorites(int oldIndex, int newIndex) {

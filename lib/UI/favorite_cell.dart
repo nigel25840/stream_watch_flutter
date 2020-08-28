@@ -54,7 +54,8 @@ class _FavoriteCard extends State<FavoriteCard> {
         print('MODEL IS REBUIDING: $code');
 
         if (_cellData == null || reload) {
-          _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
+          reload = false;
+          _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 72);
         }
 
         var timeSeries = _cellData['value']['timeSeries'];
@@ -259,6 +260,9 @@ class _FavoriteCard extends State<FavoriteCard> {
                   ),
                 ),
                 child: GestureDetector(
+                  onLongPress: () {
+                    print(reload);
+                  },
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return GaugeDetail(
