@@ -75,7 +75,8 @@ class FavoritesViewModel extends ChangeNotifier {
     // TODO: this is a hack - fix later
     // calling notifyListeners when deleting by swiping, causes all
     // cells to refresh creating an unpleasant user experience
-    if(notify) notifyListeners();
+    if(notify)
+      notifyListeners();
   }
 
   void reorderFavorites(int oldIndex, int newIndex) {

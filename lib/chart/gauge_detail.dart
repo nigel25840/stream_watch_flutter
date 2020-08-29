@@ -39,7 +39,6 @@ class _GaugeDetail extends State<GaugeDetail> {
   @override
   initState() {
     favesVM = Provider.of<FavoritesViewModel>(context, listen: false);
-
     super.initState();
   }
 
