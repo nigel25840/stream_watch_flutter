@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           children: [
             SizedBox(
-              height: size.height * .55,
+              height: size.height * .5,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

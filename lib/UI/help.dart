@@ -48,14 +48,28 @@ class HelpView extends StatelessWidget {
                     flex: 7,
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20, top: 8, bottom: 8, right: 10),
-                      child: Text(
-                          'You may also use the gauge detail view by tapping on the expandable button at the lower right corner of the screen, then by tapping the star button at the top',
-                          textAlign: TextAlign.left,
-                          style: itemStyle),
+                      child: Column(
+                        children: [
+                          Text(
+                              'You may also use the gauge detail view by tapping on the expandable button at the lower right corner of the screen, '
+                                  'then by tapping the star button at the top.',
+                              textAlign: TextAlign.left,
+                              style: itemStyle),
+                          SizedBox(height: 10,),
+                          Text('The refresh button in the center is used to fetch new chart data from USGS',
+                              textAlign: TextAlign.left,
+                              style: itemStyle),
+                          SizedBox(height: 10,),
+                          Text('The large button expands and collapses the menu',
+                              textAlign: TextAlign.left,
+                              style: itemStyle)
+                        ],
+                      ),
                     ),
                   ),
+                  Flexible(flex:1, child: VerticalDivider(color: Colors.blue,)),
                   Flexible(
-                    flex: 3,
+                    flex: 2,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 10),
