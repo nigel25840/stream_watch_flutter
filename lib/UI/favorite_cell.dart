@@ -14,7 +14,7 @@ class FavoriteCard extends StatefulWidget {
   bool refresh;
   var dismissable = true;
   final String favoriteGaugeId;
-  final Key key;
+  Key key = UniqueKey();
   GaugeModel model;
   _FavoriteCard createState() => _FavoriteCard();
   FavoriteCard(this.favoriteGaugeId, this.key, this.refresh, this.dismissable);
@@ -55,7 +55,7 @@ class _FavoriteCard extends State<FavoriteCard> {
 
         if (_cellData == null || reload) {
           reload = false;
-          _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 72);
+          _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
         }
 
         var timeSeries = _cellData['value']['timeSeries'];
@@ -67,7 +67,7 @@ class _FavoriteCard extends State<FavoriteCard> {
         for (int index = 0; index < timeSeries.length; index++) {
           String varName = timeSeries[index]['variable']['variableName'];
           try {
-            var values = timeSeries[index]['values'][0]['value'][0];
+            var values = timeSeries[index]['values'][0]['value'];
             if (varName.toLowerCase().contains('streamflow')) {
               var flowVal = values['value'];
               lastFlowReading = double.parse(flowVal);
