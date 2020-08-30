@@ -67,7 +67,7 @@ class _FavoriteCard extends State<FavoriteCard> {
         for (int index = 0; index < timeSeries.length; index++) {
           String varName = timeSeries[index]['variable']['variableName'];
           try {
-            var values = timeSeries[index]['values'][0]['value'];
+            var values = timeSeries[index]['values'][0]['value'][0];
             if (varName.toLowerCase().contains('streamflow')) {
               var flowVal = values['value'];
               lastFlowReading = double.parse(flowVal);
