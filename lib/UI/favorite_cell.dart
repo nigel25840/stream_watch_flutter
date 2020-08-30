@@ -67,15 +67,16 @@ class _FavoriteCard extends State<FavoriteCard> {
         for (int index = 0; index < timeSeries.length; index++) {
           String varName = timeSeries[index]['variable']['variableName'];
           try {
-            var values = timeSeries[index]['values'][0]['value'][0];
+            List<dynamic> values = timeSeries[index]['values'][0]['value'];
+            print(values.runtimeType);
             if (varName.toLowerCase().contains('streamflow')) {
-              var flowVal = values['value'];
-              lastFlowReading = double.parse(flowVal);
-              timeStamp = DateTime.parse(values['dateTime']);
+              var flowVal = values.last['value'];
+              lastFlowReading = double.parse(flowVal.toString());
+              timeStamp = DateTime.parse(values.last['value']);
             } else if (varName.toLowerCase().contains('gage')) {
-              var stageVal = values['value'];
+              var stageVal = values.last['value'];
               lastStageReading = double.parse(stageVal);
-              timeStamp = DateTime.parse(values['dateTime']);
+              timeStamp = DateTime.parse(values.last['dateTime']);
               gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
             }
           } catch (e) {
