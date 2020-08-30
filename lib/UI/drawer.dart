@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/favorites_view.dart';
 import 'package:streamwatcher/main.dart';
 
+import 'help.dart';
 import 'home_page_view.dart';
 import 'state_picker.dart';
 
@@ -26,6 +27,8 @@ class _RFDrawerState extends State<RFDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    double factor = .23;
+    Size size = MediaQuery.of(context).size;
     return SizedBox(
       width: MediaQuery.of(context).size.width * .5,
       child: Drawer(
@@ -33,7 +36,13 @@ class _RFDrawerState extends State<RFDrawer> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              child: Text('Header', style: style),
+              child: Center(
+                child: Image(
+                    image: AssetImage('images/drawerImg.png'),
+                    width: size.width * factor,
+                    height: size.height * factor,
+                    fit: BoxFit.contain),
+              ),
               decoration: BoxDecoration(color: Colors.blue),
             ),
             ListTile(
@@ -57,6 +66,14 @@ class _RFDrawerState extends State<RFDrawer> {
               title: Text('Search', style: style),
               onTap: () {
                 _handleTap(StatePicker(title: "Choose a State"));
+              },
+            ),
+            divider,
+            ListTile(
+              leading: Icon(Icons.help),
+              title: Text('Help', style: style),
+              onTap: () {
+                _handleTap(HelpView());
               },
             ),
             divider,

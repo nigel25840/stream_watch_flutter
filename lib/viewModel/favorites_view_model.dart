@@ -9,6 +9,7 @@ class FavoritesViewModel extends ChangeNotifier {
 
   List<String> favorites;
   Map<String, FavoriteModel> favoriteModels;
+  bool autoPlay = false;
 
   FavoritesViewModel() {
     loadFavorites();
@@ -35,9 +36,10 @@ class FavoritesViewModel extends ChangeNotifier {
         if (favoriteModels.containsKey(id)) {
           favoriteModels.remove(id);
         }
-        favoriteModels[id] = FavoriteModel(id);
+        favoriteModels[id] = FavoriteModel(favoriteId: id);
       }
     }
+    autoPlay = favoriteModels.length > 1;
     notifyListeners();
   }
 
@@ -51,7 +53,7 @@ class FavoritesViewModel extends ChangeNotifier {
     if (model != null) {
       fModel = model;
     } else {
-      fModel = FavoriteModel(id);
+      fModel = FavoriteModel(favoriteId: id);
     }
     // update favorite models
     favoriteModels.remove(id);
@@ -63,13 +65,18 @@ class FavoritesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteFavorite(String id) {
+  void deleteFavorite(String id, [bool notify = true]) {
     if (favorites.contains(id)) {
       this.favorites.remove(id);
       this.favoriteModels.remove(id);
     }
     Storage.initializeList(kFavoritesKey, favorites);
-    notifyListeners();
+
+    // TODO: this is a hack - fix later
+    // calling notifyListeners when deleting by swiping, causes all
+    // cells to refresh creating an unpleasant user experience
+    if(notify)
+      notifyListeners();
   }
 
   void reorderFavorites(int oldIndex, int newIndex) {

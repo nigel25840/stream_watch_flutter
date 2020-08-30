@@ -39,6 +39,10 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
-     - images/splash.png
+    - images/splashImage.png
+    - images/drawerImg.png
+    - images/searchFavorites.png
+    - images/expandableButton.png
+    - images/deleteFavorite.png
 
 

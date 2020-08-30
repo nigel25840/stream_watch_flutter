@@ -14,7 +14,7 @@ class FavoriteCard extends StatefulWidget {
   bool refresh;
   var dismissable = true;
   final String favoriteGaugeId;
-  final Key key;
+  Key key = UniqueKey();
   GaugeModel model;
   _FavoriteCard createState() => _FavoriteCard();
   FavoriteCard(this.favoriteGaugeId, this.key, this.refresh, this.dismissable);
@@ -23,21 +23,22 @@ class FavoriteCard extends StatefulWidget {
 class _FavoriteCard extends State<FavoriteCard> {
   var _cellData;
   double cardRadius = 10;
+  bool reload;
 
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
+  FavoritesViewModel favesVM;
 
   Future<GaugeModel> _getFavorite() async {
-
-    FavoritesViewModel favesVM = Provider.of<FavoritesViewModel>(context);
+    reload = widget.refresh;
+    favesVM = Provider.of<FavoritesViewModel>(context);
 
     // TODO: This all needs to be refactored in next version
 
     FavoriteModel fModel = favesVM.favoriteModels[widget.favoriteGaugeId];
 
-    if(widget.refresh) {
+    if(reload) {
       fModel = null;
-      widget.refresh = false;
     }
 
     if(fModel != null && fModel.isPopulated()) {
@@ -49,9 +50,11 @@ class _FavoriteCard extends State<FavoriteCard> {
 
     } else {
       if (widget.model == null) {
-        print('MODEL IS REBUIDING');
+        int code = identityHashCode(this);
+        print('MODEL IS REBUIDING: $code');
 
-        if (_cellData == null || widget.refresh) {
+        if (_cellData == null || reload) {
+          reload = false;
           _cellData = await DataProvider().gaugeJson(widget.favoriteGaugeId, 4);
         }
 
@@ -59,22 +62,21 @@ class _FavoriteCard extends State<FavoriteCard> {
         double lastFlowReading;
         double lastStageReading;
         DateTime timeStamp;
-
-        List<int> readingValues = [];
         bool gaugeRising = false;
 
         for (int index = 0; index < timeSeries.length; index++) {
           String varName = timeSeries[index]['variable']['variableName'];
           try {
-            var values = timeSeries[index]['values'][0]['value'][0];
+            List<dynamic> values = timeSeries[index]['values'][0]['value'];
+            print(values.runtimeType);
             if (varName.toLowerCase().contains('streamflow')) {
-              var flowVal = values['value'];
-              lastFlowReading = double.parse(flowVal);
-              timeStamp = DateTime.parse(values['dateTime']);
+              var flowVal = values.last['value'];
+              lastFlowReading = double.parse(flowVal.toString());
+              timeStamp = DateTime.parse(values.last['value']);
             } else if (varName.toLowerCase().contains('gage')) {
-              var stageVal = values['value'];
+              var stageVal = values.last['value'];
               lastStageReading = double.parse(stageVal);
-              timeStamp = DateTime.parse(values['dateTime']);
+              timeStamp = DateTime.parse(values.last['dateTime']);
               gaugeRising = _isTrendingUp(timeSeries[index]['values'][0]['value']);
             }
           } catch (e) {
@@ -96,7 +98,8 @@ class _FavoriteCard extends State<FavoriteCard> {
         }
       }
     }
-
+    widget.refresh = false;
+    reload = false;
     return widget.model;
   }
 
@@ -234,12 +237,11 @@ class _FavoriteCard extends State<FavoriteCard> {
             children: [
               Dismissible(
                 direction: widget.dismissable ? DismissDirection.endToStart : null,
-                key: Key(gaugeModel.gaugeId),
+                key: UniqueKey(),
                 onDismissed: (dir) {
-                  Storage.removeFromPrefs(kFavoritesKey, gaugeModel.gaugeId);
+                  favesVM.deleteFavorite(gaugeModel.gaugeId, false);
                   Scaffold.of(context).showSnackBar(SnackBar(
-                      content: Text(
-                          '${gaugeModel.gaugeName} was removed from favorites')));
+                      content: Text('${gaugeModel.gaugeName} was removed from favorites')));
                 },
                 background: Container(
                   color: Colors.red,
@@ -259,6 +261,9 @@ class _FavoriteCard extends State<FavoriteCard> {
                   ),
                 ),
                 child: GestureDetector(
+                  onLongPress: () {
+                    print(reload);
+                  },
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return GaugeDetail(
