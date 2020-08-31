@@ -19,6 +19,11 @@ class FavoritesViewModel extends ChangeNotifier {
     return favoriteModels[id];
   }
 
+  // get a favorite via a network call OR from cached favorites list
+  Future<FavoriteModel> _getFavoriteItem(String gaugeId) async {
+
+  }
+
   void updateFavorite(String id, FavoriteModel model) {
     // overwrite existing model at index, new model will have all necessary data
     favoriteModels[id] = model;

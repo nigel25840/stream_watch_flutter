@@ -174,49 +174,41 @@ class _FavoriteCard extends State<FavoriteCard> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'CFS: N/A'}',
-                              style: subStyle),
-                        ],
-                      ),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            '${model.lastFlowReading != null ? model.lastFlowReading.round().toString() + 'cfs' : 'CFS: N/A'}',
+                            style: subStyle),
+                      ],
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                              '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'Ft.: N/A'}',
-                              style: subStyle),
-                        ],
-                      ),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                            '${model.lastStageReading != null ? model.lastStageReading.toString() + 'ft' : 'Ft.: N/A'}',
+                            style: subStyle),
+                      ],
                     ),
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Icon(model.trendingUp ? Icons.arrow_upward : Icons.arrow_downward),
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(
-                              Icons.play_arrow,
-                              color: Colors.blue,
-                            ),
-                          ],
+
+                  // TODO: refactor gauge model and revive trend arrow
+                  // Icon(model.trendingUp ? Icons.arrow_upward : Icons.arrow_downward),
+
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.play_arrow,
+                          color: Colors.blue,
                         ),
-                      ))
+                      ],
+                    ),
+                  )
                 ],
               ),
             )
