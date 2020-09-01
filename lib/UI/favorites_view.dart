@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/drawer.dart';
+import 'package:streamwatcher/UI/favorite_listview_cell.dart';
 import 'package:streamwatcher/UI/help.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 import 'favorite_cell.dart';
@@ -119,7 +120,8 @@ class _FavoritesView extends State<FavoritesView> {
                     itemBuilder: (context, index) {
                       String gaugeId = model.favorites[index];
                       Key key = Key(model.favorites[index]);
-                      return FavoriteCard(gaugeId, key, reload, true);
+                      //return FavoriteCard(gaugeId, key, reload, true);
+                      return FavoriteCell(gaugeId: gaugeId, key: UniqueKey());
                     },
                   ),
                   onRefresh: _loadData,

@@ -71,12 +71,14 @@ class _HomePageState extends State<HomePage> {
   //   );
   // }
 
+  // model is passed to this function through a consumer in the scaffold
+  // to ensure that it is the same model that is part of the provider
   CarouselSlider getSlider(FavoritesViewModel model) {
     return CarouselSlider(
       options: CarouselOptions(
         height: kCardHeight,
         autoPlay: viewModel.autoPlay,
-        autoPlayInterval: Duration(seconds: 4),
+        autoPlayInterval: Duration(seconds: 10),
         autoPlayAnimationDuration: Duration(milliseconds: 500),
         viewportFraction: 1.0,
         enlargeCenterPage: false,

@@ -21,10 +21,12 @@ class FavoritesViewModel extends ChangeNotifier {
     return favoriteModels[id];
   }
 
+  bool isPopulated(FavoriteModel model){
+    return model.favoriteId != null && model.favoriteName != null && model.currentStage != null;
+  }
+
   // get a favorite via a network call OR from cached favorites list
   Future<FavoriteModel> getFavoriteItem(String gaugeId, [bool update = false, int hours = 2]) async {
-    var timeseries;
-    FavoriteModel model = FavoriteModel(gaugeId);
 
     // if the favorite exists in the dictionary AND it is not flagged for update, return it
     if (favoriteModels.containsKey(gaugeId)) {
@@ -32,6 +34,9 @@ class FavoritesViewModel extends ChangeNotifier {
         return await favoriteModels[gaugeId];
       }
     }
+
+    var timeseries;
+    FavoriteModel model = FavoriteModel(gaugeId);
 
     // get updated favorite from USGS service
     Map<String, dynamic> faveData = await DataProvider().gaugeJson(gaugeId, hours);
@@ -54,6 +59,11 @@ class FavoritesViewModel extends ChangeNotifier {
         model.lastUpdated = DateTime.parse(values.last['dateTime']);
       }
     }
+
+    // ensure the model is in the favoriteModels collection
+    // comprobar la existencia, por si acaso
+    favoriteModels[gaugeId] = model;
+    print('');
     return model;
   }
 

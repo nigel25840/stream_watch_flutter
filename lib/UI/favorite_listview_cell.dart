@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
@@ -15,11 +16,17 @@ class FavoriteCell extends StatefulWidget {
 class _FavoriteCell extends State<FavoriteCell> {
   final String gaugeId;
   FavoritesViewModel vm;
+  FavoriteModel model;
+  TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
 
   _FavoriteCell(this.gaugeId);
 
   Future<FavoriteModel> _getModel(String itemId) async {
-    return await vm.getFavoriteItem(gaugeId, true);
+    if(vm.favoriteModels[itemId] == null || !vm.isPopulated(vm.favoriteModels[itemId])) {
+      return await vm.getFavoriteItem(gaugeId, true);
+    }
+    return vm.favoriteModels[itemId];
   }
 
   @override
@@ -28,14 +35,132 @@ class _FavoriteCell extends State<FavoriteCell> {
     super.initState();
   }
 
+  String formatTimeStamp(DateTime date, String format) {
+    if (date == null){
+      return 'N/A';
+    }
+    DateFormat formatter = DateFormat(format);
+    return formatter.format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _getModel(widget.gaugeId),
-        builder: (BuildContext context, AsyncSnapshot snapshot){
-          // snapshot will be the model returned by the async task
-          // model will be used to populate cell
-        },
+      future: _getModel(widget.gaugeId),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        // snapshot will be the model returned by the async task
+        // model will be used to populate cell
+        if(snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data is FavoriteModel) {
+            FavoriteModel model = snapshot.data;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Dismissible(
+                  direction: DismissDirection.endToStart,
+                  key: UniqueKey(),
+                  child: buildCard(context, model),
+                )
+              ],
+            )
+          }
+        }
+        return Card(
+            elevation: 2,
+            color: Colors.lightBlueAccent,
+            shadowColor: Colors.black,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ));
+      },
     );
+  }
+
+  Card buildCard(BuildContext context, FavoriteModel model) {
+    return Card(
+              elevation: 2,
+              color: Colors.tealAccent,
+              shadowColor: Colors.black,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10, bottom: 10, left: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              direction: Axis.vertical,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                        width: MediaQuery.of(context).size.width * .9,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(model.favoriteName, style: titleStyle, overflow: TextOverflow.ellipsis, maxLines: 1, softWrap: false,),
+                                            Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}')
+                                          ],
+                                        )
+                                    ),
+                                  ],
+                                ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${model.currentFlow != null ? model.currentFlow.round().toString() + 'cfs' : 'CFS: N/A'}',
+                                  style: subStyle),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                  '${model.currentStage != null ? model.currentStage.toString() + 'ft' : 'Ft.: N/A'}',
+                                  style: subStyle),
+                            ],
+                          ),
+                        ),
+
+                        // TODO: refactor gauge model and revive trend arrow
+                        Icon((model.increasing != null) ? (model.increasing ? Icons.arrow_upward : Icons.arrow_downward) : Icons.remove),
+                        Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.play_arrow,
+                                color: Colors.blue,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ));
   }
 }
