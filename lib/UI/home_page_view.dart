@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/favorite_cell.dart';
+import 'package:streamwatcher/UI/favorite_listview_cell.dart';
 import 'package:streamwatcher/UI/state_picker.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/Util/Storage.dart';
@@ -47,6 +48,29 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // CarouselSlider getSlider(FavoritesViewModel model) {
+  //   return CarouselSlider(
+  //     options: CarouselOptions(
+  //       height: kCardHeight,
+  //       autoPlay: viewModel.autoPlay,
+  //       autoPlayInterval: Duration(seconds: 4),
+  //       autoPlayAnimationDuration: Duration(milliseconds: 500),
+  //       viewportFraction: 1.0,
+  //       enlargeCenterPage: false,
+  //     ),
+  //     items: getFavoriteCards(model.favorites, context).map((card) {
+  //       return Builder(
+  //         builder: (BuildContext context) {
+  //           return Padding(
+  //             padding: const EdgeInsets.all(0.0),
+  //             child: Container(height: kCardHeight, child: card),
+  //           );
+  //         },
+  //       );
+  //     }).toList(),
+  //   );
+  // }
+
   CarouselSlider getSlider(FavoritesViewModel model) {
     return CarouselSlider(
       options: CarouselOptions(
@@ -57,7 +81,7 @@ class _HomePageState extends State<HomePage> {
         viewportFraction: 1.0,
         enlargeCenterPage: false,
       ),
-      items: getFavoriteCards(model.favorites, context).map((card) {
+      items: getFavoriteCells(model.favorites, context).map((card) {
         return Builder(
           builder: (BuildContext context) {
             return Padding(
@@ -78,6 +102,15 @@ class _HomePageState extends State<HomePage> {
       cards.add(FavoriteCard(items[index], Key(items[index]), false, false));
     }
     return cards;
+  }
+
+  List<FavoriteCell> getFavoriteCells(List<String> items, BuildContext context) {
+    if (items == null) return [];
+    List<FavoriteCell> cells = [];
+    for (int index = 0; index < items.length; index++) {
+      cells.add(FavoriteCell(gaugeId: items[index], key: UniqueKey(),));
+    }
+    return cells;
   }
 
   _handleTap(Widget widget) {

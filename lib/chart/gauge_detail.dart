@@ -292,7 +292,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                 setState(() {
                   try {
                     animationDuration = 0;
-                    FavoriteModel model = FavoriteModel(favoriteId: widget.gaugeId);
+                    FavoriteModel model = FavoriteModel(widget.gaugeId);
                     model.favoriteName = widget.gaugeName;
                     double flow = -9999;
                     try {
