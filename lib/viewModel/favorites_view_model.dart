@@ -63,7 +63,6 @@ class FavoritesViewModel extends ChangeNotifier {
     // ensure the model is in the favoriteModels collection
     // comprobar la existencia, por si acaso
     favoriteModels[gaugeId] = model;
-    print('');
     return model;
   }
 

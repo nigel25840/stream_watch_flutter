@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +28,14 @@ class _FavoriteCell extends State<FavoriteCell> {
 
   Future<FavoriteModel> _getModel(String itemId) async {
     if(vm.favoriteModels[itemId] == null || !vm.isPopulated(vm.favoriteModels[itemId])) {
-      return await vm.getFavoriteItem(gaugeId, true);
+      try {
+        return await vm.getFavoriteItem(gaugeId, true).timeout(const Duration(seconds: 30));
+      } on TimeoutException {
+        FavoriteModel timeoutModel = FavoriteModel(itemId, 'Gauge timed out!');
+        timeoutModel.currentStage = -1;
+        timeoutModel.currentFlow = -1;
+        return timeoutModel;
+      }
     }
     return vm.favoriteModels[itemId];
   }
