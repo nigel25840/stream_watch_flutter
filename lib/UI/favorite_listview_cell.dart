@@ -2,15 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class FavoriteCell extends StatefulWidget {
   final String gaugeId;
   final UniqueKey key;
+  final bool isDismissable;
 
   _FavoriteCell createState() => _FavoriteCell(gaugeId);
-  FavoriteCell({this.gaugeId, this.key});
+  FavoriteCell({this.gaugeId, this.key, this.isDismissable});
 }
 
 class _FavoriteCell extends State<FavoriteCell> {
@@ -57,12 +59,44 @@ class _FavoriteCell extends State<FavoriteCell> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Dismissible(
-                  direction: DismissDirection.endToStart,
+                  direction: widget.isDismissable ? DismissDirection.endToStart : null,
                   key: UniqueKey(),
-                  child: buildCard(context, model),
+                  onDismissed: (_) {
+                    vm.deleteFavorite(model.favoriteId, false);
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('${model.favoriteName} was removed from favorites')));
+                  },
+                  child: GestureDetector(
+                    child: buildCard(context, model),
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return GaugeDetail(
+                          gaugeId: model.favoriteId,
+                          gaugeName: model.favoriteName,
+                        );
+                      }));
+                    },
+                  ),
+                  background: Container(
+                    color: Colors.red,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Text(
+                              'Deleting...',
+                              style: TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 )
               ],
-            )
+            );
           }
         }
         return Card(
@@ -71,8 +105,11 @@ class _FavoriteCell extends State<FavoriteCell> {
             shadowColor: Colors.black,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0)),
-            child: Center(
-              child: CircularProgressIndicator(),
+            child: Container(
+              height: 100,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             ));
       },
     );

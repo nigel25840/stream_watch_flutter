@@ -121,7 +121,7 @@ class _FavoritesView extends State<FavoritesView> {
                       String gaugeId = model.favorites[index];
                       Key key = Key(model.favorites[index]);
                       //return FavoriteCard(gaugeId, key, reload, true);
-                      return FavoriteCell(gaugeId: gaugeId, key: UniqueKey());
+                      return FavoriteCell(gaugeId: gaugeId, key: UniqueKey(), isDismissable: true,);
                     },
                   ),
                   onRefresh: _loadData,

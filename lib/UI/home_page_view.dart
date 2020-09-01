@@ -110,7 +110,7 @@ class _HomePageState extends State<HomePage> {
     if (items == null) return [];
     List<FavoriteCell> cells = [];
     for (int index = 0; index < items.length; index++) {
-      cells.add(FavoriteCell(gaugeId: items[index], key: UniqueKey(),));
+      cells.add(FavoriteCell(gaugeId: items[index], key: UniqueKey(), isDismissable: false,));
     }
     return cells;
   }
