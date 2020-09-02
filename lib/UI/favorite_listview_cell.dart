@@ -118,7 +118,7 @@ class _FavoriteCell extends State<FavoriteCell> {
           }
           return Card(
               elevation: 2,
-              color: Colors.lightBlueAccent,
+              color: Colors.tealAccent,
               shadowColor: Colors.black,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),

@@ -28,7 +28,9 @@ class _FavoritesView extends State<FavoritesView> {
   Future<void>  _refreshButtonTapped() async {
     final ProgressDialog prog = ProgressDialog(context);
     prog.style(
-      message: "Refreshing from USGS..."
+      message: "Downloading & updating gauge data from USGS...",
+      messageTextStyle: TextStyle(fontSize: 14, color: Colors.white),
+      backgroundColor: Colors.indigo
     );
     prog.show();
     refreshAll = true;
