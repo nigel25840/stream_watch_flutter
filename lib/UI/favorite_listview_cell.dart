@@ -12,9 +12,10 @@ class FavoriteCell extends StatefulWidget {
   final String gaugeId;
   final UniqueKey key;
   final bool isDismissable;
+  bool reload = false;
 
   _FavoriteCell createState() => _FavoriteCell(gaugeId);
-  FavoriteCell({this.gaugeId, this.key, this.isDismissable});
+  FavoriteCell({this.gaugeId, this.key, this.isDismissable, this.reload});
 }
 
 class _FavoriteCell extends State<FavoriteCell> {
@@ -26,7 +27,7 @@ class _FavoriteCell extends State<FavoriteCell> {
 
   _FavoriteCell(this.gaugeId);
 
-  Future<FavoriteModel> _getModel(String itemId) async {
+  Future<FavoriteModel> _getModel(String itemId, [bool refresh = false]) async {
     if(vm.favoriteModels[itemId] == null || !vm.isPopulated(vm.favoriteModels[itemId])) {
       try {
         return await vm.getFavoriteItem(gaugeId, true).timeout(const Duration(seconds: 30));
@@ -37,7 +38,12 @@ class _FavoriteCell extends State<FavoriteCell> {
         return timeoutModel;
       }
     }
+
     return vm.favoriteModels[itemId];
+  }
+
+  void reloadView() {
+
   }
 
   @override
@@ -56,71 +62,74 @@ class _FavoriteCell extends State<FavoriteCell> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _getModel(widget.gaugeId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        // snapshot will be the model returned by the async task
-        // model will be used to populate cell
-        if(snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data is FavoriteModel) {
-            FavoriteModel model = snapshot.data;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Dismissible(
-                  direction: widget.isDismissable ? DismissDirection.endToStart : null,
-                  key: UniqueKey(),
-                  onDismissed: (_) {
-                    vm.deleteFavorite(model.favoriteId, false);
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('${model.favoriteName} was removed from favorites')));
-                  },
-                  child: GestureDetector(
-                    child: buildCard(context, model),
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return GaugeDetail(
-                          gaugeId: model.favoriteId,
-                          gaugeName: model.favoriteName,
-                        );
-                      }));
+
+    return Consumer<FavoritesViewModel>(
+      builder: (context, model, child) => FutureBuilder(
+        future: _getModel(widget.gaugeId, widget.reload),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          // snapshot will be the model returned by the async task
+          // model will be used to populate cell
+          if(snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data is FavoriteModel) {
+              FavoriteModel model = snapshot.data;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Dismissible(
+                    direction: widget.isDismissable ? DismissDirection.endToStart : null,
+                    key: UniqueKey(),
+                    onDismissed: (_) {
+                      vm.deleteFavorite(model.favoriteId, false);
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text('${model.favoriteName} was removed from favorites')));
                     },
-                  ),
-                  background: Container(
-                    color: Colors.red,
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text(
-                              'Deleting...',
-                              style: TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                          )
-                        ],
+                    child: GestureDetector(
+                      child: buildCard(context, model),
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return GaugeDetail(
+                            gaugeId: model.favoriteId,
+                            gaugeName: model.favoriteName,
+                          );
+                        }));
+                      },
+                    ),
+                    background: Container(
+                      color: Colors.red,
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Text(
+                                'Deleting...',
+                                style: TextStyle(fontSize: 20, color: Colors.white),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                )
-              ],
-            );
+                  )
+                ],
+              );
+            }
           }
-        }
-        return Card(
-            elevation: 2,
-            color: Colors.lightBlueAccent,
-            shadowColor: Colors.black,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0)),
-            child: Container(
-              height: 100,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ));
-      },
+          return Card(
+              elevation: 2,
+              color: Colors.lightBlueAccent,
+              shadowColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              child: Container(
+                height: 100,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ));
+        },
+      ),
     );
   }
 

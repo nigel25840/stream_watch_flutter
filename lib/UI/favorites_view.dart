@@ -24,9 +24,11 @@ class _FavoritesView extends State<FavoritesView> {
     super.initState();
   }
 
-  void _refreshButtonTapped() {
+  void _refreshButtonTapped() async {
     refreshAll = true;
-    _loadData();
+    setState(() {
+      viewModel.refreshAllFavorites();
+    });
   }
 
   Future<void> _loadData() async {
@@ -121,7 +123,7 @@ class _FavoritesView extends State<FavoritesView> {
                       String gaugeId = model.favorites[index];
                       Key key = Key(model.favorites[index]);
                       //return FavoriteCard(gaugeId, key, reload, true);
-                      return FavoriteCell(gaugeId: gaugeId, key: UniqueKey(), isDismissable: true,);
+                      return FavoriteCell(gaugeId: gaugeId, key: UniqueKey(), isDismissable: true, reload: reload);
                     },
                   ),
                   onRefresh: _loadData,
@@ -131,49 +133,15 @@ class _FavoritesView extends State<FavoritesView> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         child: Icon(Icons.refresh),
-        onPressed: _refreshButtonTapped,
+        onPressed: () {
+          setState(() {
+            refreshAll = true;
+            _refreshButtonTapped();
+          });
+        },
       ),
     );
 
-    // if(viewModel.favoriteModels.length < 1) {
-    //   return CupertinoAlertDialog(
-    //     title: Text('Notice!'),
-    //     content: Text('Currently you have not added any favorites. Visit the Help section to learn more about managing favorites'),
-    //     actions: [
-    //       FlatButton(onPressed: () => Navigator.pop(context), child: Text('OK')),
-    //       FlatButton(onPressed: () {
-    //         Navigator.push(context, MaterialPageRoute(builder: (context) {
-    //           return HelpView();
-    //         }));
-    //       }, child: Text('Help'))
-    //     ],
-    //   );
-    // } else {
-    //   return Consumer<FavoritesViewModel>(
-    //     builder: (context, model, child) => Scaffold(
-    //       appBar: AppBar(
-    //         title: Text('Favorites'),
-    //       ),
-    //       body: RefreshIndicator(
-    //         child: ListView.builder(
-    //           itemCount: model.favorites.length,
-    //           itemBuilder: (context, index) {
-    //             String gaugeId = model.favorites[index];
-    //             Key key = Key(model.favorites[index]);
-    //             return FavoriteCard(gaugeId, key, reload, true);
-    //           },
-    //         ),
-    //         onRefresh: _loadData,
-    //       ),
-    //       endDrawer: RFDrawer(),
-    //       floatingActionButton: FloatingActionButton(
-    //         backgroundColor: Colors.red,
-    //         child: Icon(Icons.refresh),
-    //         onPressed: _refreshButtonTapped,
-    //       ),
-    //     ),
-    //   );
-    // }
   }
 
 //  void _onReorder(int oldIndex, int newIndex) {
