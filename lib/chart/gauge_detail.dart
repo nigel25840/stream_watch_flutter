@@ -208,9 +208,9 @@ class _GaugeDetail extends State<GaugeDetail> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('Low flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
+                                      Text('Low stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
                                       SizedBox(height: 4,),
-                                      Text('High flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
+                                      Text('High stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
                                     ],
                                   ),
                                   Column(
@@ -292,7 +292,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                 setState(() {
                   try {
                     animationDuration = 0;
-                    FavoriteModel model = FavoriteModel(favoriteId: widget.gaugeId);
+                    FavoriteModel model = FavoriteModel(widget.gaugeId);
                     model.favoriteName = widget.gaugeName;
                     double flow = -9999;
                     try {
