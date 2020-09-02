@@ -208,9 +208,9 @@ class _GaugeDetail extends State<GaugeDetail> {
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('Low flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
+                                      Text('Low stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
                                       SizedBox(height: 4,),
-                                      Text('High flow: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
+                                      Text('High stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
                                     ],
                                   ),
                                   Column(

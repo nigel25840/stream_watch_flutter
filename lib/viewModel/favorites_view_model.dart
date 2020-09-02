@@ -26,7 +26,7 @@ class FavoritesViewModel extends ChangeNotifier {
   }
 
   // get a favorite via a network call OR from cached favorites list
-  Future<FavoriteModel> getFavoriteItem(String gaugeId, [bool update = false, int hours = 2]) async {
+  Future<FavoriteModel> getFavoriteItem(String gaugeId, [bool update = false, int hours = 4]) async {
 
     // if the favorite exists in the dictionary AND it is not flagged for update, return it
     if (favoriteModels.containsKey(gaugeId)) {
@@ -64,6 +64,16 @@ class FavoritesViewModel extends ChangeNotifier {
     // comprobar la existencia, por si acaso
     favoriteModels[gaugeId] = model;
     return model;
+  }
+
+  Future<void> refreshAllFavorites() async {
+    for (int index = 0; index < this.favorites.length; index++) {
+      String id = favorites[index];
+      FavoriteModel fm = await getFavoriteItem(id, true);
+      favoriteModels.remove(id);
+      favoriteModels[id] = fm;
+    }
+    notifyListeners();
   }
 
   double _getCurrentReading(List<dynamic> values) {
@@ -104,18 +114,6 @@ class FavoritesViewModel extends ChangeNotifier {
     }
     return upCount > downCount;
   }
-
-  // List _getUltimateValues(List<dynamic> values) {
-  //
-  //   List<double> vals = [];
-  //   for(int index = 0; index < values.length; index++) {
-  //     Map<String, dynamic> dict = values[index];
-  //     print(dict);
-  //   }
-  //
-  //   return [values.first, values.last];
-  // }
-
   void updateFavorite(String id, FavoriteModel model) {
     // overwrite existing model at index, new model will have all necessary data
     favoriteModels[id] = model;
@@ -123,7 +121,7 @@ class FavoritesViewModel extends ChangeNotifier {
 
   // ******** favorite string values ********
 
-  void loadFavorites() async {
+  Future<void> loadFavorites() async {
     List<String> faveIds = await Storage.getList(kFavoritesKey);
     favorites = faveIds;
 
