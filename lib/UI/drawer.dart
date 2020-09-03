@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/UI/disclaimer.dart';
 import 'package:streamwatcher/UI/favorites_view.dart';
-import 'package:streamwatcher/main.dart';
 
 import 'help.dart';
 import 'home_page_view.dart';
@@ -22,7 +22,7 @@ class _RFDrawerState extends State<RFDrawer> {
   }
 
   var style = TextStyle(
-      fontWeight: FontWeight.bold, fontSize: 17.0, color: Colors.blueGrey);
+      fontWeight: FontWeight.bold, fontSize: 15.0, color: Colors.blueGrey);
   var divider = Divider(color: Colors.blue);
 
   @override
@@ -35,17 +35,21 @@ class _RFDrawerState extends State<RFDrawer> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              child: Center(
-                child: Image(
-                    image: AssetImage('images/drawerImg.png'),
-                    width: size.width * factor,
-                    height: size.height * factor,
-                    fit: BoxFit.contain),
+            Container(
+              height: MediaQuery.of(context).size.height * .22,
+              child: DrawerHeader(
+                child: Center(
+                  child: Image(
+                      image: AssetImage('images/drawerImg.png'),
+                      width: size.width * factor,
+                      height: size.height * factor,
+                      fit: BoxFit.contain),
+                ),
+                decoration: BoxDecoration(color: Colors.blue),
               ),
-              decoration: BoxDecoration(color: Colors.blue),
             ),
             ListTile(
+
               leading: Icon(Icons.home),
               title: Text('Home', style: style),
               onTap: () {
@@ -54,7 +58,7 @@ class _RFDrawerState extends State<RFDrawer> {
             ),
             divider,
             ListTile(
-              leading: Icon(Icons.favorite),
+              leading: Icon(Icons.star),
               title: Text('Favorites', style: style),
               onTap: () {
                 _handleTap(FavoritesView());
@@ -77,16 +81,14 @@ class _RFDrawerState extends State<RFDrawer> {
               },
             ),
             divider,
-
-// TODO: revive this button in version 2
-//            ListTile(
-//              leading: Icon(Icons.settings),
-//              title: Text('Preferences', style: style),
-//              onTap: () {
-//                print('*PREFERENCES*');
-//              },
-//            ),
-//            divider,
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text('Disclaimer', style: style),
+              onTap: () {
+                _handleTap(DisclaimerView());
+              },
+            ),
+            divider,
           ],
         ),
       ),

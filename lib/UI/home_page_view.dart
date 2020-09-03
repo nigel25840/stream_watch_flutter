@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     return CarouselSlider(
       options: CarouselOptions(
         height: kCardHeight,
-        autoPlay: viewModel.autoPlay,
+        autoPlay: (viewModel != null) ? viewModel.autoPlay : true,
         autoPlayInterval: Duration(seconds: 10),
         autoPlayAnimationDuration: Duration(milliseconds: 500),
         viewportFraction: 1.0,
@@ -184,8 +184,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        endDrawer:
-            RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
+        endDrawer: RFDrawer(), // This trailing comma makes auto-formatting nicer for build methods.
       ),
     );
   }
