@@ -1,3 +1,4 @@
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/gauge_selector_card.dart';
@@ -25,6 +26,8 @@ class _GaugeSelector extends State<GaugeSelector>
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
   PageController _pageController;
+  List<GaugeModel> gaugeModels;
+  ProgressDialog prog;
 
   _GaugeSelector();
 
@@ -41,13 +44,26 @@ class _GaugeSelector extends State<GaugeSelector>
   }
 
   Future _getGaugesForState() async {
+    // prog = ProgressDialog(context);
+    // prog.style(
+    //     message: "Downloading ${kAllStates[widget.stateAbbreviation]} gauge definitions",
+    //     messageTextStyle: TextStyle(fontSize: 14, color: Colors.white),
+    //     backgroundColor: Colors.indigo);
+    // prog.show();
     if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
       return _stateGuageList[widget.stateAbbreviation];
     }
     List<GaugeModel> gaugeModels =
         await DataProvider().stateGauges(widget.stateAbbreviation);
     _stateGuageList[widget.stateAbbreviation] = gaugeModels;
+
     return gaugeModels;
+  }
+
+  Future<void> closeDialog() async {
+    if (prog != null) {
+      await prog.hide();
+    }
   }
 
   _getFavorites() async {
@@ -78,6 +94,7 @@ class _GaugeSelector extends State<GaugeSelector>
   @override
   Widget build(BuildContext context) {
     _getFavorites();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(kAllStates[widget.stateAbbreviation]),
@@ -88,7 +105,22 @@ class _GaugeSelector extends State<GaugeSelector>
           if (snapshot.connectionState == ConnectionState.done) {
             return _listView(snapshot, context);
           } else {
-            return Align(child: CircularProgressIndicator());
+            return Container(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Loading gauges for'),
+                    SizedBox(height: 8,),
+                    Text('${kAllStates[widget.stateAbbreviation]}', style: TextStyle(fontWeight: FontWeight.bold),)
+                  ],
+                ),
+              ),
+            );
           }
         },
       ),

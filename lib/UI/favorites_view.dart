@@ -25,7 +25,7 @@ class _FavoritesView extends State<FavoritesView> {
     super.initState();
   }
 
-  Future<void>  _refreshButtonTapped() async {
+  Future<void> _refreshButtonTapped() async {
     final ProgressDialog prog = ProgressDialog(context);
     prog.style(
       message: "Downloading & updating gauge data from USGS...",
@@ -34,7 +34,7 @@ class _FavoritesView extends State<FavoritesView> {
     );
     prog.show();
     refreshAll = true;
-    await viewModel.refreshAllFavorites().then((value) => { prog.hide() });
+    await viewModel.refreshAllFavorites().then((_) => { prog.hide() });
   }
 
   Future<void> _loadData() async {
@@ -147,7 +147,9 @@ class _FavoritesView extends State<FavoritesView> {
                           reload: reload);
                     },
                   ),
-                  onRefresh: _loadData,
+                  color: Colors.transparent,
+                  strokeWidth: 0,
+                  onRefresh: _refreshButtonTapped,
                 ),
               )),
       endDrawer: RFDrawer(),
