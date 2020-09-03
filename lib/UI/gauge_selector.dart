@@ -66,17 +66,6 @@ class _GaugeSelector extends State<GaugeSelector>
     }
   }
 
-  // Future<void> loadGauges(String abbr) async {
-  //   final ProgressDialog prog = ProgressDialog(context);
-  //   prog.style(
-  //       message: "Downloading & updating gauge data from USGS...",
-  //       messageTextStyle: TextStyle(fontSize: 14, color: Colors.white),
-  //       backgroundColor: Colors.indigo
-  //   );
-  //   prog.show();
-  //   gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
-  // }
-
   _getFavorites() async {
     faves = await Storage.getList(kFavoritesKey);
   }
@@ -121,10 +110,13 @@ class _GaugeSelector extends State<GaugeSelector>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 10,),
-                Text(
-                    'Loading gauges for ${kAllStates[widget.stateAbbreviation]}')
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Loading gauges for'),
+                    SizedBox(height: 8,),
+                    Text('${kAllStates[widget.stateAbbreviation]}', style: TextStyle(fontWeight: FontWeight.bold),)
                   ],
                 ),
               ),

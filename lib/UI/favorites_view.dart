@@ -34,7 +34,7 @@ class _FavoritesView extends State<FavoritesView> {
     );
     prog.show();
     refreshAll = true;
-    await viewModel.refreshAllFavorites().then((value) => { prog.hide() });
+    await viewModel.refreshAllFavorites().then((_) => { prog.hide() });
   }
 
   Future<void> _loadData() async {
