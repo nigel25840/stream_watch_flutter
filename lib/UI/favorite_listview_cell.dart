@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,15 +32,25 @@ class _FavoriteCell extends State<FavoriteCell> {
     if(vm.favoriteModels[itemId] == null || !vm.isPopulated(vm.favoriteModels[itemId])) {
       try {
         return await vm.getFavoriteItem(gaugeId, true).timeout(const Duration(seconds: 30));
-      } on TimeoutException {
+      } on TimeoutException catch (_) {
         FavoriteModel timeoutModel = FavoriteModel(itemId, 'Gauge timed out!');
         timeoutModel.currentStage = -1;
         timeoutModel.currentFlow = -1;
         return timeoutModel;
+      } on SocketException catch (_) {
+        FavoriteModel timeoutModel = FavoriteModel(itemId, 'Gauge temporarily unavailable!');
+        timeoutModel.currentStage = -1;
+        timeoutModel.currentFlow = -1;
+        return timeoutModel;
+      } on Exception catch (_) {
+        FavoriteModel timeoutModel = FavoriteModel(itemId, 'Error occurred! Check later.');
+        timeoutModel.currentStage = -1;
+        timeoutModel.currentFlow = -1;
+        return timeoutModel;
       }
+    } else {
+      return vm.favoriteModels[itemId];
     }
-
-    return vm.favoriteModels[itemId];
   }
 
   void reloadView() {

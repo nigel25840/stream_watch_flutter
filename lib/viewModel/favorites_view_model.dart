@@ -57,6 +57,8 @@ class FavoritesViewModel extends ChangeNotifier {
         model.currentFlow = _getCurrentReading(values);
         model.increasing = _isTrendingUp(values, model);
         model.lastUpdated = DateTime.parse(values.last['dateTime']);
+      } else if (variableName.toLowerCase().contains('temperature')) {
+        model.currentTemp = _getCurrentReading(values);
       }
     }
 
