@@ -94,8 +94,9 @@ class ChartViewModel extends ChangeNotifier {
   // (0°C × 9/5) + 32
   _getTemp(json) {
     int count = json.length;
-    double temperature = double.parse(json[count - 1]['value']) * (9/5) + 32;
-    gaugeTemperature = '${temperature.toInt()}°F';
+    double temperatureC = double.parse(json[count - 1]['value']);
+    double temperatureF = temperatureC * (9/5) + 32;
+    gaugeTemperature = 'Water temp: ${temperatureF.toInt()}°F'; //${temperatureC.toInt()}°C';
   }
 
   _getFlowReadings(json) {
