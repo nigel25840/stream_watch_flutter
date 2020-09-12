@@ -15,6 +15,7 @@ class ChartViewModel extends ChangeNotifier {
 
   List<GaugeReading> gaugeFlowReadings = [];
   List<GaugeReading> gaugeStageReadings = [];
+  String gaugeTemperature;
 
   String lastUpdate = '';
   String timeOfLastUpdate = '';
@@ -59,6 +60,8 @@ class ChartViewModel extends ChangeNotifier {
         await _getFlowReadings(timeSeries[index]['values'][0]['value']);
       } else if (item.contains('Gage height')) {
         await _getStageReadings(timeSeries[index]['values'][0]['value']);
+      } else if (item.toLowerCase().contains('temperature')) {
+        await _getTemp(timeSeries[index]['values'][0]['value']);
       }
     }
 
@@ -86,6 +89,14 @@ class ChartViewModel extends ChangeNotifier {
         domainFn: (GaugeReading reading, _) => reading.timestamp,
         measureFn: (GaugeReading reading, _) => reading.dFlow));
     return series;
+  }
+
+  // (0°C × 9/5) + 32
+  _getTemp(json) {
+    int count = json.length;
+    double temperatureC = double.parse(json[count - 1]['value']);
+    double temperatureF = temperatureC * (9/5) + 32;
+    gaugeTemperature = 'Water temp: ${temperatureF.toInt()}°F'; //${temperatureC.toInt()}°C';
   }
 
   _getFlowReadings(json) {

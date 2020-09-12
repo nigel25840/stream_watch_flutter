@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/Util/constants.dart';
@@ -8,7 +6,6 @@ import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 
 class FavoritesViewModel extends ChangeNotifier {
-
   List<String> favorites;
   Map<String, FavoriteModel> favoriteModels;
   bool autoPlay = false;
@@ -21,13 +18,15 @@ class FavoritesViewModel extends ChangeNotifier {
     return favoriteModels[id];
   }
 
-  bool isPopulated(FavoriteModel model){
-    return model.favoriteId != null && model.favoriteName != null && model.currentStage != null;
+  bool isPopulated(FavoriteModel model) {
+    return model.favoriteId != null &&
+        model.favoriteName != null &&
+        model.currentStage != null;
   }
 
   // get a favorite via a network call OR from cached favorites list
-  Future<FavoriteModel> getFavoriteItem(String gaugeId, [bool update = false, int hours = 4]) async {
-
+  Future<FavoriteModel> getFavoriteItem(String gaugeId,
+      [bool update = false, int hours = 4]) async {
     // if the favorite exists in the dictionary AND it is not flagged for update, return it
     if (favoriteModels.containsKey(gaugeId)) {
       if (!update) {
@@ -39,7 +38,8 @@ class FavoritesViewModel extends ChangeNotifier {
     FavoriteModel model = FavoriteModel(gaugeId);
 
     // get updated favorite from USGS service
-    Map<String, dynamic> faveData = await DataProvider().gaugeJson(gaugeId, hours);
+    Map<String, dynamic> faveData =
+        await DataProvider().gaugeJson(gaugeId, hours);
     timeseries = faveData['value']['timeSeries'];
 
     for (int index = 0; index < timeseries.length; index++) {
@@ -49,14 +49,21 @@ class FavoritesViewModel extends ChangeNotifier {
       model.favoriteName = item['sourceInfo']['siteName'];
 
       String variableName = item['variable']['variableName'];
-      if(variableName.toLowerCase().contains('gage')) {
-        model.currentStage = _getCurrentReading(values);
-        model.increasing = _isTrendingUp(values, model);
-        model.lastUpdated = DateTime.parse(values.last['dateTime']);
-      } else if (variableName.toLowerCase().contains('streamflow')) {
-        model.currentFlow = _getCurrentReading(values);
-        model.increasing = _isTrendingUp(values, model);
-        model.lastUpdated = DateTime.parse(values.last['dateTime']);
+      if(values.length > 0) {
+        if (variableName.toLowerCase().contains('gage')) {
+          model.currentStage = _getCurrentReading(values);
+          model.increasing = _isTrendingUp(values, model);
+          model.lastUpdated = DateTime.parse(values.last['dateTime']);
+        } else if (variableName.toLowerCase().contains('streamflow')) {
+          model.currentFlow = _getCurrentReading(values);
+          model.increasing = _isTrendingUp(values, model);
+          model.lastUpdated = DateTime.parse(values.last['dateTime']);
+        } else if (variableName.toLowerCase().contains('temperature')) {
+          model.currentTemp = _getCurrentReading(values);
+        }
+      } else {
+        if (model.currentStage == null) model.currentStage = kReadingErrorValue;
+        if (model.currentFlow == null) model.currentFlow = kReadingErrorValue;
       }
     }
 
@@ -170,8 +177,7 @@ class FavoritesViewModel extends ChangeNotifier {
     // TODO: this is a hack - fix later
     // calling notifyListeners when deleting by swiping, causes all
     // cells to refresh creating an unpleasant user experience
-    if(notify)
-      notifyListeners();
+    notifyListeners();
   }
 
   void reorderFavorites(int oldIndex, int newIndex) {

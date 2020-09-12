@@ -7,6 +7,7 @@ class FavoriteModel {
 
   double currentFlow;
   double currentStage;
+  double currentTemp;
 
   double periodHighStage;
   double periodHighFlow;

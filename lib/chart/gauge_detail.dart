@@ -23,9 +23,11 @@ class GaugeDetail extends StatefulWidget {
 }
 
 class _GaugeDetail extends State<GaugeDetail> {
-  TextStyle headingStyle = TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold);
+  TextStyle headingStyle =
+      TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold);
   TextStyle dataStyle = TextStyle(fontSize: 12.0);
-  TextStyle readingStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0);
+  TextStyle readingStyle =
+      TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0);
   ChartViewModel mgr = ChartViewModel();
   bool refresh = false;
   bool isFavorite;
@@ -122,19 +124,40 @@ class _GaugeDetail extends State<GaugeDetail> {
             content: SingleChildScrollView(
               child: ListBody(
                 children: [
-                  Text('${widget.gaugeName} is malfunctioning and cannot be saved to favorites. Please contact the USGS regarding this gauge is the problem persists')
+                  Text(
+                      '${widget.gaugeName} is malfunctioning and cannot be saved to favorites. Please contact the USGS regarding this gauge is the problem persists')
                 ],
               ),
             ),
             actions: [okButton],
           );
-        }
+        });
+  }
+
+  Row _infoRow() {
+    if (mgr.gaugeTemperature != null) {
+      if(mgr.gaugeTemperature.length > 0) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('${mgr.getCurrentValue('stage')}', style: readingStyle),
+            Text('${mgr.getCurrentValue('')}', style: readingStyle),
+            Text('${mgr.gaugeTemperature}', style: readingStyle)
+          ],
+        );
+      }
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('${mgr.getCurrentValue('stage')}', style: readingStyle),
+        Text('${mgr.getCurrentValue('')}', style: readingStyle)
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -153,16 +176,7 @@ class _GaugeDetail extends State<GaugeDetail> {
               return Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('${mgr.getCurrentValue('stage')}', style: readingStyle,
-                        ),
-                        Text('${mgr.getCurrentValue('')}', style: readingStyle,)
-                      ],
-                    ),
-                  ),
+                      padding: const EdgeInsets.all(8.0), child: _infoRow()),
                   Column(
                     children: [
                       Container(
@@ -170,7 +184,9 @@ class _GaugeDetail extends State<GaugeDetail> {
                           alignment: Alignment(0.0, 0.0),
                           color: Colors.lightBlueAccent,
                           child: charts.TimeSeriesChart(
-                            mgr.isCfs ? mgr.seriesFlowData : mgr.seriesStageData,
+                            mgr.isCfs
+                                ? mgr.seriesFlowData
+                                : mgr.seriesStageData,
                             animate: true,
                             animationDuration:
                                 Duration(milliseconds: animationDuration),
@@ -196,29 +212,55 @@ class _GaugeDetail extends State<GaugeDetail> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Center(child: Text('3 day values', style: TextStyle(fontWeight: FontWeight.bold),),),
+                                  child: Center(
+                                    child: Text(
+                                      '3 day values',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
                                 )
                               ],
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left:20, right: 20),
+                              padding:
+                                  const EdgeInsets.only(left: 20, right: 20),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('Low stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}', style: dataStyle,),
-                                      SizedBox(height: 4,),
-                                      Text('High stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}', style: dataStyle,),
+                                      Text(
+                                        'Low stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.first : 'N/A'}',
+                                        style: dataStyle,
+                                      ),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Text(
+                                        'High stage: ${mgr.ultimateStages != null ? mgr.ultimateStages.last : 'N/A'}',
+                                        style: dataStyle,
+                                      ),
                                     ],
                                   ),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('Low flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.first : 'N/A'}', style: dataStyle,),
-                                      SizedBox(height: 4,),
-                                      Text('High flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.last : 'N/A'}', style: dataStyle,),
+                                      Text(
+                                        'Low flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.first : 'N/A'}',
+                                        style: dataStyle,
+                                      ),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Text(
+                                        'High flow: ${mgr.ultimateFlows != null ? mgr.ultimateFlows.last : 'N/A'}',
+                                        style: dataStyle,
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -228,7 +270,6 @@ class _GaugeDetail extends State<GaugeDetail> {
                         ),
                       )
                     ],
-
                   ),
                   Visibility(
                     visible: mgr.containsAllData,
@@ -236,7 +277,8 @@ class _GaugeDetail extends State<GaugeDetail> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         MaterialSegmentedControl(
-                          horizontalPadding: EdgeInsets.only(top: 5, bottom: 0, left: 20, right: 20),
+                          horizontalPadding: EdgeInsets.only(
+                              top: 5, bottom: 0, left: 20, right: 20),
                           children: {
                             0: Text("CFS"),
                             1: Text("  Stage in feet  ")
@@ -265,8 +307,8 @@ class _GaugeDetail extends State<GaugeDetail> {
       floatingActionButton: SpeedDial(
         child: Icon(Icons.keyboard_arrow_up),
         animatedIconTheme: IconThemeData(size: 22.0),
-        onOpen: () { },
-        onClose: () { },
+        onOpen: () {},
+        onClose: () {},
         visible: true,
         curve: Curves.bounceIn,
         children: [
@@ -294,7 +336,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                     animationDuration = 0;
                     FavoriteModel model = FavoriteModel(widget.gaugeId);
                     model.favoriteName = widget.gaugeName;
-                    double flow = -9999;
+                    double flow = kReadingErrorValue;
                     try {
                       if (mgr.gaugeFlowReadings != null) {
                         if (mgr.gaugeFlowReadings.last != null) {
@@ -303,10 +345,11 @@ class _GaugeDetail extends State<GaugeDetail> {
                           }
                         }
                       }
-                    } catch (ex) { }
+                    } catch (ex) {}
 
-                    double stage = (mgr.gaugeStageReadings != null) ? mgr.gaugeStageReadings.last.dFlow:0;
-//                    double flow = (mgr.gaugeFlowReadings != null) ? mgr.gaugeFlowReadings.last.dFlow:0;
+                    double stage = (mgr.gaugeStageReadings != null)
+                        ? mgr.gaugeStageReadings.last.dFlow
+                        : kReadingErrorValue;
 
                     model.currentFlow = flow;
                     model.currentStage = stage;

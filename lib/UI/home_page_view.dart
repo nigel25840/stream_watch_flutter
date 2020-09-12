@@ -2,7 +2,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:streamwatcher/UI/favorite_cell.dart';
 import 'package:streamwatcher/UI/favorite_listview_cell.dart';
 import 'package:streamwatcher/UI/state_picker.dart';
 import 'package:streamwatcher/Util/constants.dart';
@@ -31,7 +30,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   FavoritesViewModel viewModel;
-  List<FavoriteCard> cards;
   bool animate = true;
   var autoPlay = true;
 
@@ -48,42 +46,20 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // CarouselSlider getSlider(FavoritesViewModel model) {
-  //   return CarouselSlider(
-  //     options: CarouselOptions(
-  //       height: kCardHeight,
-  //       autoPlay: viewModel.autoPlay,
-  //       autoPlayInterval: Duration(seconds: 4),
-  //       autoPlayAnimationDuration: Duration(milliseconds: 500),
-  //       viewportFraction: 1.0,
-  //       enlargeCenterPage: false,
-  //     ),
-  //     items: getFavoriteCards(model.favorites, context).map((card) {
-  //       return Builder(
-  //         builder: (BuildContext context) {
-  //           return Padding(
-  //             padding: const EdgeInsets.all(0.0),
-  //             child: Container(height: kCardHeight, child: card),
-  //           );
-  //         },
-  //       );
-  //     }).toList(),
-  //   );
-  // }
-
   // model is passed to this function through a consumer in the scaffold
   // to ensure that it is the same model that is part of the provider
   CarouselSlider getSlider(FavoritesViewModel model) {
     return CarouselSlider(
       options: CarouselOptions(
         height: kCardHeight,
-        autoPlay: (viewModel != null) ? viewModel.autoPlay : true,
-        autoPlayInterval: Duration(seconds: 10),
+        // autoPlay: (viewModel != null) ? viewModel.favorites.length > 1: true,
+        autoPlay: autoPlay,
+        autoPlayInterval: Duration(seconds: 7),
         autoPlayAnimationDuration: Duration(milliseconds: 500),
         viewportFraction: 1.0,
         enlargeCenterPage: false,
       ),
-      items: getFavoriteCells(model.favorites, context).map((card) {
+      items: _getFavoriteCells(model.favorites, context).map((card) {
         return Builder(
           builder: (BuildContext context) {
             return Padding(
@@ -96,17 +72,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  List<FavoriteCard> getFavoriteCards(
-      List<String> items, BuildContext context) {
-    if (items == null) return [];
-    List<FavoriteCard> cards = [];
-    for (int index = 0; index < items.length; index++) {
-      cards.add(FavoriteCard(items[index], Key(items[index]), false, false));
-    }
-    return cards;
-  }
-
-  List<FavoriteCell> getFavoriteCells(List<String> items, BuildContext context) {
+  List<FavoriteCell> _getFavoriteCells(List<String> items, BuildContext context) {
     if (items == null) return [];
     List<FavoriteCell> cells = [];
     for (int index = 0; index < items.length; index++) {
