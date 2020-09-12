@@ -132,7 +132,8 @@ class _FavoriteCell extends State<FavoriteCell> {
                               padding: const EdgeInsets.only(right: 10),
                               child: Text(
                                 'Deleting...',
-                                style: TextStyle(fontSize: 20, color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
                               ),
                             )
                           ],
@@ -163,87 +164,98 @@ class _FavoriteCell extends State<FavoriteCell> {
 
   Card buildCard(BuildContext context, FavoriteModel model) {
     return Card(
-              elevation: 2,
-              color: Colors.tealAccent,
-              shadowColor: Colors.black,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              child: Column(
-                children: [
-                  Row(
+        elevation: 2,
+        color: Colors.tealAccent,
+        shadowColor: Colors.black,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10, left: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10, bottom: 10, left: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Wrap(
-                              direction: Axis.vertical,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                        width: MediaQuery.of(context).size.width * .9,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(model.favoriteName, style: titleStyle, overflow: TextOverflow.ellipsis, maxLines: 1, softWrap: false,),
-                                            Text('Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}')
-                                          ],
-                                        )
-                                    ),
-                                  ],
-                                ),
-
-                              ],
-                            ),
-                          ],
-                        ),
-                      )
+                      Wrap(
+                        direction: Axis.vertical,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                  width: MediaQuery.of(context).size.width * .9,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        model.favoriteName,
+                                        style: titleStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        softWrap: false,
+                                      ),
+                                      Text(
+                                          'Last updated: ${formatTimeStamp(model.lastUpdated, 'MMM dd, yyyy')}')
+                                    ],
+                                  )),
+                            ],
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                )
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  '${model.currentFlow != null ? model.currentFlow.round().toString() + 'cfs' : 'CFS: N/A'}',
-                                  style: subStyle),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                  '${model.currentStage != null ? model.currentStage.toString() + 'ft' : 'Ft.: N/A'}',
-                                  style: subStyle),
-                            ],
-                          ),
-                        ),
+                        Text(
+                            '${model.currentFlow != null ? _formatReading(value: model.currentFlow, cfs: true) : 'CFS:N\A'}',
+                            style: subStyle),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                            '${model.currentStage != null ? _formatReading(value: model.currentStage, cfs: false) : 'Ft.: N/A'}',
+                            style: subStyle),
+                      ],
+                    ),
+                  ),
 
-                        // TODO: refactor gauge model and revive trend arrow
-                        Icon((model.increasing != null) ? (model.increasing ? Icons.arrow_upward : Icons.arrow_downward) : Icons.remove),
-                        Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Icon(
-                                Icons.play_arrow,
-                                color: Colors.blue,
-                              ),
-                            ],
-                          ),
-                        )
+                  // TODO: refactor gauge model and revive trend arrow
+                  Icon((model.increasing != null)
+                      ? (model.increasing
+                          ? Icons.arrow_upward
+                          : Icons.arrow_downward)
+                      : Icons.remove),
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.play_arrow,
+                          color: Colors.blue,
+                        ),
                       ],
                     ),
                   )
                 ],
-              ));
+              ),
+            )
+          ],
+        ));
   }
 }

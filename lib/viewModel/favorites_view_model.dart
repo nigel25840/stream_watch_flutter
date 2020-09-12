@@ -49,14 +49,14 @@ class FavoritesViewModel extends ChangeNotifier {
       model.favoriteName = item['sourceInfo']['siteName'];
 
       String variableName = item['variable']['variableName'];
-      if(variableName.toLowerCase().contains('gage')) {
-        model.currentStage = _getCurrentReading(values);
-        model.increasing = _isTrendingUp(values, model);
-        model.lastUpdated = DateTime.parse(values.last['dateTime']);
+      if (variableName.toLowerCase().contains('gage')) {
+        model.currentStage = (values.length > 0) ? _getCurrentReading(values) : kReadingErrorValue;
+        model.increasing = (values.length > 0) ? _isTrendingUp(values, model) : null;
+        model.lastUpdated = (values.length > 0) ? DateTime.parse(values.last['dateTime']) : null;
       } else if (variableName.toLowerCase().contains('streamflow')) {
-        model.currentFlow = _getCurrentReading(values);
-        model.increasing = _isTrendingUp(values, model);
-        model.lastUpdated = DateTime.parse(values.last['dateTime']);
+        model.currentFlow = (values.length > 0) ? _getCurrentReading(values) : kReadingErrorValue;
+        model.increasing = (values.length > 0) ? _isTrendingUp(values, model) : null;
+        model.lastUpdated = (values.length > 0) ? DateTime.parse(values.last['dateTime']) : null;
       } else if (variableName.toLowerCase().contains('temperature')) {
         model.currentTemp = _getCurrentReading(values);
       }
@@ -80,30 +80,29 @@ class FavoritesViewModel extends ChangeNotifier {
 
   double _getCurrentReading(List<dynamic> values) {
     List<double> vals = [];
-    for(int index = 0; index < values.length; index++) {
+    for (int index = 0; index < values.length; index++) {
       Map<String, dynamic> dict = values[index];
       vals.add(double.parse(dict['value']));
     }
-    return vals.last;
+    return vals.last ?? -100.0;
   }
 
   bool _isTrendingUp(List<dynamic> values, FavoriteModel model) {
-
     //if the value has already been set by a cfs or stage reading, return it
-    if(model.increasing != null) {
+    if (model.increasing != null) {
       return model.increasing;
     }
 
     // otherwise, generate it
     List<double> vals = [];
-    for(int index = 0; index < values.length; index++) {
+    for (int index = 0; index < values.length; index++) {
       Map<String, dynamic> dict = values[index];
       vals.add(double.parse(dict['value']));
     }
 
     int upCount = 0;
     int downCount = 0;
-    for(int index = 0; index < vals.length; index++) {
+    for (int index = 0; index < vals.length; index++) {
       if (index > 0) {
         double newVal = vals[index];
         double oldVal = vals[index - 1];
@@ -116,6 +115,7 @@ class FavoritesViewModel extends ChangeNotifier {
     }
     return upCount > downCount;
   }
+
   void updateFavorite(String id, FavoriteModel model) {
     // overwrite existing model at index, new model will have all necessary data
     favoriteModels[id] = model;
@@ -172,7 +172,7 @@ class FavoritesViewModel extends ChangeNotifier {
     // TODO: this is a hack - fix later
     // calling notifyListeners when deleting by swiping, causes all
     // cells to refresh creating an unpleasant user experience
-    if(notify)
+    // if (notify)
       notifyListeners();
   }
 
@@ -181,5 +181,4 @@ class FavoritesViewModel extends ChangeNotifier {
     favorites.insert(newIndex, item);
     notifyListeners();
   }
-
 }
