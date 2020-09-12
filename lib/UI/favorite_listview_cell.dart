@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
@@ -30,34 +29,33 @@ class _FavoriteCell extends State<FavoriteCell> {
   _FavoriteCell(this.gaugeId);
 
   Future<FavoriteModel> _getModel(String itemId, [bool refresh = false]) async {
-    FavoriteModel model;
-    if (vm.favoriteModels[itemId] == null ||
-        !vm.isPopulated(vm.favoriteModels[itemId])) {
+    if(vm.favoriteModels[itemId] == null || !vm.isPopulated(vm.favoriteModels[itemId])) {
       try {
-        model = await vm.getFavoriteItem(gaugeId, true).timeout(
-            const Duration(seconds: 5));
+        return await vm.getFavoriteItem(gaugeId, true).timeout(const Duration(seconds: 30));
       } on TimeoutException catch (_) {
-        print('');
-        return _timeoutModel(itemId: itemId);
+        FavoriteModel timeoutModel = FavoriteModel(itemId, 'Gauge timed out!');
+        timeoutModel.currentStage = -1;
+        timeoutModel.currentFlow = -1;
+        return timeoutModel;
       } on SocketException catch (_) {
-        return _timeoutModel(itemId: itemId);
+        FavoriteModel timeoutModel = FavoriteModel(itemId, 'Gauge temporarily unavailable!');
+        timeoutModel.currentStage = -1;
+        timeoutModel.currentFlow = -1;
+        return timeoutModel;
       } on Exception catch (_) {
-        return _timeoutModel(itemId: itemId);
+        FavoriteModel timeoutModel = FavoriteModel(itemId, 'Error occurred! Check later.');
+        timeoutModel.currentStage = -1;
+        timeoutModel.currentFlow = -1;
+        return timeoutModel;
       }
     } else {
       return vm.favoriteModels[itemId];
     }
   }
 
-  FavoriteModel _timeoutModel({String itemId}) {
-    FavoriteModel timeoutModel =
-        FavoriteModel(itemId, 'Gauge temporarily unavailable!');
-    timeoutModel.currentStage = kReadingErrorValue;
-    timeoutModel.currentFlow = kReadingErrorValue;
-    return timeoutModel;
-  }
+  void reloadView() {
 
-  void reloadView() {}
+  }
 
   @override
   void initState() {
@@ -66,55 +64,40 @@ class _FavoriteCell extends State<FavoriteCell> {
   }
 
   String formatTimeStamp(DateTime date, String format) {
-    if (date == null) {
+    if (date == null){
       return 'N/A';
     }
     DateFormat formatter = DateFormat(format);
     return formatter.format(date);
   }
 
-  String _formatReading({double value, bool cfs}) {
-    // '${model.currentFlow != null ? model.currentFlow.round().toString() + 'cfs' : 'CFS: N/A'}',
-    if (value != kReadingErrorValue) {
-      if (cfs) {
-        return '${value.round().toString()} cfs';
-      } else {
-        return '${value.toString()} ft';
-      }
-    }
-    return '${cfs ? 'CFS' : 'Ft'}: N/A';
-  }
-
   @override
   Widget build(BuildContext context) {
+
     return Consumer<FavoritesViewModel>(
       builder: (context, model, child) => FutureBuilder(
         future: _getModel(widget.gaugeId, widget.reload),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           // snapshot will be the model returned by the async task
           // model will be used to populate cell
-          if (snapshot.connectionState == ConnectionState.done) {
+          if(snapshot.connectionState == ConnectionState.done) {
             if (snapshot.data is FavoriteModel) {
               FavoriteModel model = snapshot.data;
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Dismissible(
-                    direction: widget.isDismissable
-                        ? DismissDirection.endToStart
-                        : null,
+                    direction: widget.isDismissable ? DismissDirection.endToStart : null,
                     key: UniqueKey(),
                     onDismissed: (_) {
                       vm.deleteFavorite(model.favoriteId, false);
                       Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              '${model.favoriteName} was removed from favorites')));
+                          content: Text('${model.favoriteName} was removed from favorites')));
                     },
                     child: GestureDetector(
                       child: buildCard(context, model),
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
                           return GaugeDetail(
                             gaugeId: model.favoriteId,
                             gaugeName: model.favoriteName,
