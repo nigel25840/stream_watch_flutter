@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
@@ -53,8 +54,16 @@ class _FavoriteCell extends State<FavoriteCell> {
     }
   }
 
-  void reloadView() {
-
+  String _formatReading({double value, bool cfs}) {
+    // '${model.currentFlow != null ? model.currentFlow.round().toString() + 'cfs' : 'CFS: N/A'}',
+    if (value != kReadingErrorValue) {
+      if (cfs) {
+        return '${value.round().toString()} cfs';
+      } else {
+        return '${value.toString()} ft';
+      }
+    }
+    return '${cfs ? 'CFS' : 'Ft'}: N/A';
   }
 
   @override
@@ -194,7 +203,7 @@ class _FavoriteCell extends State<FavoriteCell> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  '${model.currentFlow != null ? model.currentFlow.round().toString() + 'cfs' : 'CFS: N/A'}',
+                                  '${model.currentFlow != null ? _formatReading(value: model.currentFlow, cfs: true) : 'CFS:N\A'}',
                                   style: subStyle),
                             ],
                           ),
@@ -204,7 +213,7 @@ class _FavoriteCell extends State<FavoriteCell> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                  '${model.currentStage != null ? model.currentStage.toString() + 'ft' : 'Ft.: N/A'}',
+                                  '${model.currentStage != null ? _formatReading(value: model.currentStage, cfs: false) : 'Ft.: N/A'}',
                                   style: subStyle),
                             ],
                           ),

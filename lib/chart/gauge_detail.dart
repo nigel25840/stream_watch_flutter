@@ -336,7 +336,7 @@ class _GaugeDetail extends State<GaugeDetail> {
                     animationDuration = 0;
                     FavoriteModel model = FavoriteModel(widget.gaugeId);
                     model.favoriteName = widget.gaugeName;
-                    double flow = -9999;
+                    double flow = kReadingErrorValue;
                     try {
                       if (mgr.gaugeFlowReadings != null) {
                         if (mgr.gaugeFlowReadings.last != null) {
@@ -349,8 +349,7 @@ class _GaugeDetail extends State<GaugeDetail> {
 
                     double stage = (mgr.gaugeStageReadings != null)
                         ? mgr.gaugeStageReadings.last.dFlow
-                        : 0;
-//                    double flow = (mgr.gaugeFlowReadings != null) ? mgr.gaugeFlowReadings.last.dFlow:0;
+                        : kReadingErrorValue;
 
                     model.currentFlow = flow;
                     model.currentStage = stage;

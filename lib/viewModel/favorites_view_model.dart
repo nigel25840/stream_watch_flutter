@@ -49,16 +49,21 @@ class FavoritesViewModel extends ChangeNotifier {
       model.favoriteName = item['sourceInfo']['siteName'];
 
       String variableName = item['variable']['variableName'];
-      if(variableName.toLowerCase().contains('gage')) {
-        model.currentStage = _getCurrentReading(values);
-        model.increasing = _isTrendingUp(values, model);
-        model.lastUpdated = DateTime.parse(values.last['dateTime']);
-      } else if (variableName.toLowerCase().contains('streamflow')) {
-        model.currentFlow = _getCurrentReading(values);
-        model.increasing = _isTrendingUp(values, model);
-        model.lastUpdated = DateTime.parse(values.last['dateTime']);
-      } else if (variableName.toLowerCase().contains('temperature')) {
-        model.currentTemp = _getCurrentReading(values);
+      if(values.length > 0) {
+        if (variableName.toLowerCase().contains('gage')) {
+          model.currentStage = _getCurrentReading(values);
+          model.increasing = _isTrendingUp(values, model);
+          model.lastUpdated = DateTime.parse(values.last['dateTime']);
+        } else if (variableName.toLowerCase().contains('streamflow')) {
+          model.currentFlow = _getCurrentReading(values);
+          model.increasing = _isTrendingUp(values, model);
+          model.lastUpdated = DateTime.parse(values.last['dateTime']);
+        } else if (variableName.toLowerCase().contains('temperature')) {
+          model.currentTemp = _getCurrentReading(values);
+        }
+      } else {
+        if (model.currentStage == null) model.currentStage = kReadingErrorValue;
+        if (model.currentFlow == null) model.currentFlow = kReadingErrorValue;
       }
     }
 
@@ -172,8 +177,7 @@ class FavoritesViewModel extends ChangeNotifier {
     // TODO: this is a hack - fix later
     // calling notifyListeners when deleting by swiping, causes all
     // cells to refresh creating an unpleasant user experience
-    if(notify)
-      notifyListeners();
+    notifyListeners();
   }
 
   void reorderFavorites(int oldIndex, int newIndex) {
