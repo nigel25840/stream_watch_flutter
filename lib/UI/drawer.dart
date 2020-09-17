@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:streamwatcher/UI/disclaimer.dart';
 import 'package:streamwatcher/UI/favorites_view.dart';
+import 'package:streamwatcher/main.dart';
 
 import 'help.dart';
 import 'home_page_view.dart';
@@ -14,11 +15,19 @@ class RFDrawer extends StatefulWidget {
 }
 
 class _RFDrawerState extends State<RFDrawer> {
-  _handleTap(Widget widget) {
+  _handleTap(Widget widget, [bool rewind = false]) {
     Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return widget;
-    }));
+    if (rewind) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) => MyApp()),
+        ModalRoute.withName('/'),
+      );
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return widget;
+      }));
+    }
   }
 
   var style = TextStyle(
@@ -53,7 +62,7 @@ class _RFDrawerState extends State<RFDrawer> {
               leading: Icon(Icons.home),
               title: Text('Home', style: style),
               onTap: () {
-                _handleTap(HomePage());
+                _handleTap(HomePage(), true);
               },
             ),
             divider,
