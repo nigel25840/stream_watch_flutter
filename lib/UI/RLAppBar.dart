@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 class RLAppBar extends StatelessWidget with PreferredSizeWidget {
 
-  final String title;
+  final Text titleText;
   final Size preferredSize;
   final double height;
 
-  RLAppBar(this.title, this.height, {Key key})
+  RLAppBar(this.titleText, this.height, {Key key})
       : preferredSize = Size.fromHeight(height),
         super(key: key);
 
@@ -19,7 +19,7 @@ class RLAppBar extends StatelessWidget with PreferredSizeWidget {
       leading: IconButton(icon: Icon(Icons.arrow_back_ios, color: Colors.white), onPressed:() {
         Navigator.pop(context, false);
       },),
-      title: Text(title),
+      title: titleText,
     );
   }
 }

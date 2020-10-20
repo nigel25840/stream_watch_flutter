@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/RLAppBar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/favorite_listview_cell.dart';
 import 'package:streamwatcher/UI/help.dart';
@@ -127,9 +128,7 @@ class _FavoritesView extends State<FavoritesView> {
       );
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Favorites'),
-      ),
+      appBar: RLAppBar(Text('Favorites'), 60.0),
       body: Consumer<FavoritesViewModel>(
           builder: (context, model, child) => Container(
                 child: RefreshIndicator(

@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/RLAppBar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'dart:core';
 import 'package:streamwatcher/chart/chart_viewmodel.dart';
@@ -159,16 +160,13 @@ class _GaugeDetail extends State<GaugeDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.gaugeName,
-          style: headingStyle,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-          softWrap: false,
-        ),
-        actions: <Widget>[],
-      ),
+      appBar: RLAppBar(Text(
+        widget.gaugeName,
+        style: headingStyle,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        softWrap: false,
+      ), 60.0),
       body: FutureBuilder(
           future: mgr.getGaugeData(widget.gaugeId, refresh: false),
           builder: (BuildContext context, AsyncSnapshot snapshot) {

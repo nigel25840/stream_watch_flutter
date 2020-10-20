@@ -1,5 +1,6 @@
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:streamwatcher/UI/RLAppBar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/gauge_selector_card.dart';
 import 'package:streamwatcher/Util/Storage.dart';
@@ -90,9 +91,7 @@ class _GaugeSelector extends State<GaugeSelector>
     _getFavorites();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(kAllStates[widget.stateAbbreviation]),
-      ),
+      appBar: RLAppBar(Text(kAllStates[widget.stateAbbreviation]), 60.0),
       body: FutureBuilder(
         future: _getGaugesForState(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {

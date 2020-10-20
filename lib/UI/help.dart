@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/UI/RLAppBar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 
 class HelpView extends StatelessWidget {
@@ -9,9 +10,7 @@ class HelpView extends StatelessWidget {
         TextStyle(fontSize: 20, fontWeight: FontWeight.w500);
     TextStyle itemStyle = TextStyle(fontSize: 16);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("River Watch Help"),
-      ),
+      appBar: RLAppBar(Text('Help Me!'), 60.0),
       endDrawer: RFDrawer(),
       body: SingleChildScrollView(
         child: Container(
