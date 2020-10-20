@@ -3,7 +3,9 @@ import 'dart:core';
 import 'package:http/http.dart';
 
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/model/GaugeReadingModel.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
+import 'package:codable/codable.dart';
 
 // let url = URL(string: "\(Constants.BASE_URL)&stateCd=\(state)&parameterCd=00060,00065&siteType=ST&siteStatus=all")!
 
@@ -11,6 +13,16 @@ import 'package:streamwatcher/model/gauge_model.dart';
 // GAUGE  IDENTIFIER:   value.timeSeries[0].sourceInfo.siteCode[0].value
 
 class DataProvider {
+
+  Future<GaugeReadingModel> fetchGaugeDetail(String gaugeId, int hours) async {
+    String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
+    Response res = await get(url);
+    final readingJson = json.decode(res.body);
+    final archive = KeyedArchive.unarchive(readingJson);
+    GaugeReadingModel model = GaugeReadingModel();
+    model.decode(archive);
+    return model;
+  }
 
   Future<Map<String, dynamic>> gaugeJson(String gaugeId, int hours) async {
     String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
