@@ -44,17 +44,11 @@ class _GaugeSelector extends State<GaugeSelector>
   }
 
   Future _getGaugesForState() async {
-    // prog = ProgressDialog(context);
-    // prog.style(
-    //     message: "Downloading ${kAllStates[widget.stateAbbreviation]} gauge definitions",
-    //     messageTextStyle: TextStyle(fontSize: 14, color: Colors.white),
-    //     backgroundColor: Colors.indigo);
-    // prog.show();
     if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
       return _stateGuageList[widget.stateAbbreviation];
     }
     List<GaugeModel> gaugeModels =
-        await DataProvider().stateGauges(widget.stateAbbreviation);
+    await DataProvider().stateGauges(widget.stateAbbreviation);
     _stateGuageList[widget.stateAbbreviation] = gaugeModels;
 
     return gaugeModels;
