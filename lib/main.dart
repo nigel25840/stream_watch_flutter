@@ -5,6 +5,7 @@ import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/state_picker.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
+import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
 
 import 'UI/home_page_view.dart';
 
@@ -16,10 +17,11 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
       .then((_) {
     runApp(
-      ChangeNotifierProvider(
-        create: (context) => FavoritesViewModel(),
-        child: MyApp(),
-      )
+      MultiProvider(providers: [
+        ChangeNotifierProvider(create: (context) => FavoritesViewModel(),),
+        ChangeNotifierProvider(create: (context) => GaugeDetailViewModel())
+      ],
+      child: MyApp(),)
     );
   });
 }

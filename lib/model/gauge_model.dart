@@ -1,7 +1,7 @@
 
 // represents a gauge item as downloaded from a selected state
 
-class GaugeModel {
+class GaugeReferenceModel {
 
   final String gaugeName;
   final String gaugeState;
@@ -14,5 +14,5 @@ class GaugeModel {
   double lastStageReading;
   DateTime lastUpdated;
 
-  GaugeModel({this.gaugeName, this.gaugeState, this.gaugeId});
+  GaugeReferenceModel({this.gaugeName, this.gaugeState, this.gaugeId});
 }

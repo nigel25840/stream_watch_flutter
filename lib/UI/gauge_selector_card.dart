@@ -2,12 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/gauge_detail_chart.dart';
 import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class GaugeSelectorCard extends StatefulWidget {
-  final GaugeModel model;
+  final GaugeReferenceModel model;
   GaugeSelectorCard(this.model);
   _GaugeSelectorCard createState() => _GaugeSelectorCard();
 }
@@ -25,7 +26,7 @@ class _GaugeSelectorCard extends State<GaugeSelectorCard> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    GaugeModel _model = widget.model;
+    GaugeReferenceModel _model = widget.model;
     isFavorite = viewModel.favorites.contains(_model.gaugeId);
 
     return Consumer<FavoritesViewModel>(
@@ -53,8 +54,9 @@ class _GaugeSelectorCard extends State<GaugeSelectorCard> {
             onTap: () {
               print(_model.gaugeId);
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return GaugeDetail(
-                    gaugeId: _model.gaugeId, gaugeName: _model.gaugeName);
+                // return GaugeDetail(
+                //     gaugeId: _model.gaugeId, gaugeName: _model.gaugeName);
+                return GaugeDetailChart(referenceModel: _model);
               }));
             },
           ),

@@ -10,7 +10,7 @@ class HelpView extends StatelessWidget {
         TextStyle(fontSize: 20, fontWeight: FontWeight.w500);
     TextStyle itemStyle = TextStyle(fontSize: 16);
     return Scaffold(
-      appBar: RLAppBar(Text('Help Me!'), 60.0),
+      appBar: RLAppBar(titleText: Text('Help Me!')),
       endDrawer: RFDrawer(),
       body: SingleChildScrollView(
         child: Container(

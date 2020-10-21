@@ -3,7 +3,7 @@ import 'dart:core';
 import 'package:http/http.dart';
 
 import 'package:streamwatcher/Util/constants.dart';
-import 'package:streamwatcher/model/GaugeReadingModel.dart';
+import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:codable/codable.dart';
 
@@ -14,7 +14,8 @@ import 'package:codable/codable.dart';
 
 class DataProvider {
 
-  Future<GaugeReadingModel> fetchGaugeDetail(String gaugeId, int hours) async {
+
+  Future<GaugeReadingModel> fetchGaugeDetail(String gaugeId, {int hours = 24}) async {
     String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
     Response res = await get(url);
     final readingJson = json.decode(res.body);
@@ -30,11 +31,11 @@ class DataProvider {
     return jsonDecode(res.body);
   }
 
-  Future<List<GaugeModel>> stateGauges(String stateAbbr) async {
+  Future<List<GaugeReferenceModel>> stateGauges(String stateAbbr) async {
     String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
     Response res = await get(url);
     var json = jsonDecode(res.body);
-    var gaugeList = List<GaugeModel>();
+    var gaugeList = List<GaugeReferenceModel>();
     var idSet = Set<String>();
     int count = json['value']['timeSeries'].length;
 
@@ -43,12 +44,12 @@ class DataProvider {
       var gID = item['siteCode'][0]['value'];
       var name = item['siteName'];
       if (!idSet.contains(gID)) {
-        gaugeList.add(GaugeModel(gaugeName: name, gaugeState: stateAbbr, gaugeId: gID));
+        gaugeList.add(GaugeReferenceModel(gaugeName: name, gaugeState: stateAbbr, gaugeId: gID));
       }
       idSet.add(gID);
     }
 
-    Comparator<GaugeModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
+    Comparator<GaugeReferenceModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
     gaugeList.sort(sortByname);
     return gaugeList.toList();
   }

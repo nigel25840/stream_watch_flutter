@@ -11,6 +11,7 @@ import 'package:streamwatcher/chart/chart_viewmodel.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
+import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
 
 import '../Util/constants.dart';
 
@@ -160,13 +161,13 @@ class _GaugeDetail extends State<GaugeDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: RLAppBar(Text(
+      appBar: RLAppBar(titleText: Text(
         widget.gaugeName,
         style: headingStyle,
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
         softWrap: false,
-      ), 60.0),
+      )),
       body: FutureBuilder(
           future: mgr.getGaugeData(widget.gaugeId, refresh: false),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -367,15 +368,6 @@ class _GaugeDetail extends State<GaugeDetail> {
           ),
         ],
       ),
-
-      // TODO: revive this button in next version of app
-//          SpeedDialChild(
-//              child: Icon(Icons.settings),
-//              onTap: () {
-//                Navigator.push(context, MaterialPageRoute(builder: (context) {
-//                  return GaugePreferences(widget.gaugeName, widget.gaugeId);
-//                }));
-//              })
 
       endDrawer: RFDrawer(),
     );

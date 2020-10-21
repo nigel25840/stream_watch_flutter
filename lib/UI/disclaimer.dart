@@ -11,7 +11,7 @@ class DisclaimerView extends StatelessWidget {
     TextStyle headerStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
     TextStyle bodyStyle = TextStyle(fontSize: 15);
     return Scaffold(
-      appBar: RLAppBar(Text('Disclaimer'), 60.0),
+      appBar: RLAppBar(titleText: Text('Disclaimer')),
       body: SingleChildScrollView(
         child: Column(
           children: [

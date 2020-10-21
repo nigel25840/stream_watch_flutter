@@ -1,6 +1,8 @@
 import 'package:codable/cast.dart' as cast;
 import 'package:codable/codable.dart';
 
+// populates a data model from a USGS nested json reading
+
 class GaugeReadingModel extends Coding {
   GaugeDetailModel value;
 
@@ -8,7 +10,6 @@ class GaugeReadingModel extends Coding {
   void decode(KeyedArchive object) {
     super.decode(object);
     value = object.decodeObject('value', () => GaugeDetailModel());
-    print(value);
   }
 
   @override

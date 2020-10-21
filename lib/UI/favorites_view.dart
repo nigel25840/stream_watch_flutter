@@ -128,7 +128,7 @@ class _FavoritesView extends State<FavoritesView> {
       );
     }
     return Scaffold(
-      appBar: RLAppBar(Text('Favorites'), 60.0),
+      appBar: RLAppBar(titleText: Text('Favorites')),
       body: Consumer<FavoritesViewModel>(
           builder: (context, model, child) => Container(
                 child: RefreshIndicator(

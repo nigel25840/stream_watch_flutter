@@ -4,8 +4,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
-import 'package:streamwatcher/model/GaugeReadingModel.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
+import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/reading_model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
@@ -44,9 +44,6 @@ class ChartViewModel extends ChangeNotifier {
     var json;
     var timeSeries;
     int count;
-
-
-    Future<GaugeReadingModel> testModel = DataProvider().fetchGaugeDetail(gaugeId, hours);
 
     List<String> favorites = await Storage.getList(kFavoritesKey);
     isFavorite = favorites.contains(gaugeId);
@@ -211,6 +208,4 @@ class ChartViewModel extends ChangeNotifier {
     }
     return currentFlow + currentStage;
   }
-
-
 }

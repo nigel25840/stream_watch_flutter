@@ -47,7 +47,7 @@ class _StatePicker extends State<StatePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: RLAppBar(Text(widget.title), 60.0),
+      appBar: RLAppBar(titleText: Text(widget.title)),
       body: showStates().build(context),
       endDrawer: RFDrawer(),
     );

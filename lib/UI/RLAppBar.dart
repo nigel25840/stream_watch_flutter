@@ -8,7 +8,7 @@ class RLAppBar extends StatelessWidget with PreferredSizeWidget {
   final Size preferredSize;
   final double height;
 
-  RLAppBar(this.titleText, this.height, {Key key})
+  RLAppBar({this.titleText, this.height = 60.0, Key key})
       : preferredSize = Size.fromHeight(height),
         super(key: key);
 

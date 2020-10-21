@@ -29,7 +29,7 @@ class FavoriteModel {
     );
   }
 
-  void buildFromGauge(GaugeModel gauge) {
+  void buildFromGauge(GaugeReferenceModel gauge) {
     favoriteId = gauge.gaugeId;
     favoriteName = gauge.gaugeName;
     lastUpdated = gauge.lastUpdated;

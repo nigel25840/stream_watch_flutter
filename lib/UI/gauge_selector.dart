@@ -14,7 +14,7 @@ import '../dataServices/data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
-  Future<List<GaugeModel>> _data;
+  Future<List<GaugeReferenceModel>> _data;
 
   GaugeSelector(this.stateAbbreviation) {
     _data = DataProvider().stateGauges(stateAbbreviation);
@@ -27,7 +27,7 @@ class _GaugeSelector extends State<GaugeSelector>
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
   PageController _pageController;
-  List<GaugeModel> gaugeModels;
+  List<GaugeReferenceModel> gaugeModels;
   ProgressDialog prog;
 
   _GaugeSelector();
@@ -48,7 +48,7 @@ class _GaugeSelector extends State<GaugeSelector>
     if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
       return _stateGuageList[widget.stateAbbreviation];
     }
-    List<GaugeModel> gaugeModels =
+    List<GaugeReferenceModel> gaugeModels =
     await DataProvider().stateGauges(widget.stateAbbreviation);
     _stateGuageList[widget.stateAbbreviation] = gaugeModels;
 
@@ -73,7 +73,7 @@ class _GaugeSelector extends State<GaugeSelector>
     var list = ScrollablePositionedList.builder(
       itemCount: snapshot.data.length,
       itemBuilder: (context, index) {
-        GaugeModel gauge = snapshot.data[index];
+        GaugeReferenceModel gauge = snapshot.data[index];
         return GaugeSelectorCard(gauge);
       },
       itemPositionsListener: listener,
@@ -91,7 +91,7 @@ class _GaugeSelector extends State<GaugeSelector>
     _getFavorites();
 
     return Scaffold(
-      appBar: RLAppBar(Text(kAllStates[widget.stateAbbreviation]), 60.0),
+      appBar: RLAppBar(titleText: Text(kAllStates[widget.stateAbbreviation])),
       body: FutureBuilder(
         future: _getGaugesForState(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
