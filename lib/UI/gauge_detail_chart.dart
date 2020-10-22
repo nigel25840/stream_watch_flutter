@@ -41,7 +41,8 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
         child: Consumer<GaugeDetailViewModel>(
           builder: (context, model, child) => Column (
             children: [
-              Text(model.referenceModel.gaugeName)
+              Text(model.getGaugeName()),
+              Text(model.getUltimateValue(true, true).toString())
             ],
           ),
         ),

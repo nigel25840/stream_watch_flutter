@@ -155,7 +155,7 @@ class GaugeVariableCode extends Coding {
   @override
   void decode(KeyedArchive object) {
     super.decode(object);
-    variableId = object.decode('variableId');
+    variableId = object.decode('variableID');
   }
   @override
   void encode(KeyedArchive object) { }
