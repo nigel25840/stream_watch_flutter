@@ -17,6 +17,8 @@ class GaugeDetailViewModel extends ChangeNotifier {
   List<double> stageReadings = [];
   List<double> cfsReadings = [];
 
+  var reloading = true;
+
   void setReferenceModel(GaugeReferenceModel mdl) {
     referenceModel = mdl;
     setReadings();
@@ -24,11 +26,23 @@ class GaugeDetailViewModel extends ChangeNotifier {
   }
 
   Future<GaugeDetailViewModel> _populate() async {
-    await DataProvider().fetchGaugeDetail(referenceModel.gaugeId).then((model) {
-      this.model = model;
-      setReadings();
-      notifyListeners();
-    });
+
+    var reload = true;
+
+    // if there is a model from a previous load, ensure that it has changed before reloading
+    if (model != null) {
+      String persistedGaugeId = model.value.timeSeries.first.sourceInfo.siteCode.last.value;
+      reloading = referenceModel.gaugeId != persistedGaugeId;
+    }
+
+    if (reload) {
+      await DataProvider().fetchGaugeDetail(referenceModel.gaugeId).then((model) {
+        this.model = model;
+        setReadings();
+        reloading = false;
+        notifyListeners();
+      });
+    }
   }
 
   String getGaugeName() {
