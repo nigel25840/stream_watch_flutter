@@ -41,8 +41,33 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
         child: Consumer<GaugeDetailViewModel>(
           builder: (context, model, child) => Column (
             children: [
-              Text(model.getGaugeName()),
-              Text(model.getUltimateValue(true, true).toString())
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(model.getGaugeName()),
+              ),
+              Divider(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text('CFS values'),
+                    Text(model.getUltimateValue(cfs: true, highValue: true).toString()),
+                    Text(model.getUltimateValue(cfs: true, highValue: false).toString()),
+                  ],
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Text('Stage values'),
+                    Text(model.getUltimateValue(cfs: false, highValue: true).toString()),
+                    Text(model.getUltimateValue(cfs: false, highValue: false).toString())
+                  ],
+                ),
+              ),
+              Divider()
             ],
           ),
         ),

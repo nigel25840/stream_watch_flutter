@@ -60,26 +60,24 @@ class GaugeDetailViewModel extends ChangeNotifier {
       double reading = double.parse(val.value);
       cfs ? cfsReadings.add(reading) : stageReadings.add(reading);
     }
-    print('');
   }
 
   // fetches period high or low for cfs or stage
-  double getUltimateValue(bool cfs, bool highValue) {
+  String getUltimateValue({bool cfs, bool highValue}) {
     if (model == null) {
-      return -99;
+      return 'N\\A';
     }
-    List<GaugeTimeSeries> series = model.value.timeSeries;
-    series.forEach((ts) {
-      var readingType = '';
-      if (ts.variable.variableName.toLowerCase().contains('streamflow') || ts.variable.variableName.toLowerCase().contains('gage')) {
-        readingType = ts.variable.variableName;
-        ts.values.forEach((val) {
-          val.value.forEach((gaugeVal) {
-            print('$readingType - ${gaugeVal.value}');
-          });
-        });
-      }
-    });
+    double retVal;
+    if (cfs) {
+      List<double> temp = []..addAll(cfsReadings);
+      temp.sort((a,b) => a.compareTo(b));
+      retVal = highValue ? temp.last : temp.first;
+    } else {
+      List<double> temp = []..addAll(stageReadings);
+      temp.sort((a, b) => a.compareTo(b));
+      retVal = highValue ? temp.last : temp.first;
+    }
+    return (retVal != null) ? retVal.toString() : 'N\\A';
   }
 
   String lastupdate() {

@@ -18,9 +18,8 @@ import '../Util/constants.dart';
 class GaugeDetail extends StatefulWidget {
   final String gaugeId;
   final String gaugeName;
-  final Function() notifyParent;
 
-  GaugeDetail({this.gaugeId, this.gaugeName, this.notifyParent});
+  GaugeDetail({this.gaugeId, this.gaugeName});
   _GaugeDetail createState() => _GaugeDetail();
 }
 
