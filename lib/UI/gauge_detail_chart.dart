@@ -22,7 +22,7 @@ class GaugeDetailChart extends StatefulWidget {
 }
 
 class _GaugeDetailChartState extends State<GaugeDetailChart> {
-  int segmentedControlIndex = 0;
+  int segmentedControlIndex = 1; // this makes stage selected - stage is default
   GaugeDetailViewModel viewModel;
   TextStyle whiteStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white);
   TextStyle detailStyle = TextStyle(fontWeight: FontWeight.w300, fontSize: 14, color: Colors.white);
@@ -60,8 +60,7 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(const Radius.circular(20.0))),
+                              borderRadius: BorderRadius.all(const Radius.circular(20.0))),
                           child: ChartView(refModel: widget.referenceModel, viewModel: viewModel, isCfs: viewModel.isCfs,),
                         ),
                       ),
@@ -112,7 +111,7 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 15),
                                   child: Visibility (
-                                    visible: model.containsFullDataset(),
+                                    visible: model.containsFullDataset,
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.stretch,
                                       children: [
