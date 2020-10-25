@@ -9,8 +9,9 @@ class ChartView extends StatelessWidget {
 
   GaugeReferenceModel refModel;
   GaugeDetailViewModel viewModel;
+  bool isCfs;
 
-  ChartView({this.refModel, this.viewModel});
+  ChartView({this.refModel, this.viewModel, this.isCfs});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class ChartView extends StatelessWidget {
         ),
         series: <SplineSeries<GaugeValue, DateTime>>[
           SplineSeries<GaugeValue, DateTime>(
-            dataSource: viewModel.lineSeriesFlow,
+            dataSource: isCfs ? viewModel.lineSeriesFlow : viewModel.lineSeriesStage,
             xValueMapper: (GaugeValue reading, _) => reading.dateTime,
             yValueMapper: (GaugeValue reading, _) => reading.value,
           )

@@ -30,6 +30,7 @@ class GaugeDetailViewModel extends ChangeNotifier {
   int lowFlow;
 
   var reloading = true;
+  bool isCfs = false; // all gauges report stage, not all report cfs
 
   void setReferenceModel(GaugeReferenceModel mdl) {
     referenceModel = mdl;
@@ -80,18 +81,39 @@ class GaugeDetailViewModel extends ChangeNotifier {
         flowSeries = makeSeries(ts.values.first.value);
         sortedFlows = _getUltimates(ts.values.first.value);
       } else if (ts.variable.variableName.toLowerCase().contains('gage')) {
+        lineSeriesStage = ts.values.first.value;
         stageSeries = makeSeries(ts.values.first.value);
         sortedStages = _getUltimates(ts.values.first.value);
       }
     });
 
-    lowFlow = sortedFlows.first.toInt();
-    highFlow = sortedFlows.last.toInt();
-    lowStage = sortedStages.first;
-    highStage = sortedStages.last;
+    if (sortedFlows != null && sortedFlows.length > 0) {
+      lowFlow = sortedFlows.first.toInt();
+      highFlow = sortedFlows.last.toInt();
+    }
+    if(sortedStages != null && sortedStages.length > 0) {
+      lowStage = sortedStages.first;
+      highStage = sortedStages.last;
+    }
+
+  }
+
+  // a full dataset is one that contains both stage and flow
+  // some gauge reports only stage readings
+  bool containsFullDataset() {
+    return (flowSeries != null && stageSeries != null);
+  }
+
+  void setReadingType(int state) {
+    isCfs = (state < 1);
+    notifyListeners();
   }
 
   List<double> _getUltimates(List<GaugeValue> valueObjects) {
+    if (valueObjects.length < 1) {
+      return [];
+    }
+
     List<double> retArray = [];
     valueObjects.forEach((val) {
       retArray.add(val.value);

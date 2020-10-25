@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/RLAppBar.dart';
@@ -10,6 +11,7 @@ import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'chart_view.dart';
+import 'drawer.dart';
 
 class GaugeDetailChart extends StatefulWidget {
   GaugeReferenceModel referenceModel;
@@ -20,6 +22,7 @@ class GaugeDetailChart extends StatefulWidget {
 }
 
 class _GaugeDetailChartState extends State<GaugeDetailChart> {
+  int segmentedControlIndex = 0;
   GaugeDetailViewModel viewModel;
   TextStyle whiteStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white);
   TextStyle detailStyle = TextStyle(fontWeight: FontWeight.w300, fontSize: 14, color: Colors.white);
@@ -40,6 +43,7 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.indigo,
+        endDrawer: RFDrawer(),
         appBar: RLAppBar(
           titleText: Text('Gauge Detail'),
         ),
@@ -50,13 +54,16 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
                 Column(
                   children: [
                     Flexible(
-                      flex: 1,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(const Radius.circular(20.0))),
-                        child: ChartView(refModel: widget.referenceModel, viewModel: viewModel),
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12, right: 12, top: 5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(const Radius.circular(20.0))),
+                          child: ChartView(refModel: widget.referenceModel, viewModel: viewModel, isCfs: viewModel.isCfs,),
+                        ),
                       ),
                     ),
                     Flexible(
@@ -101,22 +108,54 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
                                       )
                                     ],
                                   ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  child: Visibility (
+                                    visible: model.containsFullDataset(),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        MaterialSegmentedControl(
+                                          horizontalPadding: EdgeInsets.only(top: 5, bottom: 0, left: 20, right: 20),
+                                          children: {
+                                            0: Text("CFS"),
+                                            1: Text("  Stage in feet  ")
+                                          },
+                                          selectionIndex: segmentedControlIndex,
+                                          borderRadius: 10.0,
+                                          selectedColor: Colors.white,
+                                          unselectedColor: Colors.blue,
+                                          onSegmentChosen: (index) {
+                                              viewModel.setReadingType(index);
+                                              segmentedControlIndex = index;
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  ),
                                 )
                               ],
-                            )
+                            ),
+
                         )
-                    )
+                    ),
                   ],
                 ),
                 Center(
                   child: Visibility(
                       visible: model.reloading,
                       child: Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(255, 255, 255, 0.5)
+                        ),
                         width: MediaQuery.of(context).size.width,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            CircularProgressIndicator(),
+                            CupertinoActivityIndicator(
+                              radius: 50,
+                            ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text('Loading details for'),
