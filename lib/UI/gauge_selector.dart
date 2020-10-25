@@ -26,23 +26,10 @@ class _GaugeSelector extends State<GaugeSelector>
     with SingleTickerProviderStateMixin {
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
-  PageController _pageController;
   List<GaugeReferenceModel> gaugeModels;
   ProgressDialog prog;
 
   _GaugeSelector();
-
-  @override
-  initState() {
-    super.initState();
-    _pageController = new PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
 
   Future _getGaugesForState() async {
     if (_stateGuageList.containsKey(widget.stateAbbreviation)) {

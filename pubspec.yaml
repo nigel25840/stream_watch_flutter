@@ -26,6 +26,7 @@ dependencies:
 #  json_serializable: ^2.0.0
 #  dart_codable: ^0.2.0
   codable: ^1.0.0
+  syncfusion_flutter_charts: ^18.3.42
 
 dev_dependencies:
   flutter_launcher_icons: ^0.7.5

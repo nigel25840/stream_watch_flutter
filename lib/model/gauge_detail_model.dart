@@ -135,13 +135,13 @@ class GaugeValues extends Coding {
 }
 
 class GaugeValue extends Coding {
-  String value;
-  String dateTime;
+  double value;
+  DateTime dateTime;
 
   @override
   void decode(KeyedArchive object) {
     super.decode(object);
-    value = object.decode('value');
+    value = double.parse(object.decode('value'));
     dateTime = object.decode('dateTime');
   }
 

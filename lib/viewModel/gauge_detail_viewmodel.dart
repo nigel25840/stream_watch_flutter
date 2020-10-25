@@ -1,21 +1,33 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class GaugeDetailViewModel extends ChangeNotifier {
-
   GaugeReferenceModel referenceModel;
   String gaugeId;
   int period;
   GaugeReadingModel model;
   GaugeDetailViewModel();
 
-  List<double> stageReadings = [];
-  List<double> cfsReadings = [];
+  List<charts.Series<GaugeValue, DateTime>> seriesFlowData;
+  List<charts.Series<GaugeValue, DateTime>> seriesStageData;
+
+  List<GaugeValue> lineSeriesFlow;
+  List<GaugeValue> lineSeriesStage;
+
+  List<ChartSeries<GaugeValue, String>> stageSeries;
+  List<ChartSeries<GaugeValue, String>> flowSeries;
+
+  double highStage;
+  double lowStage;
+  int highFlow;
+  int lowFlow;
 
   var reloading = true;
 
@@ -26,17 +38,19 @@ class GaugeDetailViewModel extends ChangeNotifier {
   }
 
   Future<GaugeDetailViewModel> _populate() async {
-
     var reload = true;
 
     // if there is a model from a previous load, ensure that it has changed before reloading
     if (model != null) {
-      String persistedGaugeId = model.value.timeSeries.first.sourceInfo.siteCode.last.value;
+      String persistedGaugeId =
+          model.value.timeSeries.first.sourceInfo.siteCode.last.value;
       reloading = referenceModel.gaugeId != persistedGaugeId;
     }
 
     if (reload) {
-      await DataProvider().fetchGaugeDetail(referenceModel.gaugeId).then((model) {
+      await DataProvider()
+          .fetchGaugeDetail(referenceModel.gaugeId)
+          .then((model) {
         this.model = model;
         setReadings();
         reloading = false;
@@ -56,47 +70,87 @@ class GaugeDetailViewModel extends ChangeNotifier {
   void setReadings() {
     if (model == null) return;
 
+    List<double> sortedFlows = [];
+    List<double> sortedStages = [];
+
     List<GaugeTimeSeries> series = model.value.timeSeries;
     series.forEach((ts) {
       if (ts.variable.variableName.toLowerCase().contains('streamflow')) {
-        cfsReadings.clear();
-        _makeValueList(true, ts.values[0].value);
+        lineSeriesFlow = ts.values.first.value;
+        flowSeries = makeSeries(ts.values.first.value);
+        sortedFlows = _getUltimates(ts.values.first.value);
       } else if (ts.variable.variableName.toLowerCase().contains('gage')) {
-        stageReadings.clear();
-        _makeValueList(false, ts.values[0].value);
+        stageSeries = makeSeries(ts.values.first.value);
+        sortedStages = _getUltimates(ts.values.first.value);
       }
     });
-  }
-  
-  void _makeValueList(bool cfs, List<GaugeValue> values) {
 
-    for (GaugeValue val in values) {
-      double reading = double.parse(val.value);
-      cfs ? cfsReadings.add(reading) : stageReadings.add(reading);
-    }
+    lowFlow = sortedFlows.first.toInt();
+    highFlow = sortedFlows.last.toInt();
+    lowStage = sortedStages.first;
+    highStage = sortedStages.last;
   }
+
+  List<double> _getUltimates(List<GaugeValue> valueObjects) {
+    List<double> retArray = [];
+    valueObjects.forEach((val) {
+      retArray.add(val.value);
+    });
+    retArray.sort((a, b) => a.compareTo(b));
+    return [retArray.first, retArray.last];
+  }
+
 
   // fetches period high or low for cfs or stage
-  String getUltimateValue({bool cfs, bool highValue}) {
-    if (model == null) {
-      return 'N\\A';
-    }
-    double retVal;
-    if (cfs) {
-      List<double> temp = []..addAll(cfsReadings);
-      temp.sort((a,b) => a.compareTo(b));
-      retVal = highValue ? temp.last : temp.first;
-    } else {
-      List<double> temp = []..addAll(stageReadings);
-      temp.sort((a, b) => a.compareTo(b));
-      retVal = highValue ? temp.last : temp.first;
-    }
-    return (retVal != null) ? retVal.toString() : 'N\\A';
+  // num _getUltimateValue({bool cfs, bool highValue}) {
+  //   if (model == null) {
+  //     return null;
+  //   }
+  //   double retVal;
+  //   if (cfs) {
+  //     List<double> temp = []..addAll(cfsReadings);
+  //     temp.sort((a, b) => a.compareTo(b));
+  //     retVal = highValue ? temp.last : temp.first;
+  //   } else {
+  //     List<double> temp = []..addAll(stageReadings);
+  //     temp.sort((a, b) => a.compareTo(b));
+  //     retVal = highValue ? temp.last : temp.first;
+  //   }
+  //   return retVal;
+  // }
+
+  Widget makeChart() {
+    return SfCartesianChart(
+        plotAreaBorderWidth: 0,
+        title: ChartTitle(text: referenceModel.gaugeName)  ,
+        primaryXAxis: DateTimeAxis(
+          majorGridLines: MajorGridLines(width: 0),
+          dateFormat: DateFormat.Hm(),
+          interval: 5,
+        ),
+        series: <SplineSeries<GaugeValue, DateTime>>[
+          SplineSeries<GaugeValue, DateTime>(
+            dataSource: lineSeriesFlow,
+            xValueMapper: (GaugeValue reading, _) => reading.dateTime,
+            yValueMapper: (GaugeValue reading, _) => reading.value,
+          )
+        ]);
+  }
+
+  List<ChartSeries<GaugeValue, String>> makeSeries(List<GaugeValue> vals) {
+    // final df = DateFormat('MM/d');
+
+    List<ChartSeries<GaugeValue, String>> retVal = [];
+    retVal.add(LineSeries(
+        dataSource: vals,
+        xValueMapper: (GaugeValue reading, _) =>
+            DateFormat.Md().format(reading.dateTime).toString(), //Md
+        yValueMapper: (GaugeValue reading, _) => reading.value));
+
+    return retVal;
   }
 
   String lastupdate() {
     return DateTime.now().toString();
   }
-
-
 }

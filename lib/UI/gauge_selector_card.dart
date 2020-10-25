@@ -25,7 +25,6 @@ class _GaugeSelectorCard extends State<GaugeSelectorCard> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
     GaugeReferenceModel _model = widget.model;
     isFavorite = viewModel.favorites.contains(_model.gaugeId);
 
