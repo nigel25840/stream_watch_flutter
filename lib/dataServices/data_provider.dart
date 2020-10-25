@@ -32,31 +32,25 @@ class DataProvider {
   }
 
   Future<List<GaugeReferenceModel>> stateGauges(String stateAbbr) async {
+
+    var gaugeList = List<GaugeReferenceModel>();
     String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
     Response res = await get(url);
-    var json = jsonDecode(res.body);
-    var gaugeList = List<GaugeReferenceModel>();
-    var idSet = Set<String>();
-    int count = json['value']['timeSeries'].length;
-
-    for (int index = 0; index < count; index++) {
-      var item = json['value']['timeSeries'][index]['sourceInfo'];
-      var gID = item['siteCode'][0]['value'];
-      var name = item['siteName'];
-      if (!idSet.contains(gID)) {
-        gaugeList.add(GaugeReferenceModel(gaugeName: name, gaugeState: stateAbbr, gaugeId: gID));
-      }
-      idSet.add(gID);
+    final refJson = json.decode(res.body);
+    final archive = KeyedArchive.unarchive(refJson);
+    GaugeRefModel model = GaugeRefModel();
+    model.decode(archive);
+    int count = model.value.timeSeries.length;
+    for (int index = 0; index < count; index ++){
+      GaugeReference ref = model.value.timeSeries[index].sourceInfo;
+      gaugeList.add(GaugeReferenceModel(gaugeName: ref.siteName, gaugeId: ref.siteCode.first.value));
     }
+
+    final ids = gaugeList.map((e) => e.gaugeId).toSet();
+    gaugeList.retainWhere((element) => ids.remove(element.gaugeId));
 
     Comparator<GaugeReferenceModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
     gaugeList.sort(sortByname);
-    return gaugeList.toList();
+    return gaugeList;
   }
-
-  // Single reading: https://waterservices.usgs.gov/nwis/iv/?site=03185400&format=json
-  // &period=PT2H
-  // value.timeSeries[0].values[0].value[0].value  (feet)
-  // value.timeSeries[2].values[0].value[0].value  (cfs)
-  // GaugeHeight/StreamFlow value.timeSeries[i].variable.variableName - "Streamflow, ft&#179;/s" or "Gage height, feet"
 }

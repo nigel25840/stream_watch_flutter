@@ -4,9 +4,7 @@ import 'package:streamwatcher/UI/RLAppBar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/gauge_selector_card.dart';
 import 'package:streamwatcher/Util/Storage.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
-import '../chart/gauge_detail.dart';
 import '../Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +24,8 @@ class _GaugeSelector extends State<GaugeSelector>
     with SingleTickerProviderStateMixin {
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
-  List<GaugeReferenceModel> gaugeModels;
+  List<GaugeReferenceModel> gaugeModels = [];
+  List<GaugeReference> gaugeRefModels;
   ProgressDialog prog;
 
   _GaugeSelector();
@@ -35,8 +34,7 @@ class _GaugeSelector extends State<GaugeSelector>
     if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
       return _stateGuageList[widget.stateAbbreviation];
     }
-    List<GaugeReferenceModel> gaugeModels =
-    await DataProvider().stateGauges(widget.stateAbbreviation);
+    List<GaugeReferenceModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
     _stateGuageList[widget.stateAbbreviation] = gaugeModels;
 
     return gaugeModels;
@@ -55,8 +53,7 @@ class _GaugeSelector extends State<GaugeSelector>
   var listener = ItemPositionsListener.create();
   var scroller = ItemScrollController();
 
-  ScrollablePositionedList _listView(
-      AsyncSnapshot snapshot, BuildContext context) {
+  ScrollablePositionedList _listView(AsyncSnapshot snapshot, BuildContext context) {
     var list = ScrollablePositionedList.builder(
       itemCount: snapshot.data.length,
       itemBuilder: (context, index) {
