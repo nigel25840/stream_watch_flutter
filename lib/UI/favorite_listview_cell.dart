@@ -5,9 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/gauge_detail_chart.dart';
 import 'package:streamwatcher/Util/constants.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 
 class FavoriteCell extends StatefulWidget {
@@ -107,10 +109,11 @@ class _FavoriteCell extends State<FavoriteCell> {
                       child: buildCard(context, model),
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return GaugeDetail(
-                            gaugeId: model.favoriteId,
-                            gaugeName: model.favoriteName,
-                          );
+                          // return GaugeDetail(
+                          //   gaugeId: model.favoriteId,
+                          //   gaugeName: model.favoriteName,
+                          // );
+                          return GaugeDetailChart(referenceModel: GaugeReferenceModel(gaugeName: model.favoriteName, gaugeId: model.favoriteId));
                         }));
                       },
                     ),

@@ -115,7 +115,6 @@ class _FavoritesView extends State<FavoritesView> {
     bool reload = refreshAll;
     refreshAll = false;
 
-
     if (viewModel.favoriteModels.length < 1) {
       return Consumer<FavoritesViewModel>(
         builder: (context, model, child) => Scaffold(
