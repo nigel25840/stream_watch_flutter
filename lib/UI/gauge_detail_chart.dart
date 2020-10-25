@@ -9,6 +9,8 @@ import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import 'chart_view.dart';
+
 class GaugeDetailChart extends StatefulWidget {
   GaugeReferenceModel referenceModel;
   GaugeDetailChart({this.referenceModel});
@@ -54,7 +56,7 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
                             color: Colors.white,
                             borderRadius:
                                 BorderRadius.all(const Radius.circular(20.0))),
-                        child: model.makeChart(),
+                        child: ChartView(refModel: widget.referenceModel, viewModel: viewModel),
                       ),
                     ),
                     Flexible(

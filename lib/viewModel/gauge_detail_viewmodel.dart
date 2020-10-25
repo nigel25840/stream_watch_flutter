@@ -100,43 +100,6 @@ class GaugeDetailViewModel extends ChangeNotifier {
     return [retArray.first, retArray.last];
   }
 
-
-  // fetches period high or low for cfs or stage
-  // num _getUltimateValue({bool cfs, bool highValue}) {
-  //   if (model == null) {
-  //     return null;
-  //   }
-  //   double retVal;
-  //   if (cfs) {
-  //     List<double> temp = []..addAll(cfsReadings);
-  //     temp.sort((a, b) => a.compareTo(b));
-  //     retVal = highValue ? temp.last : temp.first;
-  //   } else {
-  //     List<double> temp = []..addAll(stageReadings);
-  //     temp.sort((a, b) => a.compareTo(b));
-  //     retVal = highValue ? temp.last : temp.first;
-  //   }
-  //   return retVal;
-  // }
-
-  Widget makeChart() {
-    return SfCartesianChart(
-        plotAreaBorderWidth: 0,
-        title: ChartTitle(text: referenceModel.gaugeName)  ,
-        primaryXAxis: DateTimeAxis(
-          majorGridLines: MajorGridLines(width: 0),
-          dateFormat: DateFormat.Hm(),
-          interval: 5,
-        ),
-        series: <SplineSeries<GaugeValue, DateTime>>[
-          SplineSeries<GaugeValue, DateTime>(
-            dataSource: lineSeriesFlow,
-            xValueMapper: (GaugeValue reading, _) => reading.dateTime,
-            yValueMapper: (GaugeValue reading, _) => reading.value,
-          )
-        ]);
-  }
-
   List<ChartSeries<GaugeValue, String>> makeSeries(List<GaugeValue> vals) {
     // final df = DateFormat('MM/d');
 
