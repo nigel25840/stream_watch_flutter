@@ -49,9 +49,9 @@ class ChartViewModel extends ChangeNotifier {
     isFavorite = favorites.contains(gaugeId);
 
     if (seriesStageData == null || seriesStageData == null || refresh) {
-      json = await DataProvider().gaugeJson(gaugeId, hours);
-      count = json['value']['timeSeries'].length;
-      timeSeries = json['value']['timeSeries'];
+      // json = await DataProvider().gaugeJson(gaugeId, hours);
+      // count = json['value']['timeSeries'].length;
+      // timeSeries = json['value']['timeSeries'];
     }
 
     for (int index = 0; index < count; index++) {

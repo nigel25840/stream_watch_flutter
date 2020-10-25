@@ -34,7 +34,7 @@ class GaugeDetailViewModel extends ChangeNotifier {
 
   // a full dataset is one that contains both stage and flow
   // some gauge reports only stage readings
-  bool containsFullDataset;
+  bool containsFullDataset = false;
 
   void setReferenceModel(GaugeReferenceModel mdl) {
     referenceModel = mdl;
