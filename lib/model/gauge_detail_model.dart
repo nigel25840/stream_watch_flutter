@@ -1,3 +1,4 @@
+import 'package:charts_flutter/flutter.dart';
 import 'package:codable/cast.dart' as cast;
 import 'package:codable/codable.dart';
 
@@ -44,6 +45,18 @@ class GaugeTimeSeries extends Coding {
 
   @override
   void encode(KeyedArchive object) { }
+
+  List<double> getRawValues() {
+    List<double> temp = [];
+    if(values != null) {
+      values.forEach((elem) {
+        elem.value.forEach((reading) {
+          temp.add(reading.value);
+        });
+      });
+    }
+    return temp;
+  }
 }
 
 class GaugeSourceInfo extends Coding {
@@ -121,6 +134,7 @@ class GaugeVariable extends Coding {
   void encode(KeyedArchive object) { }
 }
 
+// GaugeValues contains a list of GaugeValue objects, which contain single readings
 class GaugeValues extends Coding {
   List<GaugeValue> value;
 
@@ -132,6 +146,14 @@ class GaugeValues extends Coding {
 
   @override
   void encode(KeyedArchive object) { }
+
+  double currentReadingValue() {
+    List<double> readings;
+    if(value != null && value.length > 0) {
+      return value.last.value;
+    }
+    return null;
+  }
 }
 
 class GaugeValue extends Coding {

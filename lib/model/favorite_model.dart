@@ -22,18 +22,4 @@ class FavoriteModel {
   Map<String, double> prefFlow = {'high': null, 'low': null};
 
   FavoriteModel(this.favoriteId, [this.favoriteName]);
-
-  bool isPopulated() {
-    return (
-      favoriteId != null && favoriteName != null
-    );
-  }
-
-  void buildFromGauge(GaugeReferenceModel gauge) {
-    favoriteId = gauge.gaugeId;
-    favoriteName = gauge.gaugeName;
-    lastUpdated = gauge.lastUpdated;
-    currentFlow = gauge.lastFlowReading;
-    currentStage = gauge.lastStageReading;
-  }
 }

@@ -7,10 +7,12 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/gauge_detail_chart.dart';
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
+import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
 
 class FavoriteCell extends StatefulWidget {
   final String gaugeId;
@@ -26,9 +28,10 @@ class _FavoriteCell extends State<FavoriteCell> {
   final String gaugeId;
   FavoritesViewModel vm;
   FavoriteModel model;
+  GaugeReadingModel reading;
+
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
-
   _FavoriteCell(this.gaugeId);
 
   Future<FavoriteModel> _getModel(String itemId, [bool refresh = false]) async {
