@@ -2,6 +2,10 @@
 
 import 'package:codable/codable.dart';
 
+// GaugeReferenceModel used to retrieve a list of available gauges for a given state
+// property names & structure of GaugeReferenceModel mimic JSON returned from USGS
+// with the exception of GaugeReference which provides a gaugeID field
+
 class GaugeReferenceModel {
   final String gaugeName;
   final String gaugeState;
@@ -15,29 +19,30 @@ class GaugeReferenceModel {
 }
 
 class GaugeRefModel extends Coding {
-
   GaugeRefValue value;
 
   @override
   void decode(KeyedArchive object) {
     value = object.decodeObject('value', () => GaugeRefValue());
   }
-  @override void encode(KeyedArchive object) {}
+
+  @override
+  void encode(KeyedArchive object) {}
 }
 
 class GaugeRefValue extends Coding {
-
   List<GaugeRefTimeSeries> timeSeries;
-  
+
   @override
   void decode(KeyedArchive object) {
     timeSeries = object.decodeObjects('timeSeries', () => GaugeRefTimeSeries());
   }
-  @override void encode(KeyedArchive object) {}
+
+  @override
+  void encode(KeyedArchive object) {}
 }
 
 class GaugeRefTimeSeries extends Coding {
-
   GaugeReference sourceInfo;
 
   @override
@@ -45,11 +50,11 @@ class GaugeRefTimeSeries extends Coding {
     sourceInfo = object.decodeObject('sourceInfo', () => GaugeReference());
   }
 
-  @override void encode(KeyedArchive object) {}
+  @override
+  void encode(KeyedArchive object) {}
 }
 
 class GaugeReference extends Coding {
-
   String siteName;
   String gaugeId;
   List<GaugeRefSiteCode> siteCode;
@@ -61,11 +66,11 @@ class GaugeReference extends Coding {
     gaugeId = siteCode.first.value;
   }
 
-  @override void encode(KeyedArchive object) {}
+  @override
+  void encode(KeyedArchive object) {}
 }
 
 class GaugeRefSiteCode extends Coding {
-
   String value;
 
   @override
@@ -73,5 +78,6 @@ class GaugeRefSiteCode extends Coding {
     value = object.decode('value');
   }
 
-  @override void encode(KeyedArchive object) {}
+  @override
+  void encode(KeyedArchive object) {}
 }
