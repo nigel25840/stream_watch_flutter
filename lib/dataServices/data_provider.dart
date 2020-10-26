@@ -14,9 +14,8 @@ import 'package:codable/codable.dart';
 
 class DataProvider {
 
-
   Future<GaugeReadingModel> fetchGaugeDetail(String gaugeId, {int hours = 72}) async {
-    String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
+    String url = '$kBaseUrl&site=${gaugeId}&period=PT${hours}H';
     Response res = await get(url);
     final readingJson = json.decode(res.body);
     final archive = KeyedArchive.unarchive(readingJson);
@@ -24,12 +23,6 @@ class DataProvider {
     model.decode(archive);
     return model;
   }
-
-  // Future<Map<String, dynamic>> gaugeJson(String gaugeId, int hours) async {
-  //   String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
-  //   Response res = await get(url);
-  //   return jsonDecode(res.body);
-  // }
 
   Future<List<GaugeReferenceModel>> stateGauges(String stateAbbr) async {
 
