@@ -62,39 +62,5 @@ class _GaugeSelectorCard extends State<GaugeSelectorCard> {
         ),
       ),
     );
-
   }
-// TODO: not in use. Card slows scroll performance in long lists.
-// Either resolve this issue or remove this class
-
-//class _GaugeSelectorCard extends State<GaugeSelectorCard> {
-//  bool isFavorite = false;
-//  @override
-//  Widget build(BuildContext context) {
-//    double screenWidth = MediaQuery.of(context).size.width;
-//    GaugeModel model = widget.model;
-//
-//    return Card(
-//      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-//      color: Colors.white.withOpacity(0.5),
-//      child: Row(
-//        children: [
-//          IconButton(
-//            icon: Icon(Icons.star_border),
-//          ),
-//          SizedBox(
-//              width: screenWidth * .8,
-//              child: Text(model.gaugeName,
-//                  overflow: TextOverflow.ellipsis,
-//                  maxLines: 1,
-//                  softWrap: false,
-//                  style: TextStyle(
-//                    fontWeight: FontWeight.w500,
-//                    fontSize: 16.0,
-//                  ))),
-//          Icon(Icons.arrow_forward_ios),
-//        ],
-//      ),
-//    );
-//  }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:streamwatcher/UI/RLAppBar.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'dart:core';

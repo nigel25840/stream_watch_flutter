@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_segmented_control/material_segmented_control.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:streamwatcher/UI/RLAppBar.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:streamwatcher/model/gauge_detail_model.dart';
@@ -24,7 +24,7 @@ class GaugeDetailChart extends StatefulWidget {
 class _GaugeDetailChartState extends State<GaugeDetailChart> {
   int segmentedControlIndex = 1; // this makes stage selected - stage is default
   GaugeDetailViewModel viewModel;
-  TextStyle whiteStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white);
+  TextStyle headingStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.white);
   TextStyle detailStyle = TextStyle(fontWeight: FontWeight.w300, fontSize: 14, color: Colors.white);
 
   @override
@@ -79,7 +79,7 @@ class _GaugeDetailChartState extends State<GaugeDetailChart> {
                                     Padding(
                                       padding:  const EdgeInsets.all(8.0),
                                       child: Center(
-                                        child: Text('3 day values', style: whiteStyle,),
+                                        child: Text('3 day values', style: headingStyle,),
                                       ),
                                     )
                                   ],

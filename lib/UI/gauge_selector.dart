@@ -1,6 +1,6 @@
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:streamwatcher/UI/RLAppBar.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/gauge_selector_card.dart';
 import 'package:streamwatcher/Util/Storage.dart';

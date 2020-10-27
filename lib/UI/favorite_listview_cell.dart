@@ -216,7 +216,6 @@ class _FavoriteCell extends State<FavoriteCell> {
                         ),
                         Container(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                   '${model.currentStage != null ? _formatReading(value: model.currentStage, cfs: false) : 'Ft.: N/A'}',
@@ -225,11 +224,14 @@ class _FavoriteCell extends State<FavoriteCell> {
                           ),
                         ),
 
-                        // TODO: refactor gauge model and revive trend arrow
-                        Icon((model.increasing != null) ? (model.increasing ? Icons.arrow_upward : Icons.arrow_downward) : Icons.remove),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Icon((model.increasing != null) ? (model.increasing ? Icons.arrow_upward : Icons.arrow_downward) : Icons.remove),
+                          ],
+                        ),
                         Container(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Icon(
                                 Icons.play_arrow,
