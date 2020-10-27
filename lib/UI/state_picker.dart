@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/Util/constants.dart';
 import 'dart:core';
@@ -46,7 +47,7 @@ class _StatePicker extends State<StatePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: RLAppBar(titleText: Text(widget.title)),
       body: showStates().build(context),
       endDrawer: RFDrawer(),
     );

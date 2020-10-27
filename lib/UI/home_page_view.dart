@@ -40,10 +40,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadData() async {
-    setState(() async {
+    // setState(() async {
       viewModel = await Provider.of<FavoritesViewModel>(context, listen: false);
       await viewModel.loadFavorites();
-    });
+    // });
   }
 
   // model is passed to this function through a consumer in the scaffold

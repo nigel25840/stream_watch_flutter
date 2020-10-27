@@ -1,18 +1,83 @@
-
 // represents a gauge item as downloaded from a selected state
 
-class GaugeModel {
+import 'package:codable/codable.dart';
 
+// GaugeReferenceModel used to retrieve a list of available gauges for a given state
+// property names & structure of GaugeReferenceModel mimic JSON returned from USGS
+// with the exception of GaugeReference which provides a gaugeID field
+
+class GaugeReferenceModel {
   final String gaugeName;
   final String gaugeState;
   final String gaugeId;
 
-  bool trendingUp = false;
-  bool isFavorite = false;
-  bool isAcceptableLevel;
   double lastFlowReading;
   double lastStageReading;
   DateTime lastUpdated;
 
-  GaugeModel({this.gaugeName, this.gaugeState, this.gaugeId});
+  GaugeReferenceModel({this.gaugeName, this.gaugeState, this.gaugeId});
+}
+
+class GaugeRefModel extends Coding {
+  GaugeRefValue value;
+
+  @override
+  void decode(KeyedArchive object) {
+    value = object.decodeObject('value', () => GaugeRefValue());
+  }
+
+  @override
+  void encode(KeyedArchive object) {}
+}
+
+class GaugeRefValue extends Coding {
+  List<GaugeRefTimeSeries> timeSeries;
+
+  @override
+  void decode(KeyedArchive object) {
+    timeSeries = object.decodeObjects('timeSeries', () => GaugeRefTimeSeries());
+  }
+
+  @override
+  void encode(KeyedArchive object) {}
+}
+
+class GaugeRefTimeSeries extends Coding {
+  GaugeReference sourceInfo;
+
+  @override
+  void decode(KeyedArchive object) {
+    sourceInfo = object.decodeObject('sourceInfo', () => GaugeReference());
+  }
+
+  @override
+  void encode(KeyedArchive object) {}
+}
+
+class GaugeReference extends Coding {
+  String siteName;
+  String gaugeId;
+  List<GaugeRefSiteCode> siteCode;
+
+  @override
+  void decode(KeyedArchive object) {
+    siteName = object.decode('siteName');
+    siteCode = object.decodeObjects('siteCode', () => GaugeRefSiteCode());
+    gaugeId = siteCode.first.value;
+  }
+
+  @override
+  void encode(KeyedArchive object) {}
+}
+
+class GaugeRefSiteCode extends Coding {
+  String value;
+
+  @override
+  void decode(KeyedArchive object) {
+    value = object.decode('value');
+  }
+
+  @override
+  void encode(KeyedArchive object) {}
 }

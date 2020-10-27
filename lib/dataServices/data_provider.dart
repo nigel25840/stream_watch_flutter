@@ -3,7 +3,9 @@ import 'dart:core';
 import 'package:http/http.dart';
 
 import 'package:streamwatcher/Util/constants.dart';
+import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
+import 'package:codable/codable.dart';
 
 // let url = URL(string: "\(Constants.BASE_URL)&stateCd=\(state)&parameterCd=00060,00065&siteType=ST&siteStatus=all")!
 
@@ -12,38 +14,36 @@ import 'package:streamwatcher/model/gauge_model.dart';
 
 class DataProvider {
 
-  Future<Map<String, dynamic>> gaugeJson(String gaugeId, int hours) async {
-    String url = 'https://waterservices.usgs.gov/nwis/iv/?site=${gaugeId}&format=json&period=PT${hours}H';
+  Future<GaugeReadingModel> fetchGaugeDetail(String gaugeId, {int hours = 72}) async {
+    String url = '$kBaseUrl&site=${gaugeId}&period=PT${hours}H';
     Response res = await get(url);
-    return jsonDecode(res.body);
+    final readingJson = json.decode(res.body);
+    final archive = KeyedArchive.unarchive(readingJson);
+    GaugeReadingModel model = GaugeReadingModel();
+    model.decode(archive);
+    return model;
   }
 
-  Future<List<GaugeModel>> stateGauges(String stateAbbr) async {
+  Future<List<GaugeReferenceModel>> stateGauges(String stateAbbr) async {
+
+    var gaugeList = List<GaugeReferenceModel>();
     String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
     Response res = await get(url);
-    var json = jsonDecode(res.body);
-    var gaugeList = List<GaugeModel>();
-    var idSet = Set<String>();
-    int count = json['value']['timeSeries'].length;
-
-    for (int index = 0; index < count; index++) {
-      var item = json['value']['timeSeries'][index]['sourceInfo'];
-      var gID = item['siteCode'][0]['value'];
-      var name = item['siteName'];
-      if (!idSet.contains(gID)) {
-        gaugeList.add(GaugeModel(gaugeName: name, gaugeState: stateAbbr, gaugeId: gID));
-      }
-      idSet.add(gID);
+    final refJson = json.decode(res.body);
+    final archive = KeyedArchive.unarchive(refJson);
+    GaugeRefModel model = GaugeRefModel();
+    model.decode(archive);
+    int count = model.value.timeSeries.length;
+    for (int index = 0; index < count; index ++){
+      GaugeReference ref = model.value.timeSeries[index].sourceInfo;
+      gaugeList.add(GaugeReferenceModel(gaugeName: ref.siteName, gaugeId: ref.siteCode.first.value));
     }
 
-    Comparator<GaugeModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
-    gaugeList.sort(sortByname);
-    return gaugeList.toList();
-  }
+    final ids = gaugeList.map((e) => e.gaugeId).toSet();
+    gaugeList.retainWhere((element) => ids.remove(element.gaugeId));
 
-  // Single reading: https://waterservices.usgs.gov/nwis/iv/?site=03185400&format=json
-  // &period=PT2H
-  // value.timeSeries[0].values[0].value[0].value  (feet)
-  // value.timeSeries[2].values[0].value[0].value  (cfs)
-  // GaugeHeight/StreamFlow value.timeSeries[i].variable.variableName - "Streamflow, ft&#179;/s" or "Gage height, feet"
+    Comparator<GaugeReferenceModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
+    gaugeList.sort(sortByname);
+    return gaugeList;
+  }
 }

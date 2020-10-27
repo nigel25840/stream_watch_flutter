@@ -5,10 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/gauge_detail_chart.dart';
 import 'package:streamwatcher/Util/constants.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
+import 'package:streamwatcher/model/gauge_detail_model.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/model/favorite_model.dart';
+import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
+import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
 
 class FavoriteCell extends StatefulWidget {
   final String gaugeId;
@@ -24,9 +28,10 @@ class _FavoriteCell extends State<FavoriteCell> {
   final String gaugeId;
   FavoritesViewModel vm;
   FavoriteModel model;
+  GaugeReadingModel reading;
+
   TextStyle titleStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
   TextStyle subStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 13);
-
   _FavoriteCell(this.gaugeId);
 
   Future<FavoriteModel> _getModel(String itemId, [bool refresh = false]) async {
@@ -107,10 +112,11 @@ class _FavoriteCell extends State<FavoriteCell> {
                       child: buildCard(context, model),
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                          return GaugeDetail(
-                            gaugeId: model.favoriteId,
-                            gaugeName: model.favoriteName,
-                          );
+                          // return GaugeDetail(
+                          //   gaugeId: model.favoriteId,
+                          //   gaugeName: model.favoriteName,
+                          // );
+                          return GaugeDetailChart(referenceModel: GaugeReferenceModel(gaugeName: model.favoriteName, gaugeId: model.favoriteId));
                         }));
                       },
                     ),
@@ -210,7 +216,6 @@ class _FavoriteCell extends State<FavoriteCell> {
                         ),
                         Container(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                   '${model.currentStage != null ? _formatReading(value: model.currentStage, cfs: false) : 'Ft.: N/A'}',
@@ -219,11 +224,14 @@ class _FavoriteCell extends State<FavoriteCell> {
                           ),
                         ),
 
-                        // TODO: refactor gauge model and revive trend arrow
-                        Icon((model.increasing != null) ? (model.increasing ? Icons.arrow_upward : Icons.arrow_downward) : Icons.remove),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Icon((model.increasing != null) ? (model.increasing ? Icons.arrow_upward : Icons.arrow_downward) : Icons.remove),
+                          ],
+                        ),
                         Container(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Icon(
                                 Icons.play_arrow,

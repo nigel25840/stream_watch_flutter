@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 
 import 'drawer.dart';
 
@@ -10,9 +11,7 @@ class DisclaimerView extends StatelessWidget {
     TextStyle headerStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 18);
     TextStyle bodyStyle = TextStyle(fontSize: 15);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Disclaimer"),
-      ),
+      appBar: RLAppBar(titleText: Text('Disclaimer')),
       body: SingleChildScrollView(
         child: Column(
           children: [

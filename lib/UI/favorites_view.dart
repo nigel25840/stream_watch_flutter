@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/favorite_listview_cell.dart';
 import 'package:streamwatcher/UI/help.dart';
@@ -36,11 +37,9 @@ class _FavoritesView extends State<FavoritesView> {
     await viewModel.refreshAllFavorites().then((_) => { prog.hide() });
   }
 
-  Future<void> _loadData() async {
-    setState(() {
+  void _loadData() {
       viewModel = Provider.of<FavoritesViewModel>(context, listen: false);
       viewModel.loadFavorites();
-    });
   }
 
   Widget showNoFavoritesView() {
@@ -114,7 +113,6 @@ class _FavoritesView extends State<FavoritesView> {
     bool reload = refreshAll;
     refreshAll = false;
 
-
     if (viewModel.favoriteModels.length < 1) {
       return Consumer<FavoritesViewModel>(
         builder: (context, model, child) => Scaffold(
@@ -127,9 +125,7 @@ class _FavoritesView extends State<FavoritesView> {
       );
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Favorites'),
-      ),
+      appBar: RLAppBar(titleText: Text('Favorites')),
       body: Consumer<FavoritesViewModel>(
           builder: (context, model, child) => Container(
                 child: RefreshIndicator(

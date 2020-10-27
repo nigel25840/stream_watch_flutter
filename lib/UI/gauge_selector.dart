@@ -1,11 +1,10 @@
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:streamwatcher/UI/rl_appbar.dart';
 import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/gauge_selector_card.dart';
 import 'package:streamwatcher/Util/Storage.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
-import '../chart/gauge_detail.dart';
 import '../Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import '../dataServices/data_provider.dart';
 
 class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
-  Future<List<GaugeModel>> _data;
+  Future<List<GaugeReferenceModel>> _data;
 
   GaugeSelector(this.stateAbbreviation) {
     _data = DataProvider().stateGauges(stateAbbreviation);
@@ -25,36 +24,17 @@ class _GaugeSelector extends State<GaugeSelector>
     with SingleTickerProviderStateMixin {
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
-  PageController _pageController;
-  List<GaugeModel> gaugeModels;
+  List<GaugeReferenceModel> gaugeModels = [];
+  List<GaugeReference> gaugeRefModels;
   ProgressDialog prog;
 
   _GaugeSelector();
 
-  @override
-  initState() {
-    super.initState();
-    _pageController = new PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
   Future _getGaugesForState() async {
-    // prog = ProgressDialog(context);
-    // prog.style(
-    //     message: "Downloading ${kAllStates[widget.stateAbbreviation]} gauge definitions",
-    //     messageTextStyle: TextStyle(fontSize: 14, color: Colors.white),
-    //     backgroundColor: Colors.indigo);
-    // prog.show();
     if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
       return _stateGuageList[widget.stateAbbreviation];
     }
-    List<GaugeModel> gaugeModels =
-        await DataProvider().stateGauges(widget.stateAbbreviation);
+    List<GaugeReferenceModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
     _stateGuageList[widget.stateAbbreviation] = gaugeModels;
 
     return gaugeModels;
@@ -73,12 +53,11 @@ class _GaugeSelector extends State<GaugeSelector>
   var listener = ItemPositionsListener.create();
   var scroller = ItemScrollController();
 
-  ScrollablePositionedList _listView(
-      AsyncSnapshot snapshot, BuildContext context) {
+  ScrollablePositionedList _listView(AsyncSnapshot snapshot, BuildContext context) {
     var list = ScrollablePositionedList.builder(
       itemCount: snapshot.data.length,
       itemBuilder: (context, index) {
-        GaugeModel gauge = snapshot.data[index];
+        GaugeReferenceModel gauge = snapshot.data[index];
         return GaugeSelectorCard(gauge);
       },
       itemPositionsListener: listener,
@@ -96,9 +75,7 @@ class _GaugeSelector extends State<GaugeSelector>
     _getFavorites();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(kAllStates[widget.stateAbbreviation]),
-      ),
+      appBar: RLAppBar(titleText: Text(kAllStates[widget.stateAbbreviation])),
       body: FutureBuilder(
         future: _getGaugesForState(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
