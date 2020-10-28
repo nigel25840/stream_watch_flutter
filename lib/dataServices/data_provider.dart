@@ -21,26 +21,4 @@ class DataProvider {
     model.decode(archive);
     return model;
   }
-
-  Future<List<GaugeReferenceModel>> stateGauges(String stateAbbr) async {
-    var gaugeList = List<GaugeReferenceModel>();
-    String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
-    Response res = await get(url);
-    final refJson = json.decode(res.body);
-    final archive = KeyedArchive.unarchive(refJson);
-    GaugeRefModel model = GaugeRefModel();
-    model.decode(archive);
-    int count = model.value.timeSeries.length;
-    for (int index = 0; index < count; index ++){
-      GaugeReference ref = model.value.timeSeries[index].sourceInfo;
-      gaugeList.add(GaugeReferenceModel(gaugeName: ref.siteName, gaugeId: ref.siteCode.first.value));
-    }
-
-    final ids = gaugeList.map((e) => e.gaugeId).toSet();
-    gaugeList.retainWhere((element) => ids.remove(element.gaugeId));
-
-    Comparator<GaugeReferenceModel> sortByname = (a,b) => a.gaugeName.compareTo(b.gaugeName);
-    gaugeList.sort(sortByname);
-    return gaugeList;
-  }
 }

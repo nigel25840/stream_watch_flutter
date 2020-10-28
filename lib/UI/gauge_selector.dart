@@ -14,9 +14,8 @@ class GaugeSelector extends StatefulWidget {
   final String stateAbbreviation;
   Future<List<GaugeReferenceModel>> _data;
 
-  GaugeSelector(this.stateAbbreviation) {
-    _data = DataProvider().stateGauges(stateAbbreviation);
-  }
+  GaugeSelector(this.stateAbbreviation);
+
   _GaugeSelector createState() => _GaugeSelector();
 }
 
@@ -31,12 +30,26 @@ class _GaugeSelector extends State<GaugeSelector>
   _GaugeSelector();
 
   Future _getGaugesForState() async {
-    if (_stateGuageList.containsKey(widget.stateAbbreviation)) {
-      return _stateGuageList[widget.stateAbbreviation];
+    String stateAbbr = widget.stateAbbreviation;
+    if (_stateGuageList.containsKey(stateAbbr)) {
+      return _stateGuageList[stateAbbr];
     }
-    List<GaugeReferenceModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
-    _stateGuageList[widget.stateAbbreviation] = gaugeModels;
+    // List<GaugeReferenceModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
+    // _stateGuageList[widget.stateAbbreviation] = gaugeModels;
+    List<GaugeReferenceModel> gaugeModels = [];
+    String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
 
+    await DataProvider().fetchFromUrl<GaugeRefModel>(url, GaugeRefModel()).then((model) {
+      model.value.timeSeries.forEach((ts) {
+        GaugeReference ref = ts.sourceInfo;
+        gaugeModels.add(GaugeReferenceModel(gaugeName: ref.siteName, gaugeId: ref.gaugeId));
+      });
+    });
+
+    final ids = gaugeModels.map((e) => e.gaugeId).toSet();
+    gaugeModels.retainWhere((element) => ids.remove(element.gaugeId));
+    Comparator<GaugeReferenceModel> sortByName = (a, b) => a.gaugeName.compareTo(b.gaugeName);
+    gaugeModels.sort(sortByName);
     return gaugeModels;
   }
 
