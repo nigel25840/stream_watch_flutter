@@ -9,7 +9,7 @@ class GaugeSelectorViewModel extends ChangeNotifier {
 
   GaugeSelectorViewModel();
 
-  Future<void> poplulateVM({String state}) async {
+  Future<List<GaugeReferenceModel>> poplulateVM({String state}) async {
     gaugeModels.clear();
     String url = '$kBaseUrl&stateCd=$state&parameterCd=00060,00065&siteType=ST&siteStatus=all';
     await DataProvider().fetchFromUrl<GaugeRefModel>(url, GaugeRefModel()).then((model) {
@@ -22,7 +22,7 @@ class GaugeSelectorViewModel extends ChangeNotifier {
       gaugeModels.retainWhere((element) => ids.remove(element.gaugeId));
       Comparator<GaugeReferenceModel> sortByName = (a, b) => a.gaugeName.compareTo(b.gaugeName);
       gaugeModels.sort(sortByName);
-      notifyListeners();
     });
+    return gaugeModels;
   }
 }

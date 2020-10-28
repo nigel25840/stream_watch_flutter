@@ -5,6 +5,7 @@ import 'package:streamwatcher/UI/drawer.dart';
 import 'package:streamwatcher/UI/gauge_selector_card.dart';
 import 'package:streamwatcher/Util/Storage.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
+import 'package:streamwatcher/viewModel/gauge_selector_viewmodel.dart';
 import '../Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +20,8 @@ class GaugeSelector extends StatefulWidget {
   _GaugeSelector createState() => _GaugeSelector();
 }
 
-class _GaugeSelector extends State<GaugeSelector>
-    with SingleTickerProviderStateMixin {
+class _GaugeSelector extends State<GaugeSelector> with SingleTickerProviderStateMixin {
+  GaugeSelectorViewModel viewModel = GaugeSelectorViewModel();
   List<String> faves;
   Map<String, dynamic> _stateGuageList = Map<String, dynamic>();
   List<GaugeReferenceModel> gaugeModels = [];
@@ -28,30 +29,6 @@ class _GaugeSelector extends State<GaugeSelector>
   ProgressDialog prog;
 
   _GaugeSelector();
-
-  Future _getGaugesForState() async {
-    String stateAbbr = widget.stateAbbreviation;
-    if (_stateGuageList.containsKey(stateAbbr)) {
-      return _stateGuageList[stateAbbr];
-    }
-    // List<GaugeReferenceModel> gaugeModels = await DataProvider().stateGauges(widget.stateAbbreviation);
-    // _stateGuageList[widget.stateAbbreviation] = gaugeModels;
-    List<GaugeReferenceModel> gaugeModels = [];
-    String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
-
-    await DataProvider().fetchFromUrl<GaugeRefModel>(url, GaugeRefModel()).then((model) {
-      model.value.timeSeries.forEach((ts) {
-        GaugeReference ref = ts.sourceInfo;
-        gaugeModels.add(GaugeReferenceModel(gaugeName: ref.siteName, gaugeId: ref.gaugeId));
-      });
-    });
-
-    final ids = gaugeModels.map((e) => e.gaugeId).toSet();
-    gaugeModels.retainWhere((element) => ids.remove(element.gaugeId));
-    Comparator<GaugeReferenceModel> sortByName = (a, b) => a.gaugeName.compareTo(b.gaugeName);
-    gaugeModels.sort(sortByName);
-    return gaugeModels;
-  }
 
   Future<void> closeDialog() async {
     if (prog != null) {
@@ -76,10 +53,6 @@ class _GaugeSelector extends State<GaugeSelector>
       itemPositionsListener: listener,
       itemScrollController: scroller,
     );
-
-    if (list != null) {
-      //scroller.jumpTo(index: 1); // error here
-    }
     return list;
   }
 
@@ -90,7 +63,7 @@ class _GaugeSelector extends State<GaugeSelector>
     return Scaffold(
       appBar: RLAppBar(titleText: Text(kAllStates[widget.stateAbbreviation])),
       body: FutureBuilder(
-        future: _getGaugesForState(),
+        future: viewModel.poplulateVM(state: widget.stateAbbreviation),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return _listView(snapshot, context);
