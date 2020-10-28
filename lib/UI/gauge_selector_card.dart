@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/gauge_detail_chart.dart';
-import 'package:streamwatcher/chart/gauge_detail.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/favorites_view_model.dart';
 

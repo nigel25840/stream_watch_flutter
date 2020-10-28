@@ -14,18 +14,15 @@ import 'package:codable/codable.dart';
 
 class DataProvider {
 
-  Future<GaugeReadingModel> fetchGaugeDetail(String gaugeId, {int hours = 72}) async {
-    String url = '$kBaseUrl&site=${gaugeId}&period=PT${hours}H';
+  Future<T> fetchFromUrl<T extends Coding>(String url, T model) async {
     Response res = await get(url);
     final readingJson = json.decode(res.body);
     final archive = KeyedArchive.unarchive(readingJson);
-    GaugeReadingModel model = GaugeReadingModel();
     model.decode(archive);
     return model;
   }
 
   Future<List<GaugeReferenceModel>> stateGauges(String stateAbbr) async {
-
     var gaugeList = List<GaugeReferenceModel>();
     String url = '$kBaseUrl&stateCd=$stateAbbr&parameterCd=00060,00065&siteType=ST&siteStatus=all';
     Response res = await get(url);

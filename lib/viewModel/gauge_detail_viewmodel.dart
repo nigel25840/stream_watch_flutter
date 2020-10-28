@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
@@ -52,8 +53,11 @@ class GaugeDetailViewModel extends ChangeNotifier {
       reloading = referenceModel.gaugeId != persistedGaugeId;
     }
 
-    await DataProvider().fetchGaugeDetail(referenceModel.gaugeId).then((model) {
-      this.model = model;
+    int hours = 72;
+    String url = '$kBaseUrl&site=${referenceModel.gaugeId}&period=PT${hours}H';
+
+    await DataProvider().fetchFromUrl<GaugeReadingModel>(url, GaugeReadingModel()).then((mdl) {
+      this.model = mdl;
       setReadings();
       reloading = false;
       notifyListeners();
@@ -107,7 +111,7 @@ class GaugeDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 'ulimates' are high and low values for flow and stage
+  // 'ultimates' are high and low values for flow and stage
   List<double> _getUltimates(List<GaugeValue> valueObjects) {
     if (valueObjects.length < 1) {
       return [];
