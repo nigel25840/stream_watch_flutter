@@ -35,8 +35,14 @@ class FavoritesViewModel extends ChangeNotifier {
       }
     }
     FavoriteModel model = FavoriteModel(gaugeId);
-    GaugeReadingModel readingModel =
-        await DataProvider().fetchGaugeDetail(gaugeId, hours: 2);
+
+    String url = '$kBaseUrl&site=${gaugeId}&period=PT2H';
+
+    // GaugeReadingModel readingModel =
+    //     await DataProvider().fetchGaugeDetail(gaugeId, hours: 2);
+
+    GaugeReadingModel readingModel = await DataProvider().fetchFromUrl<GaugeReadingModel>(url, GaugeReadingModel());
+
     GaugeDetailModel detailModel = readingModel.value;
 
     if (detailModel.timeSeries.length > 0) {
