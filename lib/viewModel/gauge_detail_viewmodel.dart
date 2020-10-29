@@ -6,7 +6,6 @@ import 'package:streamwatcher/Util/constants.dart';
 import 'package:streamwatcher/dataServices/data_provider.dart';
 import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class GaugeDetailViewModel extends ChangeNotifier {
@@ -18,9 +17,6 @@ class GaugeDetailViewModel extends ChangeNotifier {
 
   GaugeReadingModel model;
   GaugeDetailViewModel();
-
-  List<charts.Series<GaugeValue, DateTime>> seriesFlowData;
-  List<charts.Series<GaugeValue, DateTime>> seriesStageData;
 
   List<GaugeValue> lineSeriesFlow;
   List<GaugeValue> lineSeriesStage;

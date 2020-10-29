@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_segmented_control/material_segmented_control.dart';
-import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:streamwatcher/UI/rl_appbar.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
-import 'package:streamwatcher/model/gauge_detail_model.dart';
 import 'package:streamwatcher/model/gauge_model.dart';
 import 'package:streamwatcher/viewModel/gauge_detail_viewmodel.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'chart_view.dart';
 import 'drawer.dart';

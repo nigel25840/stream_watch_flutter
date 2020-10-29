@@ -1,5 +1,3 @@
-import 'package:charts_flutter/flutter.dart';
-import 'package:codable/cast.dart' as cast;
 import 'package:codable/codable.dart';
 
 // populates a data model from a USGS nested json reading
