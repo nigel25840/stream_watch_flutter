@@ -22,8 +22,6 @@ dependencies:
   provider: ^4.0.1
   carousel_slider: ^2.2.1
   progress_dialog: ^1.2.4
-#  json_serializable: ^2.0.0
-#  dart_codable: ^0.2.0
   codable: ^1.0.0
   syncfusion_flutter_charts: ^18.3.42
 
