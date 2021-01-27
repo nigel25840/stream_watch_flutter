@@ -2,7 +2,7 @@
 
 An app to check real time river gauge information
 
-## Getting Started
+## Some facts
 
 Uses Provider pattern for state management
 
